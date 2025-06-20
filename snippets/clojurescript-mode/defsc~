@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: defsc
+# key: dsc
+# --
+(defsc [$0])

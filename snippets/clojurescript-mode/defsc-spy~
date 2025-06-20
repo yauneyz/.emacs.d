@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: import sc api
+# key: scapi
+# --
+[sc.api :refer [defsc spy]]\

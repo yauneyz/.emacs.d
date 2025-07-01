@@ -7,10 +7,11 @@
 (use-package jsonrpc)
 
 (use-package copilot
-  :quelpa (copilot :fetcher github
-                   :repo "copilot-emacs/copilot.el"
-                   :branch "main"
-                   :files ("dist" "*.el")))
+  :straight (:host github :repo "copilot-emacs/copilot.el" :files ("dist" "*.el"))
+  :config
+  ;; Suppress compilation warnings from copilot.el
+  (with-eval-after-load 'copilot
+    (put 'copilot-mode 'byte-compile-warnings nil)))
 
 ;; Company --------------------------------------------------------------------
 (use-package company

@@ -15,6 +15,13 @@
 
 (evil-define-key 'normal 'global (kbd "C-p") 'paredit-splice-sexp-killing-backward)
 
+(use-package cider
+  :after clojure-mode
+  :custom (cider-completion-system 'ivy)
+  :config
+  (setq cider-repl-display-help-banner nil)
+  (add-hook 'cider-repl-mode-hook #'paredit-mode))
+
 ;; Enable paredit mode for Clojure buffers, CIDER mode and CIDER REPL buffers
 (add-hook 'cider-repl-mode-hook #'paredit-mode)
 (add-hook 'cider-mode-hook #'paredit-mode)

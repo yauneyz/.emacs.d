@@ -45,19 +45,6 @@
   (require 'bind-key))
 (setq use-package-always-ensure t)
 
-;; --------------------------------------------------------------------------
-;; Quelpa (for repos missing from MELPA)
-;; --------------------------------------------------------------------------
-(unless (package-installed-p 'quelpa)
-  (with-temp-buffer
-    (url-insert-file-contents
-     "https://raw.githubusercontent.com/quelpa/quelpa/master/quelpa.el")
-    (eval-buffer)
-    (quelpa-self-upgrade)))
-(quelpa '(quelpa-use-package
-          :fetcher git
-          :url "https://github.com/quelpa/quelpa-use-package.git"))
-(require 'quelpa-use-package)
 
 ;; --------------------------------------------------------------------------
 ;; Convenience helper used later
@@ -70,8 +57,8 @@
 ;; --------------------------------------------------------------------------
 ;; User info (email, name)
 ;; --------------------------------------------------------------------------
-(setq user-full-name     "Zac Yauney"
-      user-mail-address  "zac.yauney@gmail.com")
+(setq user-full-name     (or (getenv "GIT_AUTHOR_NAME") "Zac Yauney")
+      user-mail-address  (or (getenv "GIT_AUTHOR_EMAIL") "zac.yauney@gmail.com"))
 
 (provide 'packages)
 ;;; 10-packages.el ends here

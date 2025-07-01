@@ -1,4 +1,4 @@
-;;; 80-custom-fns.el --- little helpers & advice  -*- lexical-binding: t; -*-
+;;; 07-custom-fns.el --- little helpers & advice  -*- lexical-binding: t; -*-
 
 (defun my-open-init-file ()
   "Open init.el quickly."
@@ -31,7 +31,6 @@
               (let ((end (1- (point))))
                 (evil-visual-select start end))))
         (error (message "Not inside a (comment ...) block"))))))
-(evil-define-key 'normal 'global (kbd "<leader>cv") #'evil-select-inside-comment-block)
 
 
 (defun my-counsel-projectile-find-file ()
@@ -43,5 +42,30 @@ to allow out-of-order matching like 'eve/mp' for 'events/map'."
         (ivy-re-builders-alist '((t . ivy--regex-fuzzy))))
     (counsel-projectile-find-file)))
 
-(provide '80-custom-fns)
-;;; 80-custom-fns.el ends here
+(defun toggle-shell-buffer (&optional buffer-num)
+  "Toggle shell buffer for given BUFFER-NUM (defaults to 1).
+If shell buffer doesn't exist, create it as eshell.
+If buffer is visible in a window, switch that window to previous buffer.
+If buffer is not visible, display it in current window."
+  (interactive "p")
+  (let* ((buffer-num (or buffer-num 1))
+         (buffer-name (format "shell-buffer-%d" buffer-num))
+         (shell-buffer (get-buffer buffer-name)))
+    
+    ;; Create buffer if it doesn't exist
+    (unless shell-buffer
+      (setq shell-buffer (get-buffer-create buffer-name))
+      (with-current-buffer shell-buffer
+        (eshell-mode)))
+    
+    ;; Find window displaying the shell buffer
+    (let ((shell-window (get-buffer-window shell-buffer)))
+      (if shell-window
+          ;; Buffer is visible - switch to previous buffer in that window
+          (with-selected-window shell-window
+            (switch-to-prev-buffer))
+        ;; Buffer is not visible - display it in current window
+        (switch-to-buffer shell-buffer)))))
+
+(provide '07-custom-fns)
+;;; 07-custom-fns.el ends here

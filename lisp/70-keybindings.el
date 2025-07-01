@@ -16,6 +16,9 @@
 (evil-define-key 'normal 'global (kbd "<leader>bk") #'kill-buffer)
 (evil-define-key 'normal 'global (kbd "<leader>gg") #'counsel-projectile-rg)
 
+;; Selection helpers --------------------------------------------------------
+(evil-define-key 'normal 'global (kbd "<leader>cv") #'evil-select-inside-comment-block)
+
 ;; Project / Git / Treemacs ----------------------------------------------------
 (evil-define-key 'normal 'global (kbd "<leader>gs") #'magit-status)
 (evil-define-key 'normal 'global (kbd "<leader>tt") #'treemacs)
@@ -66,6 +69,22 @@
 
 ;; Folds / misc ----------------------------------------------------------------
 (evil-define-key 'normal 'global (kbd "<f3>") #'evil-toggle-fold)
+
+;; Shell buffer toggles -------------------------------------------------------
+(evil-define-key 'normal 'global (kbd "<leader>t0") (lambda () (interactive) (toggle-shell-buffer 0)))
+(evil-define-key 'normal 'global (kbd "<leader>t1") (lambda () (interactive) (toggle-shell-buffer 1)))
+(evil-define-key 'normal 'global (kbd "<leader>t2") (lambda () (interactive) (toggle-shell-buffer 2)))
+(evil-define-key 'normal 'global (kbd "<leader>t3") (lambda () (interactive) (toggle-shell-buffer 3)))
+(evil-define-key 'normal 'global (kbd "<leader>t4") (lambda () (interactive) (toggle-shell-buffer 4)))
+(evil-define-key 'normal 'global (kbd "<leader>t5") (lambda () (interactive) (toggle-shell-buffer 5)))
+(evil-define-key 'normal 'global (kbd "<leader>t6") (lambda () (interactive) (toggle-shell-buffer 6)))
+(evil-define-key 'normal 'global (kbd "<leader>t7") (lambda () (interactive) (toggle-shell-buffer 7)))
+(evil-define-key 'normal 'global (kbd "<leader>t8") (lambda () (interactive) (toggle-shell-buffer 8)))
+(evil-define-key 'normal 'global (kbd "<leader>t9") (lambda () (interactive) (toggle-shell-buffer 9)))
+
+;; Layout management ----------------------------------------------------------
+(evil-define-key 'normal 'global (kbd "<leader>ls") #'layout-save)
+(evil-define-key 'normal 'global (kbd "<leader>ll") #'layout-load)
 
 ;; Repeat for treemacs
 (with-eval-after-load 'treemacs

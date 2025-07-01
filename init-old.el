@@ -218,6 +218,9 @@
   (setq olivetti-minimum-body-width 80)
   (setq olivetti-recall-visual-line-mode-entry-state t))
 
+
+;;; test
+
 ;; Call olivetti mode on .txt
 (add-hook 'text-mode-hook 'olivetti-mode)
 

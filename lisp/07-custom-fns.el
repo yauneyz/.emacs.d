@@ -42,11 +42,14 @@ to allow out-of-order matching like 'eve/mp' for 'events/map'."
         (ivy-re-builders-alist '((t . ivy--regex-fuzzy))))
     (counsel-projectile-find-file)))
 
-(defun toggle-shell-buffer (&optional buffer-num)
+(defun toggle-shell-buffer (&optional buffer-num other-window)
   "Toggle shell buffer for given BUFFER-NUM (defaults to 1).
 If shell buffer doesn't exist, create it as eshell.
 If buffer is visible in a window, switch that window to previous buffer.
-If buffer is not visible, display it in current window."
+If buffer is not visible, display it in current window.
+If OTHER-WINDOW is non-nil, try to open in another window:
+- If multiple windows exist, use an existing other window
+- If only one window exists, split and use the new window"
   (interactive "p")
   (let* ((buffer-num (or buffer-num 1))
          (buffer-name (format "shell-buffer-%d" buffer-num))
@@ -64,8 +67,38 @@ If buffer is not visible, display it in current window."
           ;; Buffer is visible - switch to previous buffer in that window
           (with-selected-window shell-window
             (switch-to-prev-buffer))
-        ;; Buffer is not visible - display it in current window
-        (switch-to-buffer shell-buffer)))))
+        ;; Buffer is not visible - display it
+        (if other-window
+            ;; Open in another window
+            (if (> (length (window-list)) 1)
+                ;; Multiple windows exist - use another window
+                (let ((other-win (next-window)))
+                  (with-selected-window other-win
+                    (switch-to-buffer shell-buffer)))
+              ;; Only one window - split and use new window
+              (progn
+                (split-window-right)
+                (other-window 1)
+                (switch-to-buffer shell-buffer)))
+          ;; Open in current window (original behavior)
+          (switch-to-buffer shell-buffer))))))
+
+(defun toggle-command-log ()
+  "Toggle command-log-mode and its buffer.
+If command-log-mode is enabled, disable it and close the buffer.
+If command-log-mode is disabled, enable it and open the buffer."
+  (interactive)
+  (if (bound-and-true-p command-log-mode)
+      ;; Command log mode is enabled - disable it and close buffer
+      (progn
+        (command-log-mode -1)
+        (when (fboundp 'clm/close-command-log-buffer)
+          (clm/close-command-log-buffer)))
+    ;; Command log mode is disabled - enable it and open buffer
+    (progn
+      (command-log-mode 1)
+      (when (fboundp 'clm/open-command-log-buffer)
+        (clm/open-command-log-buffer)))))
 
 (provide '07-custom-fns)
 ;;; 07-custom-fns.el ends here

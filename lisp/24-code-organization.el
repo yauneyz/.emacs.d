@@ -16,8 +16,8 @@
                  ((looking-at "###") 3)
                  ((looking-at "##") 2)
                  ((looking-at "#") 1)
-                 ((looking-at "class ") 1)
-                 ((looking-at "def ") 2)
+                 ((looking-at "class ") 4)
+                 ((looking-at "def ") 5)
                  (t 1))))
   (my/setup-outline-minor-mode))
 
@@ -28,11 +28,11 @@
   (setq-local outline-level
               (lambda ()
                 (cond
-                 ((looking-at ";;;") 3)
-                 ((looking-at ";;") 2)
-                 ((looking-at ";") 1)
-                 ((looking-at "(defn\\|(defmacro") 1)
-                 ((looking-at "(def") 2)
+                 ((looking-at ";;;;") 3)
+                 ((looking-at ";;;") 2)
+                 ((looking-at ";;") 1)
+                 ((looking-at "(defn\\|(defmacro") 4)
+                 ((looking-at "(def") 5)
                  (t 1))))
   (my/setup-outline-minor-mode))
 

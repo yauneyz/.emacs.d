@@ -48,6 +48,10 @@
   :hook (python-mode . lsp-deferred))
 
 
+;; LSP Config
+(setq lsp-pylsp-plugins-flake8-enabled t
+      lsp-pylsp-plugins-flake8-ignore
+      '("D100" "D101" "D102" "D103" "D104" "D105" "D107"))
 
 
 ;;============== Typescript =============

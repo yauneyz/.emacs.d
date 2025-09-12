@@ -5,12 +5,10 @@
   :commands (lsp lsp-deferred)
   :init (setq lsp-keymap-prefix "C-c l")
   :hook ((typescript-mode js-mode clojure-mode python-mode rust-mode) . lsp-deferred)
+  :custom
+  (lsp-idle9delay 0.2)
   :config (lsp-enable-which-key-integration t)
   (evil-define-key 'normal 'global (kbd "<leader>l") lsp-command-map))
-
-(setq lsp-pylsp-plugins-flake8-enabled t
-      lsp-pylsp-plugins-flake8-ignore
-      '("D100" "D101" "D102" "D103" "D104" "D105" "D107"))
 
 (use-package lsp-ui
   :hook (lsp-mode . lsp-ui-mode)

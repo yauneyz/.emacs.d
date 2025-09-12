@@ -15,5 +15,5 @@
   (setq company-mode 0)
   ;; Set the way we export, just using screenplain
   ;; To get it to work, just pip install screenplain
-  (setq fountain-export-command-profiles '(("screenplain" . "screenplain -f pdf %b ../output/%B.pdf")))
+  (setq fountain-export-command-profiles '(("screenplain" . "screenplain -f pdf %b ../%B.pdf")))
   (which-function-mode 1))

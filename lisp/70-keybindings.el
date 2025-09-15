@@ -87,6 +87,7 @@
 (evil-define-key 'normal 'global (kbd "zp") #'outline-previous-visible-heading)  ; previous heading (any level)
 
 ;; Shell buffer toggles -------------------------------------------------------
+(evil-define-key 'normal 'global (kbd "<leader>to") (lambda () (interactive) (toggle-shell-buffer 0)))
 (evil-define-key 'normal 'global (kbd "<leader>t0") (lambda () (interactive) (toggle-shell-buffer 0)))
 (evil-define-key 'normal 'global (kbd "<leader>t1") (lambda () (interactive) (toggle-shell-buffer 1)))
 (evil-define-key 'normal 'global (kbd "<leader>t2") (lambda () (interactive) (toggle-shell-buffer 2)))

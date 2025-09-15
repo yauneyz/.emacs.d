@@ -12,21 +12,59 @@
   ;; Suppress compilation warnings from copilot.el
   (with-eval-after-load 'copilot
     (put 'copilot-mode 'byte-compile-warnings nil)))
+;; ================ CORFU ========================
+;; ----- LSP should provide CAPF, not Company
+(with-eval-after-load 'lsp-mode
+  (setq lsp-completion-provider :none))   ;; Corfu reads from CAPF
 
-;; Company --------------------------------------------------------------------
-(use-package company
-  :after (lsp-mode copilot)
-  :hook (lsp-mode . company-mode)
-  :bind (:map company-active-map
-              ("C-l"   . company-complete-selection)
-              ("TAB"   . copilot-accept-completion)
-              ("<tab>" . copilot-accept-completion)
-         :map lsp-mode-map
-              ("C-l" . company-indent-or-complete-common))
-  :custom ((company-minimum-prefix-length 1)
-           (company-idle-delay 0.0)))
+;; ----- Corfu UI
+(use-package corfu
+  :init
+  (global-corfu-mode)                     ;; enable in all buffers
+  :custom
+  (corfu-auto t)                          ;; popup automatically
+  (corfu-auto-delay 0.0)
+  (corfu-auto-prefix 1)
+  (corfu-preselect-first t)
+  (corfu-cycle t)                         ;; TAB cycles candidates
+  (corfu-quit-no-match 'separator)        ;; keep UI until you type a space/comma/etc.
+  ;; nice in terminals too (M-x corfu-terminal-install if you use tty often)
+  )
 
-(use-package company-box :hook (company-mode . company-box-mode))
+;; NOTE - commented because we couldn't find the package
+;; ;; nice docs-on-hover in the popup
+;; (use-package corfu-popupinfo
+;;   :after corfu
+;;   :hook (corfu-mode . corfu-popupinfo-mode)
+;;   :custom (corfu-popupinfo-delay 0.05))
+
+;; better matching (VSCode-like fuzzy, out-of-order)
+(use-package orderless
+  :custom
+  (completion-styles '(orderless basic))
+  (completion-category-defaults nil)
+  (completion-category-overrides '((file (styles . (partial-completion))))))
+
+;; extra completion sources (dabbrev, files, etc.)
+(use-package cape
+  :init
+  ;; Keep LSP at highest priority; add a few handy fallbacks after it.
+  (add-to-list 'completion-at-point-functions #'cape-file   'append)
+  (add-to-list 'completion-at-point-functions #'cape-dabbrev 'append)
+  (add-to-list 'completion-at-point-functions #'cape-keyword 'append))
+
+;; pretty icons for candidates (requires a nerd font)
+(use-package kind-icon
+  :after corfu
+  :custom (kind-icon-use-icons t)
+  :config
+  (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
+
+;; remember history
+(savehist-mode 1)
+(with-eval-after-load 'corfu
+  (require 'corfu-history)
+  (corfu-history-mode 1))
 
 ;; YASnippet ------------------------------------------------------------------
 (use-package yasnippet

@@ -6,14 +6,17 @@
   :init (setq lsp-keymap-prefix "C-c l")
   :hook ((typescript-mode js-mode clojure-mode python-mode rust-mode) . lsp-deferred)
   :custom
-  (lsp-idle9delay 0.2)
+  (lsp-idle-delay 0.2)
+  (lsp-completion-provider :none)
   :config (lsp-enable-which-key-integration t)
   (evil-define-key 'normal 'global (kbd "<leader>l") lsp-command-map))
 
 (use-package lsp-ui
   :hook (lsp-mode . lsp-ui-mode)
   :custom ((lsp-ui-doc-enable t)
-           (lsp-ui-doc-position 'bottom)))
+           (lsp-ui-doc-position 'bottom)
+           (lsp-ui-sideline-show-code-actions t)
+           (lsp-ui-sideline-show-diagnostics t)))
 
 (use-package lsp-ivy)
 (use-package lsp-treemacs :after lsp :config (lsp-treemacs-sync-mode 1))

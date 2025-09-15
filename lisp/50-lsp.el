@@ -4,12 +4,24 @@
 (use-package lsp-mode
   :commands (lsp lsp-deferred)
   :init (setq lsp-keymap-prefix "C-c l")
-  :hook ((typescript-mode js-mode clojure-mode python-mode rust-mode) . lsp-deferred)
+  :hook ((typescript-mode js-mode clojure-mode python-mode rust-mode go-mode go-ts-mode) . lsp-deferred)
   :custom
   (lsp-idle-delay 0.2)
   (lsp-completion-provider :none)
   :config (lsp-enable-which-key-integration t)
-  (evil-define-key 'normal 'global (kbd "<leader>l") lsp-command-map))
+  (evil-define-key 'normal 'global (kbd "<leader>l") lsp-command-map)
+
+  ;; Go-specific LSP settings
+  (setq lsp-go-use-gofumpt t
+        lsp-go-staticcheck t
+        lsp-semantic-tokens-enable t
+        lsp-eldoc-enable-hover t
+        lsp-headerline-breadcrumb-enable t)
+
+  ;; Format and organize imports on save for Go buffers
+  (dolist (hook '(go-mode-hook go-ts-mode-hook))
+    (add-hook hook (lambda ()
+                     (add-hook 'before-save-hook #'+go/lsp-format+imports nil t)))))
 
 (use-package lsp-ui
   :hook (lsp-mode . lsp-ui-mode)
@@ -25,11 +37,14 @@
 (use-package dap-mode
   :after lsp-mode
   :commands dap-debug
-  :hook ((js-mode typescript-mode) . dap-mode)
+  :hook ((js-mode typescript-mode go-mode go-ts-mode) . dap-mode)
   :config
   (dap-auto-configure-mode)
   (require 'dap-ui) (dap-ui-mode 1)
   (require 'dap-node) (dap-node-setup)
+
+  ;; Go DAP (debugging with Delve)
+  (require 'dap-dlv-go)  ;; Go adapter
 
   (dap-register-debug-template
    "Node :: Launch Current File"
@@ -38,6 +53,14 @@
          :runtimeExecutable "node"
          :console "integratedTerminal"
          :internalConsoleOptions "neverOpen"))
+
+  ;; Go debug templates
+  (dap-register-debug-template "Go: Launch main (go run .)"
+    (list :type "go" :request "launch" :name "Go: Launch main"
+          :mode "auto" :program "${workspaceFolder}"))
+  (dap-register-debug-template "Go: Test current package"
+    (list :type "go" :request "launch" :name "Go: Test pkg"
+          :mode "test" :program "${workspaceFolder}"))
 
   (evil-define-key 'normal 'global
     (kbd "<leader>db") #'dap-breakpoint-toggle

@@ -29,7 +29,9 @@
   (corfu-cycle t)                         ;; TAB cycles candidates
   (corfu-quit-no-match 'separator)        ;; keep UI until you type a space/comma/etc.
   ;; nice in terminals too (M-x corfu-terminal-install if you use tty often)
-  )
+  :config
+  ;; Disable in org-mode to avoid interference
+  (add-hook 'org-mode-hook (lambda () (corfu-mode -1))))
 
 ;; NOTE - commented because we couldn't find the package
 ;; ;; nice docs-on-hover in the popup
@@ -73,11 +75,11 @@
   (define-key yas-minor-mode-map (kbd "C-j")   #'yas-next-field-or-maybe-expand)
   (define-key yas-minor-mode-map (kbd "C-S-j") #'yas-prev-field))
 
-(defun my/company-yasnippet-complete ()
+(defun my/yasnippet-complete ()
+  "Complete using YASnippet via completion-at-point."
   (interactive)
-  (let ((company-backends '(company-yasnippet)))
-    (company-complete)))
-(evil-define-key 'insert 'global (kbd "C-y") #'my/company-yasnippet-complete)
+  (yas-expand-from-trigger-key))
+(evil-define-key 'insert 'global (kbd "C-y") #'my/yasnippet-complete)
 
 ;; Dispatcher TAB --------------------------------------------------------------
 (defun dispatch-tab-command ()

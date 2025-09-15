@@ -114,6 +114,61 @@
 
 ;; ============== Go =============
 
+;; Load Go helper functions
+(require 'go-fns)
+
+;; Tree-sitter Go + auto-install grammars (Emacs 29+)
+(use-package treesit-auto
+  :ensure t
+  :custom (treesit-auto-install 'prompt)
+  :config
+  (treesit-auto-add-to-auto-mode-alist 'all)
+  (global-treesit-auto-mode))
+
+;; Keep go-mode around for handy commands (coverage, go-run/go-build helpers)
+(use-package go-mode
+  :ensure t
+  :mode "\\.go\\'")
+
+;; Test runner helpers (prefers gotestsum if present)
+(use-package gotest
+  :ensure t
+  :commands (go-test-current-test go-test-current-file go-test-current-project))
+
+;; One-key menu for the whole lifecycle (requires `transient`)
+(use-package transient :ensure t)
+
+(transient-define-prefix +go/menu ()
+  "Go lifecycle menu"
+  [:description (lambda () (propertize "Go: Build • Test • Run • Debug" 'face 'bold))
+   ["Run/Build"
+    ("b" "Build ./..."         +go/build)
+    ("r" "Run (go run .)"      +go/run)
+    ("R" "Re-run last"         +go/recompile)]
+   ["Tests"
+    ("t" "Test at point"       +go/test-at-point)
+    ("f" "Test file"           +go/test-file)
+    ("p" "Test project"        +go/test-project)
+    ("k" "Benchmarks"          +go/test-benchmark)
+    ("c" "Coverage toggle"     +go/coverage-toggle)]
+   ["Debug"
+    ("d" "Debug: choose templ" dap-debug)
+    ("." "Toggle breakpoint"   dap-breakpoint-toggle)
+    ("," "Continue"            dap-continue)]]
+  [ :class transient-row
+    ("g" "Open *compilation*" (lambda () (interactive) (pop-to-buffer "*compilation*")))
+    ("q" "Quit menu" transient-quit-one)])
+
+;; Compilation pane UX (bottom split, auto-scroll, color)
+(setq compilation-scroll-output 'first-error
+      compilation-always-kill t
+      compilation-ask-about-save nil)
+(add-hook 'compilation-filter-hook #'ansi-color-compilation-filter)
+(add-to-list 'display-buffer-alist
+             '("\\*compilation\\*"
+               (display-buffer-reuse-window display-buffer-in-side-window)
+               (side . bottom) (slot . 0) (window-height . 0.33)))
+
 
 
 ;; ============== Misc =============

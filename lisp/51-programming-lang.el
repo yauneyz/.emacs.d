@@ -114,50 +114,69 @@
 
 ;; ============== Go =============
 
+;; Set tree-sitter library path
+(setq treesit-extra-load-path (list (expand-file-name "~/.emacs.d/tree-sitter/")))
+
 ;; Load Go helper functions
 (require 'go-fns)
 
-;; Tree-sitter Go + auto-install grammars (Emacs 29+)
-(use-package treesit-auto
-  :ensure t
-  :custom (treesit-auto-install 'prompt)
-  :config
-  (treesit-auto-add-to-auto-mode-alist 'all)
-  (global-treesit-auto-mode))
+;; ;; ;; Tree-sitter Go + auto-install grammars (Emacs 29+)
+;; (use-package treesit-auto
+;;   :ensure t
+;;   :custom (treesit-auto-install 'prompt)
+;;   :config
+;;   (treesit-auto-add-to-auto-mode-alist 'all)
+;;   (global-treesit-auto-mode))
 
 ;; Keep go-mode around for handy commands (coverage, go-run/go-build helpers)
 (use-package go-mode
   :ensure t
-  :mode "\\.go\\'")
+  :mode "\\.go\\'"
+  :hook (go-mode . lsp-deferred)
+  :config
+  ;; Disable go-mode's own definition lookup (use LSP instead)
+  (setq godoc-at-point-function nil
+        go-guess-gopath-functions nil)
+
+  ;; Ensure xref uses LSP for go-to-definition
+  (add-hook 'go-mode-hook
+            (lambda ()
+              (setq-local xref-backend-functions '(lsp--xref-backend)))))
 
 ;; Test runner helpers (prefers gotestsum if present)
 (use-package gotest
   :ensure t
   :commands (go-test-current-test go-test-current-file go-test-current-project))
 
-;; One-key menu for the whole lifecycle (requires `transient`)
-(use-package transient :ensure t)
+;; Go hydra menu (replaces transient)
+(use-package hydra :ensure t)
 
-(transient-define-prefix +go/menu ()
-  "Go lifecycle menu"
-  [:description (lambda () (propertize "Go: Build • Test • Run • Debug" 'face 'bold))
-   ["Run/Build"
-    ("b" "Build ./..."         +go/build)
-    ("r" "Run (go run .)"      +go/run)
-    ("R" "Re-run last"         +go/recompile)]
-   ["Tests"
-    ("t" "Test at point"       +go/test-at-point)
-    ("f" "Test file"           +go/test-file)
-    ("p" "Test project"        +go/test-project)
-    ("k" "Benchmarks"          +go/test-benchmark)
-    ("c" "Coverage toggle"     +go/coverage-toggle)]
-   ["Debug"
-    ("d" "Debug: choose templ" dap-debug)
-    ("." "Toggle breakpoint"   dap-breakpoint-toggle)
-    ("," "Continue"            dap-continue)]]
-  [ :class transient-row
-    ("g" "Open *compilation*" (lambda () (interactive) (pop-to-buffer "*compilation*")))
-    ("q" "Quit menu" transient-quit-one)])
+(defhydra +go/hydra (:color blue :hint nil)
+  "
+^Build/Run^         ^Tests^           ^Debug^           ^Utils^
+─────────────────────────────────────────────────────────────────
+_b_: build          _t_: at point     _d_: debug        _g_: show compilation
+_r_: run            _f_: file         _._: breakpoint   _x_: close compilation
+_R_: re-run         _p_: project      _,_: continue     _q_: quit
+_B_: build root     _k_: benchmark
+_P_: test root      _c_: coverage
+"
+  ("b" +go/build)
+  ("r" +go/run)
+  ("R" +go/recompile)
+  ("B" +go/build-from-root)
+  ("P" +go/test-from-root)
+  ("t" +go/test-at-point)
+  ("f" +go/test-file)
+  ("p" +go/test-project)
+  ("k" +go/test-benchmark)
+  ("c" +go/coverage-toggle)
+  ("d" dap-debug)
+  ("." dap-breakpoint-toggle)
+  ("," dap-continue)
+  ("g" (lambda () (interactive) (pop-to-buffer "*compilation*")) :color red)
+  ("x" +go/dismiss-compilation :color red)
+  ("q" nil))
 
 ;; Compilation pane UX (bottom split, auto-scroll, color)
 (setq compilation-scroll-output 'first-error
@@ -169,6 +188,10 @@
                (display-buffer-reuse-window display-buffer-in-side-window)
                (side . bottom) (slot . 0) (window-height . 0.33)))
 
+
+;; ;; 0) Prefer tree-sitter Go (keeps go-mode for utilities, but avoids its keymap)
+(when (fboundp 'go-ts-mode)
+  (add-to-list 'major-mode-remap-alist '(go-mode . go-ts-mode)))
 
 
 ;; ============== Misc =============

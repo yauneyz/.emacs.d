@@ -18,6 +18,12 @@
         lsp-eldoc-enable-hover t
         lsp-headerline-breadcrumb-enable t)
 
+  ;; Ensure gopls is used for Go language server
+  (lsp-register-client
+   (make-lsp-client :new-connection (lsp-stdio-connection "gopls")
+                    :activation-fn (lsp-activate-on "go")
+                    :server-id 'gopls))
+
   ;; Format and organize imports on save for Go buffers
   (dolist (hook '(go-mode-hook go-ts-mode-hook))
     (add-hook hook (lambda ()

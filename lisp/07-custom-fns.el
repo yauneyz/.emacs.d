@@ -100,5 +100,20 @@ If command-log-mode is disabled, enable it and open the buffer."
       (when (fboundp 'clm/open-command-log-buffer)
         (clm/open-command-log-buffer)))))
 
+;; Last toggled shell buffer tracking
+(defvar last-toggled-shell-buffer-number 0
+  "The number of the last toggled shell buffer.")
+
+(defun toggle-shell-buffer-and-remember (buffer-number &optional other-window)
+  "Toggle shell buffer BUFFER-NUMBER and remember it as the last used.
+If OTHER-WINDOW is non-nil, open in other window."
+  (setq last-toggled-shell-buffer-number buffer-number)
+  (toggle-shell-buffer buffer-number other-window))
+
+(defun toggle-last-shell-buffer ()
+  "Toggle the last used shell buffer."
+  (interactive)
+  (toggle-shell-buffer last-toggled-shell-buffer-number))
+
 (provide '07-custom-fns)
 ;;; 07-custom-fns.el ends here

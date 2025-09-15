@@ -54,10 +54,12 @@
 (defun +go/set-keys ()
   "Set Go-specific keybindings for Go buffers."
   (let ((m (current-local-map)))
-    (define-key m (kbd "<leader>gm") #'+go/menu)
+    (define-key m (kbd "<leader>gm") #'+go/hydra/body)
     (define-key m (kbd "<leader>gb") #'+go/build)
+    (define-key m (kbd "<leader>gB") #'+go/build-from-root)
     (define-key m (kbd "<leader>gr") #'+go/run)
     (define-key m (kbd "<leader>gp") #'+go/test-project)
+    (define-key m (kbd "<leader>gP") #'+go/test-from-root)
     (define-key m (kbd "<leader>gf") #'+go/test-file)
     (define-key m (kbd "<leader>gt") #'+go/test-at-point)
     (define-key m (kbd "<leader>gc") #'+go/coverage-toggle)
@@ -107,33 +109,45 @@
 (evil-define-key 'normal 'global (kbd "zp") #'outline-previous-visible-heading)  ; previous heading (any level)
 
 ;; Shell buffer toggles -------------------------------------------------------
-(evil-define-key 'normal 'global (kbd "<leader>to") (lambda () (interactive) (toggle-shell-buffer 0)))
-(evil-define-key 'normal 'global (kbd "<leader>t0") (lambda () (interactive) (toggle-shell-buffer 0)))
-(evil-define-key 'normal 'global (kbd "<leader>t1") (lambda () (interactive) (toggle-shell-buffer 1)))
-(evil-define-key 'normal 'global (kbd "<leader>t2") (lambda () (interactive) (toggle-shell-buffer 2)))
-(evil-define-key 'normal 'global (kbd "<leader>t3") (lambda () (interactive) (toggle-shell-buffer 3)))
-(evil-define-key 'normal 'global (kbd "<leader>t4") (lambda () (interactive) (toggle-shell-buffer 4)))
-(evil-define-key 'normal 'global (kbd "<leader>t5") (lambda () (interactive) (toggle-shell-buffer 5)))
-(evil-define-key 'normal 'global (kbd "<leader>t6") (lambda () (interactive) (toggle-shell-buffer 6)))
-(evil-define-key 'normal 'global (kbd "<leader>t7") (lambda () (interactive) (toggle-shell-buffer 7)))
-(evil-define-key 'normal 'global (kbd "<leader>t8") (lambda () (interactive) (toggle-shell-buffer 8)))
-(evil-define-key 'normal 'global (kbd "<leader>t9") (lambda () (interactive) (toggle-shell-buffer 9)))
+;; Quick access to last used shell buffer
+(evil-define-key 'normal 'global (kbd "<leader><leader>t") #'toggle-last-shell-buffer)
+
+;; Numbered shell buffers (with memory)
+(evil-define-key 'normal 'global (kbd "<leader>t0") (lambda () (interactive) (toggle-shell-buffer-and-remember 0)))
+(evil-define-key 'normal 'global (kbd "<leader>t1") (lambda () (interactive) (toggle-shell-buffer-and-remember 1)))
+(evil-define-key 'normal 'global (kbd "<leader>t2") (lambda () (interactive) (toggle-shell-buffer-and-remember 2)))
+(evil-define-key 'normal 'global (kbd "<leader>t3") (lambda () (interactive) (toggle-shell-buffer-and-remember 3)))
+(evil-define-key 'normal 'global (kbd "<leader>t4") (lambda () (interactive) (toggle-shell-buffer-and-remember 4)))
+(evil-define-key 'normal 'global (kbd "<leader>t5") (lambda () (interactive) (toggle-shell-buffer-and-remember 5)))
+(evil-define-key 'normal 'global (kbd "<leader>t6") (lambda () (interactive) (toggle-shell-buffer-and-remember 6)))
+(evil-define-key 'normal 'global (kbd "<leader>t7") (lambda () (interactive) (toggle-shell-buffer-and-remember 7)))
+(evil-define-key 'normal 'global (kbd "<leader>t8") (lambda () (interactive) (toggle-shell-buffer-and-remember 8)))
+(evil-define-key 'normal 'global (kbd "<leader>t9") (lambda () (interactive) (toggle-shell-buffer-and-remember 9)))
 
 ;; Shell buffer toggles (other window) ----------------------------------------
-(evil-define-key 'normal 'global (kbd "<leader>to0") (lambda () (interactive) (toggle-shell-buffer 0 t)))
-(evil-define-key 'normal 'global (kbd "<leader>to1") (lambda () (interactive) (toggle-shell-buffer 1 t)))
-(evil-define-key 'normal 'global (kbd "<leader>to2") (lambda () (interactive) (toggle-shell-buffer 2 t)))
-(evil-define-key 'normal 'global (kbd "<leader>to3") (lambda () (interactive) (toggle-shell-buffer 3 t)))
-(evil-define-key 'normal 'global (kbd "<leader>to4") (lambda () (interactive) (toggle-shell-buffer 4 t)))
-(evil-define-key 'normal 'global (kbd "<leader>to5") (lambda () (interactive) (toggle-shell-buffer 5 t)))
-(evil-define-key 'normal 'global (kbd "<leader>to6") (lambda () (interactive) (toggle-shell-buffer 6 t)))
-(evil-define-key 'normal 'global (kbd "<leader>to7") (lambda () (interactive) (toggle-shell-buffer 7 t)))
-(evil-define-key 'normal 'global (kbd "<leader>to8") (lambda () (interactive) (toggle-shell-buffer 8 t)))
-(evil-define-key 'normal 'global (kbd "<leader>to9") (lambda () (interactive) (toggle-shell-buffer 9 t)))
+(evil-define-key 'normal 'global (kbd "<leader>to0") (lambda () (interactive) (toggle-shell-buffer-and-remember 0 t)))
+(evil-define-key 'normal 'global (kbd "<leader>to1") (lambda () (interactive) (toggle-shell-buffer-and-remember 1 t)))
+(evil-define-key 'normal 'global (kbd "<leader>to2") (lambda () (interactive) (toggle-shell-buffer-and-remember 2 t)))
+(evil-define-key 'normal 'global (kbd "<leader>to3") (lambda () (interactive) (toggle-shell-buffer-and-remember 3 t)))
+(evil-define-key 'normal 'global (kbd "<leader>to4") (lambda () (interactive) (toggle-shell-buffer-and-remember 4 t)))
+(evil-define-key 'normal 'global (kbd "<leader>to5") (lambda () (interactive) (toggle-shell-buffer-and-remember 5 t)))
+(evil-define-key 'normal 'global (kbd "<leader>to6") (lambda () (interactive) (toggle-shell-buffer-and-remember 6 t)))
+(evil-define-key 'normal 'global (kbd "<leader>to7") (lambda () (interactive) (toggle-shell-buffer-and-remember 7 t)))
+(evil-define-key 'normal 'global (kbd "<leader>to8") (lambda () (interactive) (toggle-shell-buffer-and-remember 8 t)))
+(evil-define-key 'normal 'global (kbd "<leader>to9") (lambda () (interactive) (toggle-shell-buffer-and-remember 9 t)))
 
 ;; Layout management ----------------------------------------------------------
 (evil-define-key 'normal 'global (kbd "<leader>ls") #'layout-save)
 (evil-define-key 'normal 'global (kbd "<leader>ll") #'layout-load)
+
+;; Global compilation buffer dismiss
+(defun +go/dismiss-compilation ()
+  "Close the compilation window if visible."
+  (interactive)
+  (when-let ((win (get-buffer-window "*compilation*")))
+    (delete-window win)))
+
+(evil-define-key 'normal 'global (kbd "<leader>x") #'+go/dismiss-compilation)
 
 ;; Repeat for treemacs
 (with-eval-after-load 'treemacs

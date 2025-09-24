@@ -141,13 +141,8 @@
 (evil-define-key 'normal 'global (kbd "<leader>ll") #'layout-load)
 
 ;; Global compilation buffer dismiss
-(defun +go/dismiss-compilation ()
-  "Close the compilation window if visible."
-  (interactive)
-  (when-let ((win (get-buffer-window "*compilation*")))
-    (delete-window win)))
 
-(evil-define-key 'normal 'global (kbd "<leader>x") #'+go/dismiss-compilation)
+(evil-define-key 'normal 'global (kbd "<leader>x") #'dismiss-popup-buffer)
 
 ;; Repeat for treemacs
 (with-eval-after-load 'treemacs

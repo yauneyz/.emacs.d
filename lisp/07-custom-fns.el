@@ -54,13 +54,13 @@ If OTHER-WINDOW is non-nil, try to open in another window:
   (let* ((buffer-num (or buffer-num 1))
          (buffer-name (format "shell-buffer-%d" buffer-num))
          (shell-buffer (get-buffer buffer-name)))
-    
+
     ;; Create buffer if it doesn't exist
     (unless shell-buffer
       (setq shell-buffer (get-buffer-create buffer-name))
       (with-current-buffer shell-buffer
         (eshell-mode)))
-    
+
     ;; Find window displaying the shell buffer
     (let ((shell-window (get-buffer-window shell-buffer)))
       (if shell-window
@@ -117,3 +117,11 @@ If OTHER-WINDOW is non-nil, open in other window."
 
 (provide '07-custom-fns)
 ;;; 07-custom-fns.el ends here
+
+(defun dismiss-popup-buffer (&optional names)
+  "Close windows showing any buffer in NAMES.
+If NAMES is nil, default to \"*compilation*\" and \"*ref*\"."
+  (interactive)
+  (dolist (name (or names '("*compilation*" "*ref*")))
+    (when-let ((win (get-buffer-window name 'visible)))
+      (delete-window win))))

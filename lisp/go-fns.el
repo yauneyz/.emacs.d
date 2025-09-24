@@ -127,24 +127,10 @@ Customize per-project via .dir-locals.el if needed."
 (provide 'go-fns)
 ;;; go-fns.el ends here
 
-;; 1) Use Emacs to build grammars that match its own ABI
-(setq treesit-language-source-alist
-      '((go    "https://github.com/tree-sitter/tree-sitter-go")
-        (gomod "https://github.com/camdencheek/tree-sitter-go-mod")))
+;; (setq treesit-language-source-alist
+;;       '((go    "https://github.com/tree-sitter/tree-sitter-go"     "v0.23.4")
+;;         (gomod "https://github.com/camdencheek/tree-sitter-go-mod" "v1.1.0")))
 
-;; 2) Purge any mismatched Go grammars Emacs might be loading first
-(let* ((dirs (append treesit-extra-load-path
-                     (list (expand-file-name "tree-sitter" user-emacs-directory))))
-       (rx (rx-to-string '(seq (or "go" "gomod") (+ any) (or ".so" ".dylib" ".dll")))))
-  (dolist (d dirs)
-    (when (and d (file-directory-p d))
-      (dolist (f (directory-files d t rx))
-        (ignore-errors (delete-file f))))))
-
-;; 3) (Re)install matching grammars with Emacs’ built-in installer
-;;    This compiles against Emacs’ own Tree-sitter headers → ABI match.
-(mapc #'treesit-install-language-grammar '(go gomod))
-
-;; 4) Prefer go-ts-mode (optional but recommended)
-(when (fboundp 'go-ts-mode)
-  (add-to-list 'major-mode-remap-alist '(go-mode . go-ts-mode)))
+;; ;; Optional: keep using go-ts-mode automatically
+;; (when (fboundp 'go-ts-mode)
+;;   (add-to-list 'major-mode-remap-alist '(go-mode . go-ts-mode)))

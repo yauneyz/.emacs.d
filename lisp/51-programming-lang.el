@@ -1,13 +1,38 @@
 ;;============== Clojure =============
 
+;; Global timeout settings for network requests
+(setq url-queue-timeout 5) ; Timeout for URL requests (ClojureDocs, etc.)
+
+;; ClojureDocs cache configuration
+(defcustom +clojure/clojuredocs-cache-dir
+  (expand-file-name "~/.cache/orchard/clojuredocs/")
+  "Directory for ClojureDocs cache storage."
+  :type 'string
+  :group 'cider)
+
+;; Ensure cache directory exists on startup
+(unless (file-exists-p +clojure/clojuredocs-cache-dir)
+  (make-directory +clojure/clojuredocs-cache-dir t))
+
 (use-package clojure-mode
-  :mode "\\.clj\\'"
-  :hook (clojure-mode . lsp-deferred)
+  :mode (("\\.clj\\'" . clojure-mode)
+         ("\\.cljs\\'" . clojurescript-mode)
+         ("\\.cljc\\'" . clojurec-mode))
+  :hook ((clojure-mode . lsp-deferred)
+         (clojurescript-mode . lsp-deferred)
+         (clojurec-mode . lsp-deferred))
   :config
   (add-hook 'clojure-mode-hook #'paredit-mode)
-  (add-hook 'clojure-mode-hook #'rainbow-delimiters-mode))
+  (add-hook 'clojure-mode-hook #'rainbow-delimiters-mode)
+  (add-hook 'clojure-mode-hook #'clj-refactor-mode)
+  ;; Enable spec validation instrumentation in development
+  (add-hook 'clojure-mode-hook
+            (lambda ()
+              (when (string-match-p "development\\|dev" (or (getenv "NODE_ENV") "development"))
+                (setq-local cider-auto-select-error-buffer t)
+                (setq-local cider-show-error-buffer t)))))
 
-;; cider
+;; Enhanced Cider configuration for testing and debugging
 (unless (package-installed-p 'cider)
   (package-install 'cider))
 
@@ -15,12 +40,57 @@
 
 (evil-define-key 'normal 'global (kbd "C-p") 'paredit-splice-sexp-killing-backward)
 
+;; clj-refactor for enhanced refactoring
+(use-package clj-refactor
+  :after clojure-mode
+  :hook (clojure-mode . clj-refactor-mode)
+  :config
+  (cljr-add-keybindings-with-prefix "C-c C-m"))
+
+;; flycheck-clj-kondo for static analysis
+(use-package flycheck-clj-kondo
+  :after flycheck)
+
 (use-package cider
   :after clojure-mode
-  :custom (cider-completion-system 'ivy)
+  :custom
+  (cider-completion-system 'ivy)
+  (cider-eldoc-display-for-symbol-at-point nil) ; Reduce noise
+  (cider-eldoc-display-context-dependent-info nil) ; Disable context-dependent info to prevent fetching
+  (cider-eldoc-max-class-names-to-display 0) ; Disable class name display
+  (cider-eldoc-ns-function nil) ; Don't fetch namespace docs
+  ;; Documentation and performance optimizations
+  (cider-doc-auto-select-buffer nil) ; Don't auto-select doc buffers
+  (cider-connection-timeout 10) ; Set connection timeout
+  (eldoc-idle-delay 1.0) ; Increase eldoc delay to reduce requests
+  ;; Enhanced test integration
+  (cider-test-show-report-on-success t)
+  (cider-auto-select-test-report-buffer t)
+  (cider-test-defining-forms '("deftest" "defspec")) ; Add defspec support
+  ;; REPL enhancements
+  (cider-repl-history-file "~/.emacs.d/cider-repl-history")
+  (cider-repl-history-size 1000)
+  (cider-repl-wrap-history t)
+  ;; Error handling
+  (cider-show-error-buffer t)
+  (cider-auto-select-error-buffer t)
+  (cider-repl-display-help-banner nil)
+  ;; Debugging enhancements
+  (cider-debug-use-overlays t)
+  (cider-debug-prompt 'overlay)
   :config
-  (setq cider-repl-display-help-banner nil)
-  (add-hook 'cider-repl-mode-hook #'paredit-mode))
+  (add-hook 'cider-repl-mode-hook #'paredit-mode)
+  (add-hook 'cider-repl-mode-hook #'rainbow-delimiters-mode)
+  ;; Load test utilities on REPL start
+  (add-hook 'cider-connected-hook
+            (lambda ()
+              (when (cider-repls 'cljs)
+                (cider-eval-string-up-to-point
+                 "(require '[test.dev.repl-utils :as repl] :reload) (repl/init!)"))))
+  ;; Enhanced error display
+  (add-hook 'cider-stacktrace-mode-hook
+            (lambda ()
+              (setq-local truncate-lines nil))))
 
 ;; Enable paredit mode for Clojure buffers, CIDER mode and CIDER REPL buffers
 (add-hook 'cider-repl-mode-hook #'paredit-mode)
@@ -29,7 +99,7 @@
 ;; Disable paredit in emacs-lisp-mode
 (add-hook 'emacs-lisp-mode-hook (lambda () (paredit-mode 0)))
 
-
+;; Enhanced spy function with better defaults
 (defun my-spy-and-slurp ()
   "Insert '(spy )', move point before the closing parenthesis, then call `paredit-forward-slurp-sexp`."
   (interactive)
@@ -37,7 +107,65 @@
   (backward-char 1)  ;; Position point before the closing parenthesis
   (paredit-forward-slurp-sexp))
 
+(defun my-spy-with-label ()
+  "Insert '(spy \"label\" )', prompt for label, then slurp."
+  (interactive)
+  (let ((label (read-string "Spy label: " "debug")))
+    (insert (format "(spy \"%s\" )" label))
+    (backward-char 1)
+    (paredit-forward-slurp-sexp)))
+
+;; Test running utilities
+(defun cider-test-run-ns-and-focus ()
+  "Run tests for current namespace and focus on test buffer."
+  (interactive)
+  (cider-test-run-ns-tests)
+  (when-let ((buf (get-buffer "*cider-test-report*")))
+    (pop-to-buffer buf)))
+
+(defun cider-test-run-all-and-focus ()
+  "Run all tests and focus on test buffer."
+  (interactive)
+  (cider-test-run-all-tests)
+  (when-let ((buf (get-buffer "*cider-test-report*")))
+    (pop-to-buffer buf)))
+
+;; REPL utilities for testing
+(defun cider-repl-load-test-utils ()
+  "Load test utilities into the REPL."
+  (interactive)
+  (cider-eval-string-up-to-point
+   "(require '[test.dev.repl-utils :as repl] :reload)"))
+
+(defun cider-repl-run-test-suite ()
+  "Run test suite from REPL."
+  (interactive)
+  (let ((suite (completing-read "Test suite: " '("unit" "integration" "all"))))
+    (cider-eval-string-up-to-point
+     (format "(repl/run-test-suite :%s)" suite))))
+
+;; Scope-capture integration
+(defun cider-scope-capture-last ()
+  "View last scope-capture execution point."
+  (interactive)
+  (cider-eval-string-up-to-point "(sc.api/last-ep)"))
+
+(defun cider-scope-capture-ep-info ()
+  "View scope-capture execution point info."
+  (interactive)
+  (cider-eval-string-up-to-point "(sc.api/ep-info)"))
+
+;; Spec validation helpers
+(defun cider-toggle-spec-instrumentation ()
+  "Toggle spec instrumentation for development."
+  (interactive)
+  (cider-eval-string-up-to-point
+   "(if (app.specs.validation/get-instrumented-functions)
+      (app.specs.validation/uninstrument-all-functions!)
+      (app.specs.validation/instrument-all-functions!))"))
+
 (global-set-key (kbd "C-S-p") 'my-spy-and-slurp)
+(global-set-key (kbd "C-M-S-p") 'my-spy-with-label)
 
 ;;============== Python =============
 

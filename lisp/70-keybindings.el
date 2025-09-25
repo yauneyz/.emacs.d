@@ -31,6 +31,7 @@
 
 
 ;; Clojure / REPL --------------------------------------------------------------
+;; Basic REPL operations
 (evil-define-key 'normal 'global (kbd "<leader>cj") #'cider-connect-cljs)
 (evil-define-key 'normal 'global (kbd "<leader>cl") #'cider-eval-last-sexp)
 (evil-define-key 'normal 'global (kbd "<leader>cb") #'cider-eval-buffer)
@@ -38,6 +39,31 @@
 (evil-define-key 'normal 'global (kbd "<leader>cr") #'cider-restart)
 (evil-define-key 'normal 'global (kbd "<leader>nr") #'cider-switch-to-repl-buffer)
 (evil-define-key 'normal 'global (kbd "<leader>nc") #'cider-switch-to-last-clojure-buffer)
+
+;; Enhanced testing keybindings (using 'c' prefix to avoid conflicts)
+(evil-define-key 'normal 'global (kbd "<leader>ct") #'cider-test-run-test)
+(evil-define-key 'normal 'global (kbd "<leader>cn") #'cider-test-run-ns-and-focus)
+(evil-define-key 'normal 'global (kbd "<leader>ca") #'cider-test-run-all-and-focus)
+(evil-define-key 'normal 'global (kbd "<leader>cx") #'cider-test-rerun-tests)
+(evil-define-key 'normal 'global (kbd "<leader>csr") #'cider-test-show-report)
+
+;; REPL utilities and test integration (using 'cu' prefix)
+(evil-define-key 'normal 'global (kbd "<leader>cu") #'cider-repl-load-test-utils)
+(evil-define-key 'normal 'global (kbd "<leader>ce") #'cider-repl-run-test-suite)
+
+;; Scope-capture debugging (using 'cp' prefix for "capture")
+(evil-define-key 'normal 'global (kbd "<leader>cpl") #'cider-scope-capture-last)
+(evil-define-key 'normal 'global (kbd "<leader>cpi") #'cider-scope-capture-ep-info)
+
+;; Spec validation (using 'cs' prefix for "spec" - note cs is already used, using csv for "spec validation")
+(evil-define-key 'normal 'global (kbd "<leader>csv") #'cider-toggle-spec-instrumentation)
+
+;; Enhanced debugging (using 'cd' prefix for "debug")
+(evil-define-key 'normal 'global (kbd "<leader>cdb") #'cider-debug-defun-at-point)
+(evil-define-key 'normal 'global (kbd "<leader>cdc") #'cider-debug-continue)
+(evil-define-key 'normal 'global (kbd "<leader>cdn") #'cider-debug-step-next)
+(evil-define-key 'normal 'global (kbd "<leader>cdi") #'cider-debug-step-into)
+(evil-define-key 'normal 'global (kbd "<leader>cdo") #'cider-debug-step-out)
 
 ;; LSP helpers -----------------------------------------------------------------
 (evil-define-key 'normal 'global (kbd "gd") #'lsp-find-definition)

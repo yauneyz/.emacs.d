@@ -37,21 +37,89 @@
 (use-package org
   :hook (org-mode . org-mode-setup)
   :config
-  (setq org-ellipsis " ▼")
-  (setq org-hide-emphasis-markers t)
+  (setq org-ellipsis " ▼"
+        org-hide-emphasis-markers t
+        org-startup-indented t
+        org-image-actual-width '(300)
+        org-cycle-separator-lines 0
+        org-directory (expand-file-name "org" (getenv "HOME"))
+        org-default-notes-file (expand-file-name "inbox.org" org-directory)
+        org-agenda-files (list (expand-file-name "inbox.org" org-directory)
+                               (expand-file-name "agenda" org-directory)
+                               (expand-file-name "projects" org-directory))
+        org-log-done 'time
+        org-log-into-drawer t)
+
+  (setq org-capture-templates
+        '(("t" "Task" entry (file+headline org-default-notes-file "Tasks")
+           "* TODO %?\n  CREATED: %U\n  %a" :empty-lines 1)
+          ("n" "Note" entry (file+headline org-default-notes-file "Notes")
+           "* %?\n  %U\n  %a" :empty-lines 1)
+          ("j" "Journal" entry (file+datetree (expand-file-name "journal.org" org-directory))
+           "* %<%H:%M> %?" :empty-lines 1)))
+
+  (setq org-agenda-custom-commands
+        '(("d" "Dashboard"
+           ((agenda "" ((org-deadline-warning-days 7)))
+            (todo "NEXT" ((org-agenda-overriding-header "Next Actions")))
+            (todo "TODO" ((org-agenda-overriding-header "Backlog")))))))
+
 					; set tab to be org mode tab
-  (evil-define-key 'insert 'global (kbd "TAB") 'org-cycle))
+  (evil-define-key 'insert 'global (kbd "TAB") #'org-cycle)
+
+  (with-eval-after-load 'org
+    (dolist (lib '(ob-clojure ob-python ob-shell ob-js ob-go ob-rust ob-haskell))
+      (when (locate-library (symbol-name lib))
+        (require lib)))
+    (org-babel-do-load-languages
+     'org-babel-load-languages
+     '((emacs-lisp . t)
+       (clojure    . t)
+       (python     . t)
+       (shell      . t)
+       (js         . t)
+       (go         . t)
+       (rust       . t)
+       (haskell    . t)))))
 
 ;; Org hook to turn off evil auto-indent
 ;; Can't be in org-mode-setup or it somehow messes with other buffers
 ;;(add-hook 'org-mode-hook (lambda () (setq evil-auto-indent nil)))
 
-;; Org-bullets
-(use-package org-bullets
+(use-package org-modern
   :after org
-  :hook (org-mode . org-bullets-mode)
+  :hook (org-mode . org-modern-mode)
+  :config
+  (setq org-modern-table nil
+        org-modern-hide-stars "•"))
+
+(use-package org-appear
+  :after org
+  :hook (org-mode . org-appear-mode)
+  :config
+  (setq org-appear-autolinks t
+        org-appear-trigger 'manual))
+
+(use-package org-super-agenda
+  :after org
+  :config
+  (org-super-agenda-mode 1)
+  (setq org-super-agenda-groups
+        '((:name "Today" :time-grid t :scheduled today)
+          (:name "Due Soon" :deadline future)
+          (:name "Important" :priority "A")
+          (:name "Waiting" :todo "WAIT"))))
+
+(use-package org-roam
+  :after org
+  :ensure t
   :custom
-  (org-bullets-bullet-list '("◉" "○" "✸" "✿" "❀" "❁" "❂" "❃" "❄" "❅" "❆" "❇")))
+  (org-roam-directory (file-truename (expand-file-name "roam" org-directory)))
+  (org-roam-completion-everywhere t)
+  :config
+  (unless (file-directory-p org-roam-directory)
+    (make-directory org-roam-directory t))
+  (org-roam-db-autosync-mode))
 
 (dolist (face '((org-level-1 . 1.2)
                 (org-level-2 . 1.1)

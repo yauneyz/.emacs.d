@@ -1,72 +1,138 @@
-;;; 50-lang-lsp.el --- LSP, DAP, major modes  -*- lexical-binding: t; -*-
+;;; 50-lsp.el --- Shared LSP and DAP configuration -*- lexical-binding: t; -*-
 
-;; ---------------------------- LSP, DAP --------------------------------------
+;;; Commentary:
+;; Centralises LSP/DAP plumbing so language-specific modules can stay lean.
+
+;;; Code:
+
 (use-package lsp-mode
   :commands (lsp lsp-deferred)
-  :init (setq lsp-keymap-prefix "C-c l")
-  :hook ((typescript-mode js-mode clojure-mode python-mode rust-mode go-mode go-ts-mode) . lsp-deferred)
-  :custom
-  (lsp-idle-delay 0.2)
-  (lsp-completion-provider :none)
-  :config (lsp-enable-which-key-integration t)
+  :init
+  (setq lsp-keymap-prefix "C-c l"
+        lsp-enable-on-type-formatting nil
+        lsp-log-io nil
+        lsp-idle-delay 0.2
+        lsp-completion-provider :none)
+                                        ; Corfu handles CAPF
+
+;; clojure-lsp cache locations
+  (setq lsp-clojure-workspace-dir       (expand-file-name "~/.cache/clojure-lsp/workspace/")
+        lsp-clojure-workspace-cache-dir (expand-file-name "~/.cache/clojure-lsp/.cache/"))
+  (make-directory lsp-clojure-workspace-dir t)
+  (make-directory lsp-clojure-workspace-cache-dir t)
+
+  :hook ((clojure-mode . lsp-deferred)
+         (clojurescript-mode . lsp-deferred)
+         (clojurec-mode . lsp-deferred)
+         (python-mode . lsp-deferred)
+         (rust-mode . lsp-deferred)
+         (go-mode . lsp-deferred)
+         (typescript-mode . lsp-deferred)
+         (js-mode . lsp-deferred)
+         (haskell-mode . lsp-deferred)
+         (yaml-mode . lsp-deferred)
+         (json-mode . lsp-deferred)
+         (toml-mode . lsp-deferred)
+         (dockerfile-mode . lsp-deferred)
+         (sh-mode . lsp-deferred)
+         (c-mode . lsp-deferred)
+         (c++-mode . lsp-deferred))
+  :config
+  ;; Tree-sitter variants
+  (dolist (mode '(go-ts-mode rust-ts-mode python-ts-mode tsx-ts-mode
+                             haskell-ts-mode bash-ts-mode c-ts-mode c++-ts-mode))
+    (add-hook (intern (format "%s-hook" mode)) #'lsp-deferred))
+
+  (lsp-enable-which-key-integration t)
   (evil-define-key 'normal 'global (kbd "<leader>l") lsp-command-map)
 
-  ;; Go-specific LSP settings
-  (setq lsp-go-use-gofumpt t
-        lsp-go-staticcheck t
+  ;; Diagnostic UX
+  (setq lsp-modeline-diagnostics-enable t
+        lsp-signature-auto-activate nil
         lsp-semantic-tokens-enable t
-        lsp-eldoc-enable-hover t
         lsp-headerline-breadcrumb-enable t)
 
-  ;; Ensure gopls is used for Go language server
+  ;; Go-specific tweaks
+  (setq lsp-go-use-gofumpt t
+        lsp-go-staticcheck t)
+
+  ;; gopls registration (ensures explicit binary usage even with custom paths)
   (lsp-register-client
    (make-lsp-client :new-connection (lsp-stdio-connection "gopls")
                     :activation-fn (lsp-activate-on "go")
                     :server-id 'gopls))
 
-  ;; Format and organize imports on save for Go buffers
+  ;; Format + organise imports for Go buffers
   (dolist (hook '(go-mode-hook go-ts-mode-hook))
     (add-hook hook (lambda ()
-                     (add-hook 'before-save-hook #'+go/lsp-format+imports nil t)))))
+                     (add-hook 'before-save-hook #'+go/lsp-format+imports nil t))))
+
+  ;; rust-analyzer sensible defaults
+  (setq lsp-rust-analyzer-cargo-watch-command "clippy"
+        lsp-rust-analyzer-server-display-inlay-hints t
+        lsp-rust-analyzer-display-lifetime-elision-hints-enable t)
+
+  ;; Haskell
+  (setq lsp-haskell-server-path "haskell-language-server-wrapper"
+        lsp-haskell-formatting-provider "ormolu"))
 
 (use-package lsp-ui
+  :after lsp-mode
   :hook (lsp-mode . lsp-ui-mode)
-  :custom ((lsp-ui-doc-enable t)
-           (lsp-ui-doc-position 'bottom)
-           (lsp-ui-sideline-show-code-actions t)
-           (lsp-ui-sideline-show-diagnostics t)))
+  :custom
+  (lsp-ui-doc-enable t)
+  (lsp-ui-doc-position 'bottom)
+  (lsp-ui-doc-delay 0.2)
+  (lsp-ui-sideline-show-code-actions t)
+  (lsp-ui-sideline-show-diagnostics t))
 
-(use-package lsp-ivy)
-(use-package lsp-treemacs :after lsp :config (lsp-treemacs-sync-mode 1))
+(use-package lsp-treemacs
+  :after lsp-mode
+  :config (lsp-treemacs-sync-mode 1))
 
-;; DAP (Node example) ----------------------------------------------------------
+(use-package lsp-ivy :after lsp-mode)
+
 (use-package dap-mode
   :after lsp-mode
-  :commands dap-debug
-  :hook ((js-mode typescript-mode go-mode go-ts-mode) . dap-mode)
+  :commands (dap-debug dap-debug-edit-template)
+  :hook ((go-mode go-ts-mode typescript-mode tsx-ts-mode python-mode rust-mode) . dap-mode)
   :config
   (dap-auto-configure-mode)
-  (require 'dap-ui) (dap-ui-mode 1)
-  (require 'dap-node) (dap-node-setup)
+  (require 'dap-ui)
+  (dap-ui-mode 1)
 
-  ;; Go DAP (debugging with Delve)
-  (require 'dap-dlv-go)  ;; Go adapter
-
+  ;; Node/TS
+  (require 'dap-node)
+  (dap-node-setup)
   (dap-register-debug-template
    "Node :: Launch Current File"
-   (list :type "node" :request "launch" :name "Launch"
+   (list :type "node" :request "launch" :name "Node :: Launch"
          :program "${file}" :cwd "${workspaceFolder}"
-         :runtimeExecutable "node"
-         :console "integratedTerminal"
+         :runtimeExecutable "node" :console "integratedTerminal"
          :internalConsoleOptions "neverOpen"))
 
-  ;; Go debug templates
-  (dap-register-debug-template "Go: Launch main (go run .)"
-    (list :type "go" :request "launch" :name "Go: Launch main"
-          :mode "auto" :program "${workspaceFolder}"))
-  (dap-register-debug-template "Go: Test current package"
-    (list :type "go" :request "launch" :name "Go: Test pkg"
-          :mode "test" :program "${workspaceFolder}"))
+  ;; Go / Delve
+  (require 'dap-dlv-go)
+  (dap-register-debug-template
+   "Go :: Run Main"
+   (list :type "go" :request "launch" :name "Go :: Run Main"
+         :mode "auto" :program "${workspaceFolder}"))
+  (dap-register-debug-template
+   "Go :: Test Current Package"
+   (list :type "go" :request "launch" :name "Go :: Test"
+         :mode "test" :program "${workspaceFolder}"))
+
+  ;; Python (debugpy)
+  (require 'dap-python)
+  (setq dap-python-debugger 'debugpy)
+
+  ;; Rust (CodeLLDB / codelldb adapter assumed installed)
+  (require 'dap-lldb)
+  (dap-register-debug-template
+   "Rust :: Cargo Run"
+   (list :type "lldb" :request "launch" :name "Rust :: Cargo Run"
+         :program "${workspaceFolder}/target/debug/${workspaceFolderBasename}"
+         :cwd "${workspaceFolder}"))
 
   (evil-define-key 'normal 'global
     (kbd "<leader>db") #'dap-breakpoint-toggle
@@ -81,31 +147,5 @@
     (kbd "<leader>dh") #'dap-hydra
     (kbd "<leader>dq") #'dap-disconnect))
 
-;; ---------------------------- Major modes ------------------------------------
-(use-package clojure-mode
-  :mode "\\.clj[scx]?\\'"
-  :hook (clojure-mode . lsp-deferred)
-  :config (add-hook 'clojure-mode-hook #'paredit-mode))
-
-(use-package cider
-  :after clojure-mode
-  :custom (cider-completion-system 'ivy)
-  :config
-  (setq cider-repl-display-help-banner nil)
-  (add-hook 'cider-repl-mode-hook #'paredit-mode))
-
-(use-package python-mode :mode "\\.py\\'"  :hook (python-mode . lsp-deferred))
-(use-package rust-mode   :mode "\\.rs\\'"  :hook (rust-mode   . lsp-deferred)
-  :custom (lsp-rust-server 'rust-analyzer) (indent-tabs-mode nil))
-(use-package typescript-mode
-  :mode (("\\.ts\\'" . typescript-mode) ("\\.tsx\\'" . typescript-mode))
-  :hook (typescript-mode . (lambda ()
-                             (setq-local indent-tabs-mode nil
-                                         tab-width 2
-                                         typescript-indent-level 2))))
-
-(use-package yaml-mode      :mode "\\.ya?ml\\'" :hook (yaml-mode . highlight-indent-guides-mode))
-(use-package markdown-mode  :mode "\\.md\\'"   :hook (markdown-mode . visual-line-mode))
-
-(provide '50-lang-lsp)
-;;; 50-lang-lsp.el ends here
+(provide '50-lsp)
+;;; 50-lsp.el ends here

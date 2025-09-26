@@ -19,6 +19,29 @@
 
 (use-package all-the-icons)
 
+(use-package nerd-icons
+  :if (display-graphic-p)
+  :ensure t)
+
+(use-package nerd-icons-dired
+  :if (display-graphic-p)
+  :hook (dired-mode . nerd-icons-dired-mode))
+
+(use-package nerd-icons-ibuffer
+  :if (display-graphic-p)
+  :hook (ibuffer-mode . nerd-icons-ibuffer-mode))
+
+(defun +ui/apply-nerd-fonts ()
+  "Set Nerd Font defaults when available."
+  (let ((font "JetBrainsMono Nerd Font"))
+    (when (and (display-graphic-p) (member font (font-family-list)))
+      (set-face-attribute 'default nil :font font :height 120)
+      (set-face-attribute 'fixed-pitch nil :font font :height 120)
+      (set-face-attribute 'variable-pitch nil :font "Cantarell" :height 130))))
+
+(add-hook 'server-after-make-frame-hook #'+ui/apply-nerd-fonts)
+(add-hook 'after-init-hook #'+ui/apply-nerd-fonts)
+
 ;; --------------------------------------------------------------------------
 ;; Doom themes + modeline
 ;; --------------------------------------------------------------------------
@@ -90,6 +113,17 @@
 (tool-bar-mode -1)          ; Disable the toolbar
 (tooltip-mode -1)           ; Disable tooltips
 (menu-bar-mode -1)
+
+;; Tree-sitter auto installation/helper --------------------------------------
+(use-package treesit-auto
+  :when (and (fboundp 'treesit-available-p) (treesit-available-p))
+  :ensure t
+  :custom (treesit-auto-install 'prompt)
+  :config
+  (setq treesit-auto-install 'prompt
+        treesit-auto-langs '(bash c clojure css go haskell json python rust tsx typescript yaml))
+  (treesit-auto-add-to-auto-mode-alist 'all)
+  (global-treesit-auto-mode))
 
 (provide 'ui)
 ;;; 20-ui.el ends here

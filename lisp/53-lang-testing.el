@@ -37,14 +37,14 @@
      (if (+test/has-gotestsum?)
          'gotestsum
        'gotest))
-    ('python-mode
+    ((or 'python-mode 'python-ts-mode)
      (cond
       ((+test/has-pytest?) 'pytest)
       ((+test/has-nose?) 'nose)
       (t 'unittest)))
-    ('rust-mode 'cargo)
-    ('javascript-mode 'jest)
-    ('typescript-mode 'jest)
+    ((or 'rust-mode 'rustic-mode 'rust-ts-mode) 'cargo)
+    ((or 'javascript-mode 'typescript-mode 'tsx-mode) 'jest)
+    ((or 'haskell-mode 'haskell-ts-mode) 'stack)
     (_ 'generic)))
 
 (defun +test/has-gotestsum? ()
@@ -74,6 +74,7 @@
       ('pytest (+test/python-run-test-at-point))
       ('cargo (+test/rust-run-test-at-point))
       ('jest (+test/js-run-test-at-point))
+      ('stack (+test/haskell-run-test-at-point))
       (_ (+test/generic-run-test-at-point)))))
 
 (defun +test/run-file ()
@@ -87,6 +88,7 @@
       ('pytest (+test/python-run-file-tests))
       ('cargo (+test/rust-run-file-tests))
       ('jest (+test/js-run-file-tests))
+      ('stack (+test/haskell-run-file-tests))
       (_ (+test/generic-run-file-tests)))))
 
 (defun +test/run-project ()
@@ -100,6 +102,7 @@
       ('pytest (+test/python-run-project-tests))
       ('cargo (+test/rust-run-project-tests))
       ('jest (+test/js-run-project-tests))
+      ('stack (+test/haskell-run-project-tests))
       (_ (+test/generic-run-project-tests)))))
 
 (defun +test/run-all ()
@@ -113,6 +116,7 @@
       ('pytest (+test/python-run-all-tests))
       ('cargo (+test/rust-run-all-tests))
       ('jest (+test/js-run-all-tests))
+      ('stack (+test/haskell-run-all-tests))
       (_ (+test/generic-run-all-tests)))))
 
 (defun +test/rerun ()
@@ -138,6 +142,7 @@
       ('gotest (+test/go-toggle-coverage))
       ('pytest (+test/python-toggle-coverage))
       ('cargo (+test/rust-toggle-coverage))
+      ('stack (+test/haskell-toggle-coverage))
       (_ (message "Coverage toggled %s for %s"
                   (if +test/coverage-enabled "ON" "OFF")
                   backend)))))
@@ -340,6 +345,40 @@
     (beginning-of-defun)
     (when (re-search-forward "#\\[test\\]\\s-*fn \\([A-Za-z0-9_]*\\)" nil t)
       (match-string 1))))
+
+;; =============================================================================
+;; Haskell Test Functions
+;; =============================================================================
+
+(defun +test/haskell-run-test-at-point ()
+  "Run Haskell test at point if detectable, otherwise fall back to file tests."
+  (setq +test/last-command #'+test/haskell-run-test-at-point)
+  (message "Stack does not expose per-test runs yet; running file tests instead")
+  (+test/haskell-run-file-tests))
+
+(defun +test/haskell-run-file-tests ()
+  "Run Stack tests scoped to the current module (best effort)."
+  (setq +test/last-command #'+test/haskell-run-file-tests)
+  (if buffer-file-name
+      (compile (format "stack test --fast --test-arguments \"--match %s\""
+                       (file-name-base buffer-file-name)))
+    (compile "stack test --fast")))
+
+(defun +test/haskell-run-project-tests ()
+  "Run Stack test for the entire project."
+  (setq +test/last-command #'+test/haskell-run-project-tests)
+  (compile "stack test"))
+
+(defun +test/haskell-run-all-tests ()
+  "Run complete Stack test suite including integration tests." 
+  (setq +test/last-command #'+test/haskell-run-all-tests)
+  (compile "stack test --fast"))
+
+(defun +test/haskell-toggle-coverage ()
+  "Toggle Stack coverage reporting."
+  (if +test/coverage-enabled
+      (compile "stack test --coverage")
+    (message "Coverage disabled")))
 
 ;; =============================================================================
 ;; Generic Test Functions

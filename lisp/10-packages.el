@@ -60,5 +60,7 @@
 (setq user-full-name     (or (getenv "GIT_AUTHOR_NAME") "Zac Yauney")
       user-mail-address  (or (getenv "GIT_AUTHOR_EMAIL") "zac.yauney@gmail.com"))
 
+(load-file (expand-file-name "lisp/21-modeline.el" user-emacs-directory))
+
 (provide 'packages)
 ;;; 10-packages.el ends here

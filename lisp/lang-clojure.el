@@ -28,9 +28,18 @@
   :config
   (add-hook 'clojure-mode-hook
             (lambda ()
-              (when (string-match-p "development\\|dev" (or (getenv "NODE_ENV") "development"))
+              (when (string-match-p "development\|dev" (or (getenv "NODE_ENV") "development"))
                 (setq-local cider-auto-select-error-buffer t
-                            cider-show-error-buffer t)))))
+                            cider-show-error-buffer t))
+              (evil-define-key 'normal 'local (kbd "gd") #'cider-find-var)
+              (evil-define-key 'normal 'local (kbd "gr") #'cider-find-references)
+              (evil-define-key 'normal 'local (kbd "gi") #'cider-find-implementations)
+              (evil-define-key 'normal 'local (kbd "<leader>rn") #'cider-rename-symbol-at-point)
+              (evil-define-key 'normal 'local (kbd "<leader>lg") #'cider-doc)
+              (evil-define-key 'normal 'local (kbd "<leader>ld") #'cider-doc)
+              (evil-define-key 'normal 'local (kbd "<leader>ls") #'cider-eldoc)
+              (evil-define-key 'normal 'local (kbd "<leader>lh") #'cider-describe-thing-at-point)
+              (evil-define-key 'normal 'local (kbd "<leader>ts") #'cider-browse-ns))))
 
 (use-package clj-refactor
   :ensure t
@@ -139,6 +148,20 @@
    "(if (app.specs.validation/get-instrumented-functions)
       (app.specs.validation/uninstrument-all-functions!)
       (app.specs.validation/instrument-all-functions!))"))
+
+(defun my-cider-connect-electron-renderer ()
+  "Connect to the shadow-cljs REPL for the electron renderer."
+  (interactive)
+  (cider-connect-cljs
+   `(:host "localhost"
+     :port 8777
+     :repl-type shadow
+     :shadow-cljs-build ":renderer-dev"
+     :project-dir ,default-directory)))
+
+(evil-define-key 'normal 'global (kbd "<leader>c1") #'my-cider-connect-electron-renderer)
+
+
 
 (provide 'lang-clojure)
 ;;; 55-clojure.el ends here

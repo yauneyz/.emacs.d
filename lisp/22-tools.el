@@ -161,17 +161,13 @@ to allow out-of-order matching like 'eve/mp' for 'events/map'."
   (ivy-mode 1))
 
 (use-package counsel :after ivy
+  :ensure t
   :bind (("M-x"     . counsel-M-x)
-	 ("<leader>SPC" . my-counsel-projectile-find-file)
+         ("<leader>SPC" . my-counsel-projectile-find-file)
          ("C-x b"   . counsel-ibuffer)
          ("C-x C-f" . counsel-find-file)
          :map minibuffer-local-map
-         ("C-r" . counsel-minibuffer-history)))
-
-(use-package counsel
-  :ensure t
-  :bind (("C-x C-f"   . counsel-find-file)          ; default binding
-         ) ; use our wrapper for Projectile
+         ("C-r" . counsel-minibuffer-history))
   :config
   (setq ivy-initial-inputs-alist nil))
 

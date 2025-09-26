@@ -31,22 +31,23 @@
               (when (string-match-p "development\|dev" (or (getenv "NODE_ENV") "development"))
                 (setq-local cider-auto-select-error-buffer t
                             cider-show-error-buffer t))
-              (evil-define-key 'normal 'local (kbd "gd") #'cider-find-var)
-              (evil-define-key 'normal 'local (kbd "gr") #'cider-find-references)
+              ;; (evil-define-key 'normal 'local (kbd "gd") #'cider-find-var)
+              ;; (evil-define-key 'normal 'local (kbd "gr") #'cider-find-references)
               (evil-define-key 'normal 'local (kbd "gi") #'cider-find-implementations)
               (evil-define-key 'normal 'local (kbd "<leader>rn") #'cider-rename-symbol-at-point)
               (evil-define-key 'normal 'local (kbd "<leader>lg") #'cider-doc)
               (evil-define-key 'normal 'local (kbd "<leader>ld") #'cider-doc)
               (evil-define-key 'normal 'local (kbd "<leader>ls") #'cider-eldoc)
               (evil-define-key 'normal 'local (kbd "<leader>lh") #'cider-describe-thing-at-point)
-              (evil-define-key 'normal 'local (kbd "<leader>ts") #'cider-browse-ns))))
+              (evil-define-key 'normal 'local (kbd "<leader>ts") #'cider-browse-ns)))
 
 (use-package clj-refactor
   :ensure t
   :after clojure-mode
   :hook (clojure-mode . clj-refactor-mode)
   :config
-  (cljr-add-keybindings-with-prefix "C-c C-m"))
+  (cljr-add-keybindings-with-prefix "C-c C-m")
+  (setq cljr-inject-dependencies-at-jack-in t))
 
 (use-package flycheck-clj-kondo
   :ensure t
@@ -84,7 +85,7 @@
               (when (cider-repls 'cljs)
                 (cider-eval-string-up-to-point
                  "(require '[test.dev.repl-utils :as repl] :reload) (repl/init!)"))))
-  (add-hook 'cider-stacktrace-mode-hook (lambda () (setq-local truncate-lines nil))))
+  (add-hook 'cider-stacktrace-mode-hook (lambda () (setq-local truncate-lines nil)))))
 
 (evil-define-key 'normal 'global (kbd "C-p") #'paredit-splice-sexp-killing-backward)
 (global-set-key (kbd "C-S-p") #'my-spy-and-slurp)

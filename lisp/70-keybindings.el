@@ -180,6 +180,7 @@
 (global-set-key (kbd "C-M-h") 'help-command)
 (global-set-key (kbd "C-x C-b") 'counsel-switch-buffer)
 (global-set-key (kbd "C-c o") 'toggle-command-log)
+(global-set-key (kbd "C-x r r") 'reload-init)
 
 (provide '70-keybindings)
 ;;; 70-keybindings.el ends here

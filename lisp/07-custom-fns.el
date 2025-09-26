@@ -5,6 +5,13 @@
   (interactive)
   (find-file user-init-file))
 
+(defun reload-init ()
+  "Reload the init.el file with debugging enabled (like --debug-init)."
+  (interactive)
+  (let ((debug-on-error t))
+    (load-file user-init-file))
+  (message "init.el reloaded with debugging"))
+
 (defun revert-all-buffers ()
   "Revert every non-modified file buffer."
   (interactive)

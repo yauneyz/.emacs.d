@@ -17,14 +17,9 @@
 
 ;; clojure-lsp cache locations
   (setq lsp-clojure-workspace-dir       (expand-file-name "~/.cache/clojure-lsp/workspace/")
-        lsp-clojure-workspace-cache-dir (expand-file-name "~/.cache/clojure-lsp/.cache/"))
-  (make-directory lsp-clojure-workspace-dir t)
-  (make-directory lsp-clojure-workspace-cache-dir t)
+        lsp-clojure-workspace-cache-dir (expand-file-name "~/.cache/clojure-lsp/"))
 
-  :hook ((clojure-mode . lsp-deferred)
-         (clojurescript-mode . lsp-deferred)
-         (clojurec-mode . lsp-deferred)
-         (python-mode . lsp-deferred)
+  :hook ((python-mode . lsp-deferred)
          (rust-mode . lsp-deferred)
          (go-mode . lsp-deferred)
          (typescript-mode . lsp-deferred)
@@ -36,7 +31,10 @@
          (dockerfile-mode . lsp-deferred)
          (sh-mode . lsp-deferred)
          (c-mode . lsp-deferred)
-         (c++-mode . lsp-deferred))
+         (c++-mode . lsp-deferred)
+         (clojure-mode . lsp-deferred)
+         (clojurescript-mode . lsp-deferred)
+         (clojurec-mode . lsp-deferred))
   :config
   ;; Tree-sitter variants
   (dolist (mode '(go-ts-mode rust-ts-mode python-ts-mode tsx-ts-mode

@@ -3,13 +3,18 @@
 (setq x-alt-keysym 'meta)
 
 ;; Debug on error
-(setq debug-on-error t)
+;; (setq debug-on-error t)
 
 ;;; When buffer is closed, saves the cursor location
 ;(save-place-mode 1)
 
 ;; Set history-length longer
 (setq-default history-length 500)
+
+
+;; Default browser
+(setq browse-url-browser-function 'browse-url-generic
+      browse-url-generic-program "firefox")
 
 ;; Move the backup fies to user-emacs-directory/.backup
 (setq backup-directory-alist `(("." . ,(expand-file-name ".backup" user-emacs-directory))))

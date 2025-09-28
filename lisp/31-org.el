@@ -38,7 +38,7 @@
   :hook (org-mode . org-mode-setup)
   :config
   (setq org-ellipsis " ▼"
-        org-hide-emphasis-markers t
+	org-hide-emphasis-markers t
         org-startup-indented t
         org-image-actual-width '(300)
         org-cycle-separator-lines 0
@@ -67,38 +67,31 @@
 					; set tab to be org mode tab
   (evil-define-key 'insert 'global (kbd "TAB") #'org-cycle)
 
-  (with-eval-after-load 'org
-    (dolist (lib '(ob-clojure ob-python ob-shell ob-js ob-go ob-rust ob-haskell))
-      (when (locate-library (symbol-name lib))
-        (require lib)))
-    (org-babel-do-load-languages
-     'org-babel-load-languages
-     '((emacs-lisp . t)
-       (clojure    . t)
-       (python     . t)
-       (shell      . t)
-       (js         . t)
-       (go         . t)
-       (rust       . t)
-       (haskell    . t)))))
+)
+
+(use-package org-bullets
+  :after org
+  :hook (org-mode . org-bullets-mode)
+  :custom
+  (org-bullets-bullet-list '("◉" "○" "✸" "✿" "❀" "❁" "❂" "❃" "❄" "❅" "❆" "❇")))
 
 ;; Org hook to turn off evil auto-indent
 ;; Can't be in org-mode-setup or it somehow messes with other buffers
 ;;(add-hook 'org-mode-hook (lambda () (setq evil-auto-indent nil)))
 
-(use-package org-modern
-  :after org
-  :hook (org-mode . org-modern-mode)
-  :config
-  (setq org-modern-table nil
-        org-modern-hide-stars "•"))
+;; (use-package org-modern
+;;   :after org
+;;   :hook (org-mode . org-modern-mode)
+;;   :config
+;;   (setq org-modern-table nil
+;;         org-modern-hide-stars "•"))
 
-(use-package org-appear
-  :after org
-  :hook (org-mode . org-appear-mode)
-  :config
-  (setq org-appear-autolinks t
-        org-appear-trigger 'manual))
+;; (use-package org-appear
+;;   :after org
+;;   :hook (org-mode . org-appear-mode)
+;;   :config
+;;   (setq org-appear-autolinks t
+;;         org-appear-trigger 'manual))
 
 (use-package org-super-agenda
   :after org

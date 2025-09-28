@@ -352,29 +352,28 @@ _tr_: rerun         _do_: step out    ^                 ^
   "Define consistent development keybindings for MODE-NAME.
 EXTRA-BINDINGS is a list of (key function) pairs for mode-specific commands."
   `(defun ,(intern (format "+%s/set-dev-keys" mode-name)) ()
-     (let ((map (current-local-map)))
-       ;; Universal hydra - primary interface
-       (define-key map (kbd "<leader>hh") #'+dev/hydra/body)
-       (define-key map (kbd "<f12>") #'+dev/hydra/body)
+     ;; Universal hydra - primary interface
+     (evil-local-set-key 'normal (kbd "<leader>hh") #'+dev/hydra/body)
+     (evil-local-set-key 'normal (kbd "<f12>") #'+dev/hydra/body)
 
-       ;; Quick access bindings
-       (define-key map (kbd "gd") #'+dev/goto-definition)
-       (define-key map (kbd "gr") #'+dev/goto-references)
-       (define-key map (kbd "gi") #'+dev/goto-implementation)
+     ;; Quick access bindings
+     (evil-local-set-key 'normal (kbd "gd") #'+dev/goto-definition)
+     (evil-local-set-key 'normal (kbd "gr") #'+dev/goto-references)
+     (evil-local-set-key 'normal (kbd "gi") #'+dev/goto-implementation)
 
-       ;; Mode-specific extra bindings
-       ,@(mapcar (lambda (binding)
-                   `(define-key map (kbd ,(car binding)) ,(cadr binding)))
-                 extra-bindings))))
+     ;; Mode-specific extra bindings
+     ,@(mapcar (lambda (binding)
+                 `(evil-local-set-key 'normal (kbd ,(car binding)) ,(cadr binding)))
+               extra-bindings)))
 
 ;; Register universal keys for programming modes
 (add-hook 'prog-mode-hook
           (lambda ()
-            (local-set-key (kbd "<leader>hh") #'+dev/hydra/body)
-            (local-set-key (kbd "<f12>") #'+dev/hydra/body)
-            (local-set-key (kbd "gd") #'+dev/goto-definition)
-            (local-set-key (kbd "gr") #'+dev/goto-references)
-            (local-set-key (kbd "gi") #'+dev/goto-implementation)))
+            (evil-local-set-key 'normal (kbd "<leader>hh") #'+dev/hydra/body)
+            (evil-local-set-key 'normal (kbd "<f12>") #'+dev/hydra/body)
+            (evil-local-set-key 'normal (kbd "gd") #'+dev/goto-definition)
+            (evil-local-set-key 'normal (kbd "gr") #'+dev/goto-references)
+            (evil-local-set-key 'normal (kbd "gi") #'+dev/goto-implementation)))
 
 (provide '52-universal-dev)
 ;;; 52-universal-dev.el ends here

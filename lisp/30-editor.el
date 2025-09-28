@@ -68,6 +68,9 @@
                 ("\\.Rmd\\'"     . markdown-mode)))
   (add-to-list 'auto-mode-alist pair))
 
+(add-hook 'after-save-hook #'format-all-buffer)
+;; (add-hook 'after-save-hook 'lsp-format-buffer)
+
 (provide '30-editor)
 ;;; 30-editor.el ends here
 

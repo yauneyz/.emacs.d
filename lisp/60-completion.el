@@ -2,17 +2,44 @@
 
 ;; Minuet AI ------------------------------------------------------------------
 (use-package minuet
+  :bind
+  (("M-y" . #'minuet-complete-with-minibuffer) ;; use minibuffer for completion
+   ("M-I" . #'minuet-show-suggestion) ;; use overlay for completion
+   ("C-c m" . #'minuet-configure-provider)
+   :map minuet-active-mode-map
+   ;; These keymaps activate only when a minuet suggestion is displayed in the current buffer
+   ("M-P" . #'minuet-previous-suggestion) ;; invoke completion or cycle to next completion
+   ("M-N" . #'minuet-next-suggestion) ;; invoke completion or cycle to previous completion
+   ("C-TAB" . #'minuet-accept-suggestion) ;; accept whole completion
+   ;; Accept the first line of completion, or N lines with a numeric-prefix:
+   ;; e.g. C-u 2 M-a will accepts 2 lines of completion.
+   ("M-a" . #'minuet-accept-suggestion-line)
+   ("M-e" . #'minuet-dismiss-suggestion))
+
+
+
+  :init
+  ;; if you want to enable auto suggestion.
+  ;; Note that you can manually invoke completions without enable minuet-auto-suggestion-mode
+  (add-hook 'prog-mode-hook #'minuet-auto-suggestion-mode)
+  (add-hook 'minuet-active-mode-hook #'evil-normalize-keymaps)
+
   :config
+  ;; You can use M-x minuet-configure-provider to interactively configure provider and model
   (setq minuet-provider 'openai-compatible)
-  (setq minuet-provider-options
-        '((openai-compatible
-           :end-point "http://127.0.0.1:11434/v1/chat/completions"
-           :api-key "OPENAI_API_KEY"))))
+  (plist-put minuet-openai-compatible-options
+	    :end-point "http://localhost:11434/v1/chat/completions")
+  (plist-put minuet-openai-compatible-options :api-key "OPENAI_API_KEY")
+  ;; Must match the --served-model-name in vLLM
+  (plist-put minuet-openai-compatible-options :model "qwen2.5-coder-14b")
+
+  (minuet-set-optional-options minuet-openai-fim-compatible-options :max_tokens 128))
 
 ;; ================ CORFU ========================
 ;; ----- LSP should provide CAPF, not Company
 (with-eval-after-load 'lsp-mode
   (setq lsp-completion-provider :none))   ;; Corfu reads from CAPF
+
 
 ;; ----- Corfu UI
 (use-package corfu

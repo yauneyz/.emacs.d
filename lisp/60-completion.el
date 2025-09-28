@@ -1,17 +1,14 @@
-;;; 60-completion.el --- company, copilot, snippets  -*- lexical-binding: t; -*-
+;;; 60-completion.el --- company, minuet, snippets  -*- lexical-binding: t; -*-
 
-;; Copilot --------------------------------------------------------------------
-(install-if-necessary 'editorconfig)
-(install-if-necessary 'jsonrpc)
-(use-package editorconfig :config (editorconfig-mode 1))
-(use-package jsonrpc)
-
-(use-package copilot
-  :straight (:host github :repo "copilot-emacs/copilot.el" :files ("dist" "*.el"))
+;; Minuet AI ------------------------------------------------------------------
+(use-package minuet
   :config
-  ;; Suppress compilation warnings from copilot.el
-  (with-eval-after-load 'copilot
-    (put 'copilot-mode 'byte-compile-warnings nil)))
+  (setq minuet-provider 'openai-compatible)
+  (setq minuet-provider-options
+        '((openai-compatible
+           :end-point "http://127.0.0.1:11434/v1/chat/completions"
+           :api-key "OPENAI_API_KEY"))))
+
 ;; ================ CORFU ========================
 ;; ----- LSP should provide CAPF, not Company
 (with-eval-after-load 'lsp-mode
@@ -83,12 +80,12 @@
 
 ;; Dispatcher TAB --------------------------------------------------------------
 (defun dispatch-tab-command ()
-  "Context-aware <TAB>: Copilot, YAS, indent."
+  "Context-aware <TAB>: Minuet, YAS, indent."
   (interactive)
   (cond
    ((eq major-mode 'fountain-mode) (fountain-dwim))
    (t
-    (or (copilot-accept-completion)
+    (or (minuet-accept-suggestion)
         (indent-for-tab-command)))))
 (global-set-key (kbd "<tab>") #'dispatch-tab-command)
 (evil-define-key 'insert 'global (kbd "<tab>") #'dispatch-tab-command)

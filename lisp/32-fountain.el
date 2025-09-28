@@ -11,7 +11,6 @@
   :hook
   (fountain-mode . fountain-mode-setup)
   :config
-  (setq copilot-mode 0)
   (setq company-mode 0)
   ;; Set the way we export, just using screenplain
   ;; To get it to work, just pip install screenplain

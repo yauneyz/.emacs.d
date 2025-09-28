@@ -6,6 +6,11 @@
 
 ;;; Code:
 
+(message "Loading lang-clojure.el...")
+(condition-case err
+    (progn
+      (message "Starting Clojure configuration...")
+
 (declare-function paredit-forward-slurp-sexp "paredit")
 
 
@@ -16,13 +21,11 @@
   :mode (("\\.clj\\'"  . clojure-mode)
          ("\\.cljs\\'" . clojurescript-mode)
          ("\\.cljc\\'" . clojurec-mode))
-  :hook ((clojure-mode . paredit-mode)
+  :hook (
          (clojure-mode . rainbow-delimiters-mode)
          (clojure-mode . clj-refactor-mode)
-         (clojurescript-mode . paredit-mode)
          (clojurescript-mode . rainbow-delimiters-mode)
          (clojurescript-mode . clj-refactor-mode)
-         (clojurec-mode . paredit-mode)
          (clojurec-mode . rainbow-delimiters-mode)
          (clojurec-mode . clj-refactor-mode))
   :config
@@ -39,7 +42,7 @@
               (evil-define-key 'normal 'local (kbd "<leader>ld") #'cider-doc)
               (evil-define-key 'normal 'local (kbd "<leader>ls") #'cider-eldoc)
               (evil-define-key 'normal 'local (kbd "<leader>lh") #'cider-describe-thing-at-point)
-              (evil-define-key 'normal 'local (kbd "<leader>ts") #'cider-browse-ns)))
+              (evil-define-key 'normal 'local (kbd "<leader>ts") #'cider-browse-ns))))
 
 (use-package clj-refactor
   :ensure t
@@ -85,7 +88,7 @@
               (when (cider-repls 'cljs)
                 (cider-eval-string-up-to-point
                  "(require '[test.dev.repl-utils :as repl] :reload) (repl/init!)"))))
-  (add-hook 'cider-stacktrace-mode-hook (lambda () (setq-local truncate-lines nil)))))
+  (add-hook 'cider-stacktrace-mode-hook (lambda () (setq-local truncate-lines nil))))
 
 (evil-define-key 'normal 'global (kbd "C-p") #'paredit-splice-sexp-killing-backward)
 (global-set-key (kbd "C-S-p") #'my-spy-and-slurp)
@@ -163,6 +166,11 @@
 (evil-define-key 'normal 'global (kbd "<leader>c1") #'my-cider-connect-electron-renderer)
 
 
+
+      (message "Clojure configuration completed successfully"))
+  (error
+   (message "Error in lang-clojure.el: %s" err)
+   (message "Error details: %S" err)))
 
 (provide 'lang-clojure)
 ;;; 55-clojure.el ends here

@@ -10,10 +10,13 @@
   :init
   (setq lsp-keymap-prefix "C-c l"
         lsp-enable-on-type-formatting nil
-        lsp-log-io nil
+        lsp-log-io t
         lsp-idle-delay 0.2
         lsp-completion-provider :none)
-                                        ; Corfu handles CAPF
+   (setenv "CLOJURE_LSP_LOG_LEVEL" "DEBUG")
+   (setenv "CLOJURE_LSP_LOG_PATH" (expand-file-name "~/.cache/clojure-lsp/log.txt"))
+
+  ;; Corfu handles CAPF
 
 ;; clojure-lsp cache locations
   (setq lsp-clojure-workspace-dir       (expand-file-name "~/.cache/clojure-lsp/workspace/")
@@ -81,7 +84,7 @@
   (lsp-ui-doc-enable t)
   (lsp-ui-doc-position 'bottom)
   (lsp-ui-doc-delay 0.2)
-  (lsp-ui-sideline-show-code-actions t)
+  ;; (lsp-ui-sideline-show-code-actions t)
   (lsp-ui-sideline-show-diagnostics t))
 
 (use-package lsp-treemacs

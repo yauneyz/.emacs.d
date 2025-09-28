@@ -259,7 +259,7 @@
 ^Build/Run^         ^REPL^            ^Navigation^      ^Utils^
 ─────────────────────────────────────────────────────────────────
 _bb_: build         _rr_: start/repl  _gd_: definition  _x_: dismiss popups
-_br_: run           _rb_: eval buffer _gr_: references  _g_: compilation
+_br_: run           _rb_: eval buffer _gr_: references  _cc_: compilation
 _bx_: recompile     _rl_: eval sexp   _gi_: implement   _s_: status
 _bc_: clean         _rs_: switch repl _gh_: docs        _h_: help
 ^                   ^                 _rn_: rename      _q_: quit
@@ -314,7 +314,7 @@ _tr_: rerun         _do_: step out    ^                 ^
 
   ;; Utils
   ("x" dismiss-popup-buffer :color red)
-  ("g" (lambda () (interactive) (pop-to-buffer "*compilation*")) :color red)
+  ("cc" (lambda () (interactive) (pop-to-buffer "*compilation*")) :color red)
   ("s" +dev/status :color red)
   ("h" (lambda () (interactive) (describe-function '+dev/hydra/body)) :color red)
 

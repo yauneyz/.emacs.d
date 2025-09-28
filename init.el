@@ -1,1 +1,1 @@
-../dotfiles/init.el
+/home/zac/dotfiles/init.el

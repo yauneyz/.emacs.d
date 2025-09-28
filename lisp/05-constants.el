@@ -22,4 +22,5 @@
 (defconst eaf-env-p (and (display-graphic-p) python-p pip-p)
   "Do we have what EAF needs?")
 
+
 (provide '05-constants)

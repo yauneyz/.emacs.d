@@ -187,7 +187,7 @@
 
 ;; FlowStorm & CiderStorm
 (use-package cider-storm
-  :vc (:url "https://github.com/flow-storm/cider-storm" :rev :newest))
+  :vc (:url "https://github.com/flow-storm/cider-storm"))
 
 (with-eval-after-load 'cider-storm
   ;; Call the command bound to a key in `cider-storm-map` (so we don't hardcode names)

@@ -68,7 +68,11 @@
                 ("\\.Rmd\\'"     . markdown-mode)))
   (add-to-list 'auto-mode-alist pair))
 
-(add-hook 'after-save-hook #'format-all-buffer)
+(defun my/format-on-save ()
+  "Format buffer on save if a formatter is available."
+  (when (and (fboundp 'format-all--get-formatter) (format-all--get-formatter))
+    (format-all-buffer)))
+(add-hook 'after-save-hook #'my/format-on-save)
 ;; (add-hook 'after-save-hook 'lsp-format-buffer)
 
 (provide '30-editor)

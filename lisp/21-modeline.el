@@ -70,7 +70,7 @@
 
               (concat
                " "
-               (propertize (concat icon text " [STATUS:" (symbol-name status) "]")
+               (propertize (concat icon text)
                            'face face
                            'help-echo (pcase status
                                         ('connected
@@ -87,7 +87,7 @@
                                         map))
                " ")))
         "")
-    (error (format " [CIDER-ERROR: %s] " err))))
+    (error "")))
 
 (defun +cider/modeline-click-handler ()
   "Handle clicks on Cider modeline status."

@@ -184,4 +184,46 @@
                   (typescript-mode . "prettier")
                   (emacs-lisp-mode . emacs-lisp-format))))
 
+
+;; FlowStorm & CiderStorm
+(use-package cider-storm
+  :vc (:url "https://github.com/flow-storm/cider-storm" :rev :newest))
+
+(with-eval-after-load 'cider-storm
+  ;; Call the command bound to a key in `cider-storm-map` (so we don't hardcode names)
+  (defun +clj/cider-storm-dispatch (key)
+    "Invoke the CiderStorm command bound to KEY (a string like \"s\", \"d\")."
+    (let* ((cmd (and (boundp 'cider-storm-map)
+                     (lookup-key cider-storm-map (kbd key)))))
+      (if (commandp cmd)
+          (call-interactively cmd)
+        (user-error "No CiderStorm command bound to %s" key))))
+
+  (defhydra +clj/storm-hydra (:color blue :hint nil)
+    "
+^Recording^           ^Debugging^             ^Jump/Inspect^        ^UI/Other^
+────────────────────────────────────────────────────────────────────────────────
+_t_: toggle rec       _d_: debug current fn   _j_: jump to fn       _s_: start UI
+_l_: clear recs                            ^  _o_: open/timeline    _x_: stop UI
+_h_: help                                   ^                      _q_: quit   _D_: DAP hydra
+"
+    ("t" (+clj/cider-storm-dispatch "t"))
+    ("l" (+clj/cider-storm-dispatch "l"))
+    ("h" (+clj/cider-storm-dispatch "h"))
+    ("d" (+clj/cider-storm-dispatch "d"))
+    ("j" (+clj/cider-storm-dispatch "j"))
+    ("o" (+clj/cider-storm-dispatch "o"))
+    ("s" (+clj/cider-storm-dispatch "s"))
+    ("x" (+clj/cider-storm-dispatch "x"))
+    ("D" dap-hydra :color red)
+    ("q" nil :color blue))
+
+  ;; Bind <leader>d only in Clojure-family modes (leaves global DAP bindings intact elsewhere)
+  (dolist (hook '(clojure-mode-hook clojurescript-mode-hook clojurec-mode-hook))
+    (add-hook hook
+              (lambda ()
+                (evil-define-key 'normal 'local
+                  (kbd "<leader>d") #'+clj/storm-hydra/body)))))
+
+
 ;;; 55-clojure.el ends here

@@ -8,7 +8,6 @@
 (setq treesit-extra-load-path (list (expand-file-name "tree-sitter" user-emacs-directory)))
 
 (require 'go-fns)
-(require 'hydra)
 
 (use-package go-mode
   :ensure t

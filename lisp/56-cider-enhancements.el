@@ -18,7 +18,7 @@
       cider-repl-history-size 1000
       cider-repl-wrap-history t
       cider-repl-history-separator "\n---\n"
-      cider-repl-pop-to-buffer-on-connect 'display-only
+      cider-repl-pop-to-buffer-on-connect nil
       cider-repl-display-help-banner nil
       cider-repl-buffer-size-limit 10000)
 

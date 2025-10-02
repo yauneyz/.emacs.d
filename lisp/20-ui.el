@@ -18,6 +18,7 @@
 (use-package rainbow-delimiters :hook (prog-mode . rainbow-delimiters-mode))
 
 (use-package all-the-icons)
+(use-package nerd-icons :ensure t)
 
 (use-package nerd-icons
   :if (display-graphic-p)

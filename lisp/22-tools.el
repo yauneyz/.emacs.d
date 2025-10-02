@@ -182,7 +182,7 @@ to allow out-of-order matching like 'eve/mp' for 'events/map'."
   :diminish projectile-mode
   :bind-keymap ("C-c p" . projectile-command-map)
   :custom ((projectile-completion-system 'ivy))
-  :init   
+  :init
   (setq projectile-project-search-path '("~/development/"))
   :config
   (projectile-mode 1)
@@ -314,3 +314,5 @@ to allow out-of-order matching like 'eve/mp' for 'events/map'."
 
 (use-package treemacs-icons-dired
   :hook (dired-mode . treemacs-icons-dired-enable-once))
+
+(use-package hydra :ensure t)

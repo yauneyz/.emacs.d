@@ -64,7 +64,6 @@
   (cider-eldoc-display-for-symbol-at-point nil)
   (cider-eldoc-display-context-dependent-info nil)
   (cider-eldoc-max-class-names-to-display 0)
-  (cider-eldoc-ns-function nil)
   (cider-doc-auto-select-buffer nil)
   (cider-connection-timeout 10)
   (eldoc-idle-delay 1.0)

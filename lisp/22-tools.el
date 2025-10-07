@@ -203,18 +203,6 @@ to allow out-of-order matching like 'eve/mp' for 'events/map'."
   :after (projectile counsel)
   :config (counsel-projectile-mode 1))
 
-(use-package magit
-  :commands (magit-status magit-dispatch)
-  :bind (("C-x g" . magit-status)
-         ("C-x M-g" . magit-dispatch))
-  :custom ((magit-display-buffer-function
-            #'magit-display-buffer-same-window-except-diff-v1)
-           (magit-save-repository-buffers 'dontask)
-           (magit-completing-read-function #'ivy-completing-read))
-  :config
-  (setq magit-repository-directories
-        (mapcar (lambda (p) (cons p 1)) projectile-known-projects))
-  (setq magit-diff-refine-hunk t))
 
 
 ;; Treemacs

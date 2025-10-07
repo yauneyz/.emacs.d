@@ -14,21 +14,34 @@
 ;; Buffer & file helpers ------------------------------------------------------
 (evil-define-key 'normal 'global (kbd "<leader>bs") #'counsel-switch-buffer)
 (evil-define-key 'normal 'global (kbd "<leader>bk") #'kill-buffer)
+(evil-define-key 'normal 'global (kbd "<leader>bf") #'format-all-buffer)
 (evil-define-key 'normal 'global (kbd "<leader>gg") #'counsel-projectile-rg)
 
 ;; Selection helpers --------------------------------------------------------
 (evil-define-key 'normal 'global (kbd "<leader>cv") #'evil-select-inside-comment-block)
 
 ;; Project / Git / Treemacs ----------------------------------------------------
-(evil-define-key 'normal 'global (kbd "<leader>gs") #'magit-status)
+(evil-define-key 'normal 'global (kbd "gs") #'magit-status)
 (evil-define-key 'normal 'global (kbd "<leader>tt") #'treemacs)
 (evil-define-key 'normal 'global (kbd "<leader>tf") #'treemacs-find-file)
 (evil-define-key 'normal 'global (kbd "<leader>ts") #'lsp-treemacs-symbols)
 
+(evil-define-key 'normal 'global (kbd "<leader>p") 'projectile-command-map)
 
-(with-eval-after-load 'evil
-(evil-define-key 'normal 'global (kbd "<leader>p") 'projectile-command-map))
+;; Navigate between hunks (diff-hl and Magit both respect these)
+(global-set-key (kbd "M-]") #'diff-hl-next-hunk)
+(global-set-key (kbd "M-[") #'diff-hl-previous-hunk)
 
+;; smerge conflict resolution --------------------------------------------------
+(with-eval-after-load 'smerge-mode
+  (evil-define-key 'normal smerge-mode-map (kbd "<leader>mn") #'smerge-next)
+  (evil-define-key 'normal smerge-mode-map (kbd "<leader>mp") #'smerge-prev)
+  (evil-define-key 'normal smerge-mode-map (kbd "<leader>mu") #'smerge-keep-upper)
+  (evil-define-key 'normal smerge-mode-map (kbd "<leader>ml") #'smerge-keep-lower)
+  (evil-define-key 'normal smerge-mode-map (kbd "<leader>ma") #'smerge-keep-all)
+  (evil-define-key 'normal smerge-mode-map (kbd "<leader>mb") #'smerge-keep-base)
+  (evil-define-key 'normal smerge-mode-map (kbd "<leader>mc") #'smerge-combine-with-next)
+  (evil-define-key 'normal smerge-mode-map (kbd "<leader>mr") #'smerge-resolve))
 
 ;; Clojure / REPL --------------------------------------------------------------
 ;; Basic REPL operations
@@ -48,7 +61,6 @@
 (evil-define-key 'normal 'global (kbd "<leader>csr") #'cider-test-show-report)
 
 ;; REPL utilities and test integration (using 'cu' prefix)
-(evil-define-key 'normal 'global (kbd "<leader>cu") #'cider-repl-load-test-utils)
 (evil-define-key 'normal 'global (kbd "<leader>ce") #'cider-repl-run-test-suite)
 
 ;; Scope-capture debugging (using 'cp' prefix for "capture")
@@ -71,31 +83,32 @@
 (evil-define-key 'normal 'global (kbd "gi") #'lsp-find-implementation)
 (evil-define-key 'normal 'global (kbd "<leader>rn") #'lsp-rename)
 (evil-define-key 'normal 'global (kbd "<leader>lg") #'lsp-ui-doc-glance)
-(evil-define-key 'normal 'global (kbd "<leader>ld") #'lsp-ui-doc-show)
-(evil-define-key 'normal 'global (kbd "<leader>ls") #'lsp-signature-help)
-(evil-define-key 'normal 'global (kbd "<leader>lh") #'lsp-describe-thing-at-point)
+(evil-define-key 'normal 'global (kbd "<leader>lh") #'lsp-treemacs-call-hierarchy)
+(evil-define-key 'normal 'global (kbd "<leader>ls") #'lsp-workspace-symbol)
+(evil-define-key 'normal 'global (kbd "<leader>lf") #'lsp-format-buffer)
+(evil-define-key 'normal 'global (kbd "<leader>lm") #'lsp-ui-imenu)
 
 ;; Go development keybindings --------------------------------------------------
 ;; Note: <leader>gg = counsel-projectile-rg (grep), so Go menu is <leader>gm
-(defun +go/set-keys ()
-  "Set Go-specific keybindings for Go buffers."
-  (let ((m (current-local-map)))
-    (define-key m (kbd "<leader>gm") #'+go/hydra/body)
-    (define-key m (kbd "<leader>gb") #'+go/build)
-    (define-key m (kbd "<leader>gB") #'+go/build-from-root)
-    (define-key m (kbd "<leader>gr") #'+go/run)
-    (define-key m (kbd "<leader>gp") #'+go/test-project)
-    (define-key m (kbd "<leader>gP") #'+go/test-from-root)
-    (define-key m (kbd "<leader>gf") #'+go/test-file)
-    (define-key m (kbd "<leader>gt") #'+go/test-at-point)
-    (define-key m (kbd "<leader>gc") #'+go/coverage-toggle)
-    (define-key m (kbd "<leader>g.") #'dap-breakpoint-toggle)
-    (define-key m (kbd "<leader>gd") #'dap-debug)
-    (define-key m (kbd "<f5>")    #'+go/recompile)))
+;; (defun +go/set-keys ()
+;;   "Set Go-specific keybindings for Go buffers."
+;;   (let ((m (current-local-map)))
+;;     (define-key m (kbd "<leader>gm") #'+go/hydra/body)
+;;     (define-key m (kbd "<leader>gb") #'+go/build)
+;;     (define-key m (kbd "<leader>gB") #'+go/build-from-root)
+;;     (define-key m (kbd "<leader>gr") #'+go/run)
+;;     (define-key m (kbd "<leader>gp") #'+go/test-project)
+;;     (define-key m (kbd "<leader>gP") #'+go/test-from-root)
+;;     (define-key m (kbd "<leader>gf") #'+go/test-file)
+;;     (define-key m (kbd "<leader>gt") #'+go/test-at-point)
+;;     (define-key m (kbd "<leader>gc") #'+go/coverage-toggle)
+;;     (define-key m (kbd "<leader>g.") #'dap-breakpoint-toggle)
+;;     (define-key m (kbd "<leader>gd") #'dap-debug)
+;;     (define-key m (kbd "<f5>")    #'+go/recompile)))
 
 ;; Apply Go keybindings to both go-mode and go-ts-mode
-(add-hook 'go-mode-hook     #'+go/set-keys)
-(add-hook 'go-ts-mode-hook  #'+go/set-keys)
+;; (add-hook 'go-mode-hook     #'+go/set-keys)
+;; (add-hook 'go-ts-mode-hook  #'+go/set-keys)
 
 ;; Helper describe-* -----------------------------------------------------------
 (evil-define-key 'normal 'global (kbd "<leader>hf") #'counsel-describe-function)

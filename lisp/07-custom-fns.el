@@ -122,9 +122,6 @@ If OTHER-WINDOW is non-nil, open in other window."
   (interactive)
   (toggle-shell-buffer last-toggled-shell-buffer-number))
 
-(provide '07-custom-fns)
-;;; 07-custom-fns.el ends here
-
 (defun dismiss-popup-buffer (&optional names)
   "Close windows showing any buffer in NAMES.
 If NAMES is nil, default to \"*compilation*\" and \"*ref*\"."
@@ -132,3 +129,91 @@ If NAMES is nil, default to \"*compilation*\" and \"*ref*\"."
   (dolist (name (or names '("*compilation*" "*ref*")))
     (when-let ((win (get-buffer-window name 'visible)))
       (delete-window win))))
+
+;;;; --- Open the file-at-point in vdiff, based on Magit context ----
+(defun my/magit-vdiff-open-current ()
+  "Open the file at point in vdiff, using the current Magit diff context.
+Works in magit-diff/status buffers without asking (no DWIM prompts)."
+  (interactive)
+  (require 'magit)
+  (require 'vdiff-magit)
+  (magit-with-toplevel
+    (let* ((file (or (magit-current-file)
+                     (user-error "No file at point")))
+           (dt   (when (derived-mode-p 'magit-diff-mode)
+                   (magit-diff-type))))
+      (pcase dt
+        ;; In a magit-diff buffer with a concrete type:
+        ('unstaged  (vdiff-magit-show-unstaged file))
+        ('staged    (vdiff-magit-show-staged   file))
+        ('committed
+         (let* ((range (car magit-refresh-args)) ; e.g. "A..B" or "A...B"
+                (revs  (magit-ediff-compare--read-revisions range))
+                (rev-a (nth 0 revs))
+                (rev-b (nth 1 revs)))
+           (vdiff-magit-compare rev-a rev-b file file)))
+        (_
+         ;; Not in a committed/staged/unstaged diff (e.g., status buffer):
+         (vdiff-magit-show-working-tree file))))))
+
+;;;; --- One-shot: show this file’s Magit diff, then immediately vdiff it ----
+(defun my/vdiff-magit-this-file ()
+  "Show `magit-diff-buffer-file` for the current file, then jump into vdiff."
+  (interactive)
+  (unless buffer-file-name
+    (user-error "Not visiting a file"))
+  (require 'magit)
+  (require 'vdiff-magit)
+  (unless (magit-toplevel)
+    (user-error "Not inside a Git repository"))
+  ;; Ensure Magit selects the diff window, then vdiff the file at point there.
+  (let ((magit-display-buffer-noselect nil))
+    (magit-diff-buffer-file))
+  (call-interactively #'my/magit-vdiff-open-current))
+
+
+;;;; Quit vdiff, keep only the working buffer (2-way “undo”)
+(defun my/vdiff-quit-to-working ()
+  "In a vdiff session, keep only the working tree buffer and exit vdiff.
+Kills the other vdiff buffer(s), leaves a single window showing the
+working file, and disables `vdiff-mode' in that buffer."
+  (interactive)
+  (unless (bound-and-true-p vdiff-mode)
+    (user-error "Not in vdiff-mode"))
+
+  (require 'seq)
+  ;; Find all windows in this frame currently showing vdiff buffers
+  (let* ((vdiff-wins (seq-filter
+                      (lambda (w)
+                        (with-current-buffer (window-buffer w)
+                          (bound-and-true-p vdiff-mode)))
+                      (window-list (selected-frame))))
+         (vdiff-bufs (mapcar #'window-buffer vdiff-wins))
+         ;; Heuristic: the *working* buffer is the one visiting a real file
+         (work-buf   (or (seq-find (lambda (b)
+                                     (with-current-buffer b
+                                       (let ((f (buffer-file-name)))
+                                         (and f (file-exists-p f)))))
+                                   vdiff-bufs)
+                         ;; Fallback: if nothing looks like a real file, keep current
+                         (current-buffer))))
+
+    ;; Kill all *other* vdiff buffers (HEAD/index/etc.)
+    (dolist (b vdiff-bufs)
+      (unless (eq b work-buf)
+        (when (buffer-live-p b)
+          (kill-buffer b))))
+
+    ;; Show only the working buffer in one window
+    (delete-other-windows)
+    (switch-to-buffer work-buf)
+
+    ;; Make sure we’re no longer in vdiff in the working buffer
+    (when (bound-and-true-p vdiff-mode)
+      (vdiff-mode -1))
+
+    (message "vdiff closed; kept %s" (buffer-name work-buf))))
+
+
+(provide '07-custom-fns)
+;;; 07-custom-fns.el ends here

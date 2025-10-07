@@ -65,7 +65,7 @@
             (todo "TODO" ((org-agenda-overriding-header "Backlog")))))))
 
 					; set tab to be org mode tab
-  (evil-define-key 'insert 'global (kbd "TAB") #'org-cycle)
+  ;; (evil-define-key 'insert 'global (kbd "TAB") #'org-cycle)
 
 )
 

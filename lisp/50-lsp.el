@@ -45,7 +45,7 @@
     (add-hook (intern (format "%s-hook" mode)) #'lsp-deferred))
 
   (lsp-enable-which-key-integration t)
-  (evil-define-key 'normal 'global (kbd "<leader>l") lsp-command-map)
+  ;; (evil-define-key 'normal 'global (kbd "<leader>l") lsp-command-map)
 
   ;; Diagnostic UX
   (setq lsp-modeline-diagnostics-enable t
@@ -80,11 +80,12 @@
 (use-package lsp-ui
   :after lsp-mode
   :hook (lsp-mode . lsp-ui-mode)
+  :config
+  (setq imenu-auto-rescan t)
   :custom
   (lsp-ui-doc-enable t)
   (lsp-ui-doc-position 'bottom)
   (lsp-ui-doc-delay 0.2)
-  ;; (lsp-ui-sideline-show-code-actions t)
   (lsp-ui-sideline-show-diagnostics t))
 
 (use-package lsp-treemacs

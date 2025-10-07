@@ -114,8 +114,8 @@
    (t
     (or (minuet-accept-suggestion)
         (indent-for-tab-command)))))
-(global-set-key (kbd "<tab>") #'dispatch-tab-command)
-(evil-define-key 'insert 'global (kbd "<tab>") #'dispatch-tab-command)
+;; (global-set-key (kbd "<tab>") #'dispatch-tab-command)
+;; (evil-define-key 'insert 'global (kbd "<tab>") #'dispatch-tab-command)
 
 (provide '60-completion)
 ;;; 60-completion.el ends here

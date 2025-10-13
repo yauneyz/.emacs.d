@@ -195,5 +195,15 @@
 (global-set-key (kbd "C-c o") 'toggle-command-log)
 (global-set-key (kbd "C-x r r") 'reload-init)
 
+;; Org-only color hydra binding in Evil visual state -------------------------
+;; Defined here for consistency with other leader bindings. Ensures both
+;; Evil and Org are loaded before binding, and only affects Org buffers.
+(with-eval-after-load 'evil
+  (add-hook 'org-mode-hook
+            (lambda ()
+              (evil-define-key 'visual org-mode-map
+                (kbd "<leader>c") #'my/hydra-org-color/body))))
+
+
 (provide '70-keybindings)
 ;;; 70-keybindings.el ends here

@@ -55,7 +55,9 @@
   ;; nice in terminals too (M-x corfu-terminal-install if you use tty often)
   :config
   ;; Disable in org-mode to avoid interference
-  (add-hook 'org-mode-hook (lambda () (corfu-mode -1))))
+  (add-hook 'org-mode-hook (lambda () (corfu-mode -1)))
+  (add-hook 'markdown-mode-hook (lambda () (corfu-mode -1)))
+  )
 
 ;; NOTE - commented because we couldn't find the package
 ;; ;; nice docs-on-hover in the popup

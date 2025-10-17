@@ -8,7 +8,6 @@
 
 (use-package python
   :ensure nil
-  :mode "\\.py\\'"
   :init
   (setq python-shell-interpreter "python3"
         python-indent-guess-indent-offset-verbose nil)

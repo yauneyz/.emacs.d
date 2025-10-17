@@ -52,7 +52,7 @@
   (doom-themes-visual-bell-config)
   (doom-themes-org-config)
   ;; (load-theme 'doom-dark+ t)
-  (load-theme 'doom-horizon+ t)
+  (load-theme 'doom-horizon t)
   (defun switch-theme ()
     "Interactively switch doom themes."
     (interactive)

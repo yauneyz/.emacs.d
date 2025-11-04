@@ -1,5 +1,8 @@
 ;;; 20-ui.el --- Themes, modeline, icons, line-numbers  -*- lexical-binding: t; -*-
 
+;; =========== Font  ===================
+(set-face-attribute 'default nil :font "Fira Code Retina" :height 120)
+
 (use-package diminish)       ; hide minor-mode lighters
 
 (setq inhibit-startup-message t

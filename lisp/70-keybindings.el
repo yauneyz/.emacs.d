@@ -205,5 +205,10 @@
                 (kbd "<leader>c") #'my/hydra-org-color/body))))
 
 
+;; Unbind things I don't need
+(with-eval-after-load 'evil
+  (define-key evil-insert-state-map (kbd "C-k") nil))
+
+
 (provide '70-keybindings)
 ;;; 70-keybindings.el ends here

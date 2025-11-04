@@ -16,8 +16,6 @@
    ("M-a" . #'minuet-accept-suggestion-line)
    ("M-e" . #'minuet-dismiss-suggestion))
 
-
-
   :init
   ;; if you want to enable auto suggestion.
   ;; Note that you can manually invoke completions without enable minuet-auto-suggestion-mode
@@ -28,7 +26,7 @@
   ;; You can use M-x minuet-configure-provider to interactively configure provider and model
   (setq minuet-provider 'openai-compatible)
   (plist-put minuet-openai-compatible-options
-	    :end-point "http://localhost:11434/v1/chat/completions")
+	     :end-point "http://localhost:11434/v1/chat/completions")
   (plist-put minuet-openai-compatible-options :api-key "OPENAI_API_KEY")
   ;; Must match the --served-model-name in vLLM
   (plist-put minuet-openai-compatible-options :model "qwen2.5-coder-14b")
@@ -94,28 +92,55 @@
   (require 'corfu-history)
   (corfu-history-mode 1))
 
-;; YASnippet ------------------------------------------------------------------
-(use-package yasnippet
+(use-package tempel
+  :ensure t
+  :init
+  ;; Add Tempel to CAPF so Corfu can show templates; keep LSP first.
+  (defun my/tempel-capf-setup ()
+    (add-hook 'completion-at-point-functions #'tempel-expand 90 t))
+  (add-hook 'prog-mode-hook  #'my/tempel-capf-setup)
+  (add-hook 'text-mode-hook  #'my/tempel-capf-setup)
+
+  :custom
+  ;; Load all *.tempel files in ~/.emacs.d/templates
+  (tempel-path (expand-file-name "templates/*.tempel" user-emacs-directory))
+  ;; (tempel-trigger-prefix ";")
+  (tempel-trigger-prefix nil)
+
   :config
-  (yas-global-mode 1)
-  (define-key yas-minor-mode-map (kbd "C-j")   #'yas-next-field-or-maybe-expand)
-  (define-key yas-minor-mode-map (kbd "C-S-j") #'yas-prev-field))
+  ;; Evil-only insert-state bindings
+  (with-eval-after-load 'evil
+    (evil-define-key 'insert 'global (kbd "C-y") #'tempel-expand)
+    (evil-define-key 'normal 'global (kbd "<leader>tc") #'tempel-complete)
+    (evil-define-key 'normal 'global (kbd "<leader>ts") #'tempel-insert)
+    ;; (evil-define-key 'insert 'global (kbd "C-j") #'tempel-next)
+    ;; (evil-define-key 'insert 'global (kbd "C-k") #'tempel-previous)
+    )
+  ;; (define-key tempel-map (kbd "C-j") #'tempel-next)
+  ;; (define-key tempel-map (kbd "C-k") #'tempel-previous)
+  (evil-define-key 'insert tempel-map
+    (kbd "C-j") #'tempel-next
+    (kbd "C-k") #'tempel-previous)
+  ;; Ensure that tempel bindings beat Org bindings for C-j
+  (add-to-list 'emulation-mode-map-alists
+               `((tempel-map . ,tempel-map)))
+  (add-to-list 'auto-mode-alist '("\\.tempel\\'" . emacs-lisp-mode))
+  )
 
-(defun my/yasnippet-complete ()
-  "Complete using YASnippet via completion-at-point."
-  (interactive)
-  (yas-expand-from-trigger-key))
-(evil-define-key 'insert 'global (kbd "C-y") #'my/yasnippet-complete)
+;; 3) AAS = *only* your “special-case” instant auto-expands (no space/newline).
 
-;; Dispatcher TAB --------------------------------------------------------------
+;; 4) (Optional) keep your TAB dispatcher; add Tempel as a manual step.
 (defun dispatch-tab-command ()
-  "Context-aware <TAB>: Minuet, YAS, indent."
+  "Context-aware <TAB>: Minuet, Tempel (manual), indent."
   (interactive)
   (cond
    ((eq major-mode 'fountain-mode) (fountain-dwim))
    (t
-    (or (minuet-accept-suggestion)
+    (or (minuet-accept-suggestion)  ; your AI inline suggestion accept
+        (tempel-expand)             ; try a template at point (manual)
         (indent-for-tab-command)))))
+
+
 ;; (global-set-key (kbd "<tab>") #'dispatch-tab-command)
 ;; (evil-define-key 'insert 'global (kbd "<tab>") #'dispatch-tab-command)
 

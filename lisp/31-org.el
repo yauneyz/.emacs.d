@@ -264,3 +264,11 @@ Other  _x_ custom color     _X_ custom background     _u_ uncolor at point     _
 (setq org-confirm-babel-evaluate nil
       org-src-fontify-natively t
       org-src-tab-acts-natively t)
+
+
+(use-package anki-editor
+  :ensure t
+  :commands (anki-editor-mode anki-editor-push-notes)
+  :custom
+  ;; auto-create decks if missing (optional)
+  (anki-editor-create-decks t))

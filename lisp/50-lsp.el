@@ -23,6 +23,7 @@
         lsp-clojure-workspace-cache-dir (expand-file-name "~/.cache/clojure-lsp/"))
 
   :hook ((python-mode . lsp-deferred)
+         (python-ts-mode . lsp-deferred)
          (rust-mode . lsp-deferred)
          (go-mode . lsp-deferred)
          (typescript-mode . lsp-deferred)

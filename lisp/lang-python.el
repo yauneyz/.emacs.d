@@ -18,23 +18,24 @@
 ;; Prefer lsp-mode integration; `eglot-ensure` fallback above handles no LSP.
 (use-package lsp-pyright
   :after lsp-mode
-  :hook (python-mode . (lambda ()
-                         (require 'lsp-pyright)
-                         (lsp-deferred)))
   :custom
   (lsp-pyright-typechecking-mode "strict")
   (lsp-pyright-auto-import-completions t)
-  (lsp-pyright-use-library-code-for-types t))
+  (lsp-pyright-use-library-code-for-types t)
+  :hook
+  ;; Register Pyright and start LSP for BOTH modes
+  ((python-mode python-ts-mode) . (lambda ()
+                                    (require 'lsp-pyright)
+                                    (lsp-deferred))))
 
 
 (defun +python/ensure-ruff-lsp ()
-  "Activate ruff-lsp alongside the main Python language server when available."
   (when (and (featurep 'lsp-mode)
              (executable-find "ruff-lsp"))
-    ;; Trigger a manual workspace refresh so the add-on server attaches.
     (lsp-deferred)))
 
-(add-hook 'python-mode-hook #'+python/ensure-ruff-lsp)
+(dolist (h '(python-mode-hook python-ts-mode-hook))
+  (add-hook h #'+python/ensure-ruff-lsp))
 
 (use-package python-black
   :after python

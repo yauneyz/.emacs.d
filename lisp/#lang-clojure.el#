@@ -91,15 +91,6 @@
 	(backward-char 1)
 	(paredit-forward-slurp-sexp))
 
-      (use-package format-all
-	:config
-	(setq-default format-all-formatters
-                      '((clojure-mode . "cljfmt")
-			(clojurescript-mode . "cljfmt")
-			(clojurec-mode . "cljfmt")
-			(python-mode . "black")
-			(typescript-mode . "prettier")
-			(emacs-lisp-mode . emacs-lisp-format))))
 
       ;; Use clojure-mode for EDN
       (add-to-list 'auto-mode-alist '("\.edn\'" . clojure-mode))

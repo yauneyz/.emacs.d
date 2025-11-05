@@ -23,11 +23,6 @@
   :ensure t
   :hook (prog-mode . rainbow-delimiters-mode))
 
-(defun +lang/trim-trailing-whitespace ()
-  "Keep buffers tidy without requiring ws-butler."
-  (add-hook 'before-save-hook #'delete-trailing-whitespace nil t))
-
-(add-hook 'prog-mode-hook #'+lang/trim-trailing-whitespace)
 
 (provide '51-lang-bundle)
 ;;; 51-lang-bundle.el ends here

@@ -1,16 +1,17 @@
-
 (use-package format-all
+  :commands (format-all-mode format-all-buffer)
+  :hook
+  ((prog-mode . format-all-mode)
+   ;; make sure a formatter is chosen whenever the mode enables
+   (format-all-mode . format-all-ensure-formatter))
+  :init
+  ;; show the errors buffer only on errors (not warnings)
+  (setq format-all-show-errors 'errors)
   :config
+  ;; Defaults for languages (NOTE: use language names, not modes)
   (setq-default format-all-formatters
-                '((clojure-mode . "cljfmt")
-		  (clojurescript-mode . "cljfmt")
-		  (clojurec-mode . "cljfmt")
-		  (python-mode . "black")
-		  (typescript-mode . "prettier")
-		  (emacs-lisp-mode . emacs-lisp-format))))
-
-(defun my/format-on-save ()
-  "Format buffer on save if a formatter is available."
-  (when (and (fboundp 'format-all--get-formatter) (format-all--get-formatter))
-    (format-all-buffer)))
-(add-hook 'after-save-hook #'my/format-on-save)
+                '(("Go"                 (gofmt))
+                  ("Python"             (black))
+                  ("TypeScript"         (prettier))
+                  ("Emacs Lisp"         (emacs-lisp))
+                  ("Clojure/ClojureScript" (cljfmt)))))

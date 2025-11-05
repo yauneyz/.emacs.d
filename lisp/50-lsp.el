@@ -64,11 +64,6 @@
                     :activation-fn (lsp-activate-on "go")
                     :server-id 'gopls))
 
-  ;; Format + organise imports for Go buffers
-  (dolist (hook '(go-mode-hook go-ts-mode-hook))
-    (add-hook hook (lambda ()
-                     (add-hook 'before-save-hook #'+go/lsp-format+imports nil t))))
-
   ;; rust-analyzer sensible defaults
   (setq lsp-rust-analyzer-cargo-watch-command "clippy"
         lsp-rust-analyzer-server-display-inlay-hints t

@@ -2,6 +2,9 @@
 
 ;; =========== Font  ===================
 (set-face-attribute 'default nil :font "Fira Code Retina" :height 120)
+;; (set-face-attribute 'default nil :font "JetBrainsMono Nerd Font" :height 120)
+;; (set-face-attribute 'fixed-pitch nil :font "JetBrainsMono Nerd Font" :height 120)
+;; (set-face-attribute 'variable-pitch nil :font "Cantarell" :height 130)
 
 (use-package diminish)       ; hide minor-mode lighters
 
@@ -35,15 +38,6 @@
   :if (display-graphic-p)
   :hook (ibuffer-mode . nerd-icons-ibuffer-mode))
 
-(defun +ui/apply-nerd-fonts ()
-  "Set Nerd Font defaults when available."
-  (let ((font "JetBrainsMono Nerd Font"))
-    (when (and (display-graphic-p) (member font (font-family-list)))
-      (set-face-attribute 'default nil :font font :height 120)
-      (set-face-attribute 'fixed-pitch nil :font font :height 120)
-      (set-face-attribute 'variable-pitch nil :font "Cantarell" :height 130))))
-
-(add-hook 'server-after-make-frame-hook #'+ui/apply-nerd-fonts)
 (add-hook 'after-init-hook #'+ui/apply-nerd-fonts)
 
 ;; --------------------------------------------------------------------------
@@ -55,7 +49,8 @@
   (doom-themes-visual-bell-config)
   (doom-themes-org-config)
   ;; (load-theme 'doom-dark+ t)
-  (load-theme 'doom-horizon t)
+  ;; (load-theme 'doom-horizon t)
+  (load-theme 'doom-tokyo-night t)
   (defun switch-theme ()
     "Interactively switch doom themes."
     (interactive)
@@ -129,6 +124,16 @@
         treesit-auto-langs '(bash c clojure css go haskell json python rust tsx typescript yaml))
   (treesit-auto-add-to-auto-mode-alist 'all)
   (global-treesit-auto-mode))
+
+
+;; Don't let corfu get clipped
+(setq frame-resize-pixelwise t
+      window-resize-pixelwise t)
+(when (featurep 'pgtk)
+  (setq pgtk-resize-child-frames t))              ; PGTK (Wayland/pure GTK)
+(when (boundp 'x-gtk-resize-child-frames)
+  (setq x-gtk-resize-child-frames 'resize-mode))  ; X/GTK Emacs
+
 
 (provide 'ui)
 ;;; 20-ui.el ends here

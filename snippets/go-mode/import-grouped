@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: Grouped Import
+# key: import
+# --
+import (
+	"${1}"${0}
+)

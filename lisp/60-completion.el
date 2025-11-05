@@ -43,6 +43,7 @@
 (use-package corfu
   :init
   (global-corfu-mode)                     ;; enable in all buffers
+  (corfu-popupinfo-mode)
   :custom
   (corfu-auto t)                          ;; popup automatically
   (corfu-auto-delay 0.0)
@@ -55,17 +56,29 @@
   ;; Disable in org-mode to avoid interference
   (add-hook 'org-mode-hook (lambda () (corfu-mode -1)))
   (add-hook 'markdown-mode-hook (lambda () (corfu-mode -1)))
-  (define-key corfu-map (kbd "RET") nil)
-  (define-key corfu-map (kbd "C-m") nil)
-  (define-key corfu-map (kbd "TAB") #'corfu-complete)
-  )
 
-;; NOTE - commented because we couldn't find the package
-;; ;; nice docs-on-hover in the popup
-;; (use-package corfu-popupinfo
-;;   :after corfu
-;;   :hook (corfu-mode . corfu-popupinfo-mode)
-;;   :custom (corfu-popupinfo-delay 0.05))
+  ;; Keys: RET accepts completion; S-RET inserts newline (ignoring Corfu)
+  (define-key corfu-map (kbd "RET") #'corfu-insert)
+  (define-key corfu-map (kbd "C-m") #'corfu-insert)
+
+  (defun my/corfu-newline ()
+    "Quit Corfu and insert a plain newline."
+    (interactive)
+    (corfu-quit)
+    (reindent-then-newline-and-indent))
+
+  (define-key corfu-map (kbd "S-<return>") #'my/corfu-newline)
+
+  (define-key corfu-map (kbd "TAB") #'corfu-complete))
+
+(use-package nerd-icons-corfu
+  :after (corfu nerd-icons)
+  :init
+  ;; Remove kind-icon if you had added it
+  (setq corfu-margin-formatters nil)
+  ;; Add the font-glyph formatter (crisp, scales with text)
+  (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
+
 
 ;; better matching (VSCode-like fuzzy, out-of-order)
 (use-package orderless
@@ -81,13 +94,6 @@
   (add-to-list 'completion-at-point-functions #'cape-file   'append)
   (add-to-list 'completion-at-point-functions #'cape-dabbrev 'append)
   (add-to-list 'completion-at-point-functions #'cape-keyword 'append))
-
-;; pretty icons for candidates (requires a nerd font)
-(use-package kind-icon
-  :after corfu
-  :custom (kind-icon-use-icons t)
-  :config
-  (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
 
 ;; remember history
 (savehist-mode 1)
@@ -120,6 +126,8 @@
 
 ;; (global-set-key (kbd "<tab>") #'dispatch-tab-command)
 ;; (evil-define-key 'insert 'global (kbd "<tab>") #'dispatch-tab-command)
+
+
 
 (provide '60-completion)
 ;;; 60-completion.el ends here

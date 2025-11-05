@@ -1,6 +1,6 @@
 # -*- mode: snippet -*-
 # name: new yasnippet (auto mode)
-# key: ;new
+# key: new
 # --
 # -*- mode: snippet -*-
 # name: ${1:snippet-name}
@@ -8,4 +8,4 @@
 # --
 # --
 # mode: `(symbol-name major-mode)`
-{0:snippet-body}
+${0:snippet-body}

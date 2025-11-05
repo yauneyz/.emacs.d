@@ -8,4 +8,4 @@
 # --
 # --
 # mode: `(symbol-name major-mode)`
-${0:snippet-body}
+{0:snippet-body}

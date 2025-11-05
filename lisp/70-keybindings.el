@@ -206,8 +206,8 @@
 
 ;; YAS Completion
 (with-eval-after-load 'evil
-  (evil-define-key 'normal 'global (kbd "C-c y r") #'yas-reload-snippets)
-  (evil-define-key 'insert 'global (kbd "C-y") #'yas-expand))
+  (evil-define-key 'normal 'global (kbd "<leader>yr") #'yas-reload-snippets)
+  (evil-define-key 'insert 'global (kbd "C-;") #'yas-expand))
 (with-eval-after-load 'yasnippet
   ;; Navigate snippet fields only while a snippet is active
   (define-key yas-keymap (kbd "C-j") #'yas-next-field)

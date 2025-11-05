@@ -204,10 +204,21 @@
               (evil-define-key 'visual org-mode-map
                 (kbd "<leader>c") #'my/hydra-org-color/body))))
 
+;; YAS Completion
+(with-eval-after-load 'evil
+  (evil-define-key 'normal 'global (kbd "C-c y r") #'yas-reload-snippets)
+  (evil-define-key 'insert 'global (kbd "C-y") #'yas-expand))
+(with-eval-after-load 'yasnippet
+  ;; Navigate snippet fields only while a snippet is active
+  (define-key yas-keymap (kbd "C-j") #'yas-next-field)
+  (define-key yas-keymap (kbd "C-k") #'yas-prev-field))
+
 
 ;; Unbind things I don't need
 (with-eval-after-load 'evil
   (define-key evil-insert-state-map (kbd "C-k") nil))
+
+
 
 
 (provide '70-keybindings)

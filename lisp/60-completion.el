@@ -95,44 +95,18 @@
   (require 'corfu-history)
   (corfu-history-mode 1))
 
-(use-package tempel
+(use-package yasnippet
   :ensure t
-  :init
-  ;; Add Tempel to CAPF so Corfu can show templates; keep LSP first.
-  (defun my/tempel-capf-setup ()
-    (add-hook 'completion-at-point-functions #'tempel-expand 90 t))
-  (add-hook 'prog-mode-hook  #'my/tempel-capf-setup)
-  (add-hook 'text-mode-hook  #'my/tempel-capf-setup)
-
-  :custom
-  ;; Load all *.tempel files in ~/.emacs.d/templates
-  (tempel-path (expand-file-name "templates/*.tempel" user-emacs-directory))
-  ;; (tempel-trigger-prefix ";")
-  (tempel-trigger-prefix nil)
-
+  :hook (prog-mode . yas-minor-mode)
   :config
-  ;; Evil-only insert-state bindings
-  (with-eval-after-load 'evil
-    (evil-define-key 'insert 'global (kbd "C-y") #'tempel-expand)
-    (evil-define-key 'normal 'global (kbd "<leader>tc") #'tempel-complete)
-    (evil-define-key 'normal 'global (kbd "<leader>ts") #'tempel-insert)
-    ;; (evil-define-key 'insert 'global (kbd "C-j") #'tempel-next)
-    ;; (evil-define-key 'insert 'global (kbd "C-k") #'tempel-previous)
-    )
-  ;; (define-key tempel-map (kbd "C-j") #'tempel-next)
-  ;; (define-key tempel-map (kbd "C-k") #'tempel-previous)
-  (evil-define-key 'insert tempel-map
-    (kbd "C-j") #'tempel-next
-    (kbd "C-k") #'tempel-previous)
-  ;; Ensure that tempel bindings beat Org bindings for C-j
-  (add-to-list 'emulation-mode-map-alists
-               `((tempel-map . ,tempel-map)))
-  (add-to-list 'auto-mode-alist '("\\.tempel\\'" . emacs-lisp-mode))
-  )
+  ;; Load personal snippets
+  (setq yas-snippet-dirs
+        '("~/.emacs.d/snippets"))  ;; personal snippets
 
-;; 3) AAS = *only* your “special-case” instant auto-expands (no space/newline).
+  ;; Enable Yasnippet globally
+  (yas-reload-all)
+  (yas-global-mode 1))
 
-;; 4) (Optional) keep your TAB dispatcher; add Tempel as a manual step.
 (defun dispatch-tab-command ()
   "Context-aware <TAB>: Minuet, Tempel (manual), indent."
   (interactive)
@@ -140,9 +114,9 @@
    ((eq major-mode 'fountain-mode) (fountain-dwim))
    (t
     (or (minuet-accept-suggestion)  ; your AI inline suggestion accept
+	(yas-expand)
         (tempel-expand)             ; try a template at point (manual)
         (indent-for-tab-command)))))
-
 
 ;; (global-set-key (kbd "<tab>") #'dispatch-tab-command)
 ;; (evil-define-key 'insert 'global (kbd "<tab>") #'dispatch-tab-command)

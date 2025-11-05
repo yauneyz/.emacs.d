@@ -214,6 +214,15 @@ working file, and disables `vdiff-mode' in that buffer."
 
     (message "vdiff closed; kept %s" (buffer-name work-buf))))
 
+(defun yas-reload-snippets ()
+  "Recompile and reload all Yasnippet snippets on the fly."
+  (interactive)
+  (when (featurep 'yasnippet)
+    (yas-recompile-all)
+    (yas-reload-all)
+    (message "✅ Yasnippet snippets recompiled and reloaded.")))
+
+
 
 (provide '07-custom-fns)
 ;;; 07-custom-fns.el ends here

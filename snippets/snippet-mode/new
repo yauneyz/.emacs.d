@@ -1,0 +1,11 @@
+# -*- mode: snippet -*-
+# name: new yasnippet (auto mode)
+# key: ;new
+# --
+# -*- mode: snippet -*-
+# name: ${1:snippet-name}
+# key: ${2:trigger}
+# --
+# --
+# mode: `(symbol-name major-mode)`
+${0:snippet-body}

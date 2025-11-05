@@ -68,15 +68,6 @@
                 ("\\.Rmd\\'"     . markdown-mode)))
   (add-to-list 'auto-mode-alist pair))
 
-(defun my/format-on-save ()
-  "Format buffer on save if a formatter is available."
-  (when (and (fboundp 'format-all--get-formatter) (format-all--get-formatter))
-    (format-all-buffer)))
-(add-hook 'after-save-hook #'my/format-on-save)
-;; (add-hook 'after-save-hook 'lsp-format-buffer)
 
 (provide '30-editor)
 ;;; 30-editor.el ends here
-
-;; =========== Font  ===================
-(set-face-attribute 'default nil :font "Fira Code Retina" :height 120)

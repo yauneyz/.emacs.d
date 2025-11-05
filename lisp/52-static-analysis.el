@@ -8,3 +8,9 @@
 		  (python-mode . "black")
 		  (typescript-mode . "prettier")
 		  (emacs-lisp-mode . emacs-lisp-format))))
+
+(defun my/format-on-save ()
+  "Format buffer on save if a formatter is available."
+  (when (and (fboundp 'format-all--get-formatter) (format-all--get-formatter))
+    (format-all-buffer)))
+(add-hook 'after-save-hook #'my/format-on-save)

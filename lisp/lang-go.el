@@ -12,11 +12,7 @@
 (use-package go-mode
   :ensure t
   :mode "\\.go\\'"
-  :init (setq gofmt-command "gofumpt")
-  :hook (go-mode . lsp-deferred)
   :config
-  (setq godoc-at-point-function nil
-        go-guess-gopath-functions nil)
   (add-hook 'go-mode-hook
             (lambda ()
               (setq-local xref-backend-functions '(lsp--xref-backend)))))
@@ -24,19 +20,23 @@
 (when (fboundp 'go-ts-mode)
   (add-to-list 'major-mode-remap-alist '(go-mode . go-ts-mode)))
 
-(use-package gotest
-  :ensure t
-  :commands (go-test-current-test go-test-current-file go-test-current-project))
+(add-hook 'go-ts-mode-hook
+          (lambda ()
+            (setq tab-width 4)
+	    (setq go-ts-mode-indent-offset tab-width))
+	  )
+
+;; Set tree-sitter tab to be equal to normal tab width
 
 (defhydra +go/hydra (:color blue :hint nil)
   "
-^Build/Run^         ^Tests^           ^Debug^           ^Utils^
-─────────────────────────────────────────────────────────────────
-_b_: build          _t_: at point     _d_: debug        _g_: show compilation
-_r_: run            _f_: file         _._: breakpoint   _x_: close compilation
-_R_: re-run         _p_: project      _,_: continue     _q_: quit
-_B_: build root     _k_: benchmark
-_P_: test root      _c_: coverage
+^Build/Run^          ^Tests^            ^Debug^            ^Utils^
+────────────────────────────────────────────────────────────────────────
+_b_: build           _t_: at point      _d_: debug         _g_: show compilation
+_r_: run             _f_: file          _._: breakpoint    _x_: close compilation
+_R_: re-run          _p_: project       _,_: continue      _q_: quit
+_B_: build root      _k_: benchmark                        _c_: close hydra
+_P_: test root
 "
   ("b" +go/build)
   ("r" +go/run)
@@ -47,13 +47,13 @@ _P_: test root      _c_: coverage
   ("f" +go/test-file)
   ("p" +go/test-project)
   ("k" +go/test-benchmark)
-  ("c" +go/coverage-toggle)
   ("d" dap-debug)
   ("." dap-breakpoint-toggle)
   ("," dap-continue)
   ("g" (lambda () (interactive) (pop-to-buffer "*compilation*")) :color red)
   ("x" +go/dismiss-compilation :color red)
-  ("q" nil))
+  ("c" nil)
+  ("q" +go/dismiss-compilation))
 
 (setq compilation-scroll-output 'first-error
       compilation-always-kill t

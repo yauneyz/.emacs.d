@@ -14,6 +14,22 @@
 
   (aas-set-snippets 'org-mode
     ";ab" '(tempel
-	    "* " (p "Front") n
-	    (p "Back") n))
+            "* " (p "Front") n
+            "  :PROPERTIES:" n
+            "  :ANKI_NOTE_TYPE: Basic" n
+            "  :END:" n n
+            (p "Back") n)
+
+    ";go" '(tempel "#+BEGIN_SRC go" n
+		   (p) n
+		   "#+END_SRC" n)
+    ;; End
+    )
+
+  (aas-set-snippets 'go-mode
+    ";ptl" '(tempel "fmt.Println(" p ")")
+    ";ptf" '(tempel "fmt.Printf(\"" p "\", " p ")")
+
+
+    )
   )

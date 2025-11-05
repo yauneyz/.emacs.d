@@ -90,25 +90,25 @@
 
 ;; Go development keybindings --------------------------------------------------
 ;; Note: <leader>gg = counsel-projectile-rg (grep), so Go menu is <leader>gm
-;; (defun +go/set-keys ()
-;;   "Set Go-specific keybindings for Go buffers."
-;;   (let ((m (current-local-map)))
-;;     (define-key m (kbd "<leader>gm") #'+go/hydra/body)
-;;     (define-key m (kbd "<leader>gb") #'+go/build)
-;;     (define-key m (kbd "<leader>gB") #'+go/build-from-root)
-;;     (define-key m (kbd "<leader>gr") #'+go/run)
-;;     (define-key m (kbd "<leader>gp") #'+go/test-project)
-;;     (define-key m (kbd "<leader>gP") #'+go/test-from-root)
-;;     (define-key m (kbd "<leader>gf") #'+go/test-file)
-;;     (define-key m (kbd "<leader>gt") #'+go/test-at-point)
-;;     (define-key m (kbd "<leader>gc") #'+go/coverage-toggle)
-;;     (define-key m (kbd "<leader>g.") #'dap-breakpoint-toggle)
-;;     (define-key m (kbd "<leader>gd") #'dap-debug)
-;;     (define-key m (kbd "<f5>")    #'+go/recompile)))
+(defun +go/set-keys ()
+  "Set Go-specific keybindings for Go buffers."
+  (let ((m (current-local-map)))
+    (define-key m (kbd "<leader>gm") #'+go/hydra/body)
+    (define-key m (kbd "<leader>gb") #'+go/build)
+    (define-key m (kbd "<leader>gB") #'+go/build-from-root)
+    (define-key m (kbd "<leader>gr") #'+go/run)
+    (define-key m (kbd "<leader>gp") #'+go/test-project)
+    (define-key m (kbd "<leader>gP") #'+go/test-from-root)
+    (define-key m (kbd "<leader>gf") #'+go/test-file)
+    (define-key m (kbd "<leader>gt") #'+go/test-at-point)
+    (define-key m (kbd "<leader>gc") #'+go/coverage-toggle)
+    (define-key m (kbd "<leader>g.") #'dap-breakpoint-toggle)
+    (define-key m (kbd "<leader>gd") #'dap-debug)
+    (define-key m (kbd "<f5>")    #'+go/recompile)))
 
 ;; Apply Go keybindings to both go-mode and go-ts-mode
-;; (add-hook 'go-mode-hook     #'+go/set-keys)
-;; (add-hook 'go-ts-mode-hook  #'+go/set-keys)
+(add-hook 'go-mode-hook     #'+go/set-keys)
+(add-hook 'go-ts-mode-hook  #'+go/set-keys)
 
 ;; Helper describe-* -----------------------------------------------------------
 (evil-define-key 'normal 'global (kbd "<leader>hf") #'counsel-describe-function)

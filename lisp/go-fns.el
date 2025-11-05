@@ -124,6 +124,12 @@ Customize per-project via .dir-locals.el if needed."
     (lsp-format-buffer)
     (lsp-organize-imports)))
 
+(defun +go/dismiss-compilation ()
+  "Close the window showing the *compilation* buffer, if any."
+  (interactive)
+  (when-let ((win (get-buffer-window "*compilation*")))
+    (delete-window win)))
+
 (provide 'go-fns)
 ;;; go-fns.el ends here
 

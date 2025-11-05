@@ -55,6 +55,9 @@
   ;; Disable in org-mode to avoid interference
   (add-hook 'org-mode-hook (lambda () (corfu-mode -1)))
   (add-hook 'markdown-mode-hook (lambda () (corfu-mode -1)))
+  (define-key corfu-map (kbd "RET") nil)
+  (define-key corfu-map (kbd "C-m") nil)
+  (define-key corfu-map (kbd "TAB") #'corfu-complete)
   )
 
 ;; NOTE - commented because we couldn't find the package

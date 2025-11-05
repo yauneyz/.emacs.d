@@ -272,3 +272,6 @@ Other  _x_ custom color     _X_ custom background     _u_ uncolor at point     _
   :custom
   ;; auto-create decks if missing (optional)
   (anki-editor-create-decks t))
+
+;; Make it work with anki
+(setq org-use-property-inheritance '("ANKI_DECK"))

@@ -3,7 +3,7 @@
 (setq x-alt-keysym 'meta)
 
 ;; Debug on error
-(setq debug-on-error t)
+;; (setq debug-on-error t)
 
 ;;; When buffer is closed, saves the cursor location
 ;(save-place-mode 1)
@@ -11,6 +11,7 @@
 ;; Set history-length longer
 (setq-default history-length 500)
 
+(setq tab-width 4)
 
 ;; Default browser
 (setq browse-url-browser-function 'browse-url-generic

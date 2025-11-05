@@ -13,7 +13,8 @@
      "4594d6b9753691142f02e67b8eb0fda7d12f6cc9f1299a49b819312d6addad1d"
      default))
  '(package-vc-selected-packages
-   '((cider-storm :url "https://github.com/flow-storm/cider-storm"))))
+   '((cider-storm :url "https://github.com/flow-storm/cider-storm")))
+ '(tab-width 8))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

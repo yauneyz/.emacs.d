@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: Anki Tags
+# key: atag
+# --
+:ANKI_TAGS: ${1:tag1 tag2}

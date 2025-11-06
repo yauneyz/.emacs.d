@@ -10,10 +10,17 @@
 			"Typed struct" nil nil nil
 			"/home/zac/.emacs.d/snippets/go-mode/tsruct"
 			nil nil)
+		       ("ptl" "fmt.Println(${1})$0" "println" nil nil
+			nil "/home/zac/.emacs.d/snippets/go-mode/ptl"
+			nil nil)
+		       ("ptf" "fmt.Printf(\"${1}\", ${2})$0" "printf"
+			nil nil nil
+			"/home/zac/.emacs.d/snippets/go-mode/ptf" nil
+			nil)
 		       ("import" "import (\n	\"${1}\"${0}\n)\n"
 			"Grouped Import" nil nil nil
 			"/home/zac/.emacs.d/snippets/go-mode/import-grouped"
 			nil nil)))
 
 
-;;; Do not edit! File generated at Wed Nov  5 04:25:39 2025
+;;; Do not edit! File generated at Wed Nov  5 23:33:50 2025

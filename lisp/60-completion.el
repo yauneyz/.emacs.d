@@ -33,10 +33,10 @@
 
   (minuet-set-optional-options minuet-openai-fim-compatible-options :max_tokens 128))
 
-;; ================ CORFU ========================
-;; ----- LSP should provide CAPF, not Company
-(with-eval-after-load 'lsp-mode
-  (setq lsp-completion-provider :none))   ;; Corfu reads from CAPF
+;; ;; ================ CORFU ========================
+;; ;; ----- LSP should provide CAPF, not Company
+;; (with-eval-after-load 'lsp-mode
+;;   (setq lsp-completion-provider :none))   ;; Corfu reads from CAPF
 
 
 ;; ----- Corfu UI

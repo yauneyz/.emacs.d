@@ -49,15 +49,6 @@ org-mode
 (cbmd  "#+BEGIN_SRC markdown"   n (p) n "#+END_SRC" n)
 (cbex  "#+begin_example"        n (p) n "#+end_example" n)
 
-;; HTML-wrapped code (aligned left) like in examples.org
-(cbwrap
- "#+BEGIN_EXPORT html" n
- "<div align=\"left\">" n
- "#+END_EXPORT" n n
- "#+BEGIN_SRC " (p "lang") n (p) n "#+END_SRC" n n
- "#+BEGIN_EXPORT html" n
- "</div>" n
- "#+END_EXPORT" n)
 
 ;; ---------- “Basic with code on back” conveniences (auto-trigger via AAS) ----------
 (abcf "* " (p "Question / heading") n

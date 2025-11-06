@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: Go code block
+# key: go
+# --
+#+BEGIN_SRC go
+$0
+#+END_SRC

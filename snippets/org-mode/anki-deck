@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: Anki Deck
+# key: adeck
+# --
+:ANKI_DECK: ${1:Default}

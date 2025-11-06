@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: Anki Basic Card
+# key: ;ab
+# --
+* ${1:Front}
+${2:Back}

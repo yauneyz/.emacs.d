@@ -24,7 +24,7 @@ at runtime from `major-mode`."
   (declare (indent 1))
   (unless (cl-evenp (length key-name-pairs))
     (error "aas-yas: need KEY NAME pairs (even number of forms)"))
-  (let* ((pm (if (eq mode 'global) nil (list 'quote mode)))
+  (let* ((pm (if (eq mode 'global) nil mode))
          (args (cl-loop for (k n) on key-name-pairs by #'cddr
                         append (list k `(my/aas-yas-by-name ,n ,pm)))))
     `(aas-set-snippets ,mode ,@args)))

@@ -183,7 +183,23 @@ to allow out-of-order matching like 'eve/mp' for 'events/map'."
   :bind-keymap ("C-c p" . projectile-command-map)
   :custom ((projectile-completion-system 'ivy))
   :init
-  (setq projectile-project-search-path '("~/development/"))
+  (setq projectile-project-search-path
+	'("~/development"
+          "~/development/go"
+          "~/development/clojure"
+          "~/development/clones"
+          ("~/development/research" . 2)
+          "~/development/tools"
+          "~/development/typescript"
+          "~/development/tutoring"
+          "~/development/python"
+          "~/development/android"
+          ("~/development/data-science" . 2)
+          "~/development/mcp"
+          "~/dotfiles"
+          "~/.emacs.d"))
+  (setq projectile-indexing-method 'alien
+	projectile-enable-caching t)
   :config
   (projectile-mode 1)
   ;; Set up the evil keybinding after both evil and projectile are loaded

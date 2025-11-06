@@ -53,6 +53,6 @@ at runtime from `major-mode`."
     ";ab" "Anki Basic Card")
 
   ;; Go
-  (aas-yas 'go-mode
+  (aas-yas 'go-ts-mode
     ";ptl" "println"
     ";ptf" "printf"))

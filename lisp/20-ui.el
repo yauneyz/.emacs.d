@@ -38,8 +38,6 @@
   :if (display-graphic-p)
   :hook (ibuffer-mode . nerd-icons-ibuffer-mode))
 
-(add-hook 'after-init-hook #'+ui/apply-nerd-fonts)
-
 ;; --------------------------------------------------------------------------
 ;; Doom themes + modeline
 ;; --------------------------------------------------------------------------

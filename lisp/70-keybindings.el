@@ -13,6 +13,9 @@
 
 ;; Buffer & file helpers ------------------------------------------------------
 (evil-define-key 'normal 'global (kbd "<leader>bs") #'counsel-switch-buffer)
+(evil-define-key 'normal 'global (kbd "<leader>bo") #'switch-to-buffer-other-window)
+(evil-define-key 'normal 'global (kbd "<leader>bv") #'my/counsel-switch-buffer-right)
+(evil-define-key 'normal 'global (kbd "<leader>bh") #'my/counsel-switch-buffer-below)
 (evil-define-key 'normal 'global (kbd "<leader>bk") #'kill-buffer)
 (evil-define-key 'normal 'global (kbd "<leader>bf") #'format-all-buffer)
 (evil-define-key 'normal 'global (kbd "<leader>gg") #'counsel-projectile-rg)
@@ -78,8 +81,10 @@
 (evil-define-key 'normal 'global (kbd "<leader>cdo") #'cider-debug-step-out)
 
 ;; LSP helpers -----------------------------------------------------------------
-(evil-define-key 'normal 'global (kbd "gd") #'lsp-find-definition)
-(evil-define-key 'normal 'global (kbd "gr") #'lsp-find-references)
+;; Prefer this: one key that works everywhere
+(evil-define-key 'normal 'global (kbd "gd") #'xref-find-definitions)
+(evil-define-key 'normal 'global (kbd "gr") #'xref-find-references)
+
 (evil-define-key 'normal 'global (kbd "gi") #'lsp-find-implementation)
 (evil-define-key 'normal 'global (kbd "<leader>rn") #'lsp-rename)
 (evil-define-key 'normal 'global (kbd "<leader>lg") #'lsp-ui-doc-glance)
@@ -87,6 +92,9 @@
 (evil-define-key 'normal 'global (kbd "<leader>ls") #'lsp-workspace-symbol)
 (evil-define-key 'normal 'global (kbd "<leader>lf") #'lsp-format-buffer)
 (evil-define-key 'normal 'global (kbd "<leader>lm") #'lsp-ui-imenu)
+
+
+;; ELISP bindings --------------------------------------------------
 
 ;; Go development keybindings --------------------------------------------------
 ;; Note: <leader>gg = counsel-projectile-rg (grep), so Go menu is <leader>gm

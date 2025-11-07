@@ -5,14 +5,14 @@
   ((go-mode go-ts-mode typescript-mode tsx-ts-mode python-mode rust-mode) . dap-mode)
   :init
   ;; Have dap auto-wire UI, sessions, tooltip eval, and controls
-  (setq dap-auto-configure-features '(sessions locals controls tooltip))
+  (setq dap-auto-configure-features '(locals expressions repl))
   ;; Keep breakpoints across Emacs restarts
   (setq dap-breakpoints-file (expand-file-name "dap-breakpoints" user-emacs-directory))
   :config
+  (hydra-set-property 'dap-hydra :verbosity 0)
   ;; Enable the UI minor modes once; hooks below will show/hide the windows
   (require 'dap-ui)
   (dap-ui-mode 1)
-  (dap-ui-controls-mode 1)
   (dap-auto-configure-mode 1)
 
   ;; --- Open/close panels automatically ---
@@ -83,14 +83,14 @@
    (list :type "lldb" :request "launch" :name "Rust :: Cargo Run"
          :cargo (list :args ["run"] :filterMode "rustc") ; build+run via cargo
          :cwd "${workspaceFolder}"))
+  )
 
-  ;; ---------- Keybindings ----------
-  (evil-define-key 'normal 'global (kbd "<leader>d") #'dap-hydra)
+(evil-define-key 'normal 'global (kbd "<leader>d") #'dap-hydra)
 
-  ;; If you prefer the hydra *every* stop (not just first), use your original hook:
-  ;; (add-hook 'dap-stopped-hook (lambda (arg) (call-interactively #'dap-hydra)))
-
-
-  ;; Make the hydra not
-
-  (provide '53-dap)
+(require 'subr-x) ;; for string-trim-left
+(defun my/dap-unhide-server-log ()
+  (when (and (derived-mode-p 'dap-server-log-mode)
+             (string-prefix-p " " (buffer-name)))
+    (rename-buffer (string-trim-left (buffer-name)) t)))
+(add-hook 'dap-server-log-mode-hook #'my/dap-unhide-server-log)
+(provide '53-dap)

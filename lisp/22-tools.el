@@ -319,4 +319,7 @@ to allow out-of-order matching like 'eve/mp' for 'events/map'."
 (use-package treemacs-icons-dired
   :hook (dired-mode . treemacs-icons-dired-enable-once))
 
+
+;; Use ripgrep
+
 (use-package hydra :ensure t)

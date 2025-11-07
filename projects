@@ -1,2 +1,3 @@
 ;;; -*- lisp-data -*-
-(("/home/zac/.emacs.d/") ("/home/zac/.emacs.d/elpa/cider-storm/"))
+(("/home/zac/development/clones/dap-mode/") ("/home/zac/.emacs.d/")
+ ("/home/zac/.emacs.d/elpa/cider-storm/"))

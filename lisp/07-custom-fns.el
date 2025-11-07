@@ -238,6 +238,44 @@ working file, and disables `vdiff-mode' in that buffer."
     (message "anki-editor reloaded%s."
              (if reenable " (mode re-enabled)" ""))))
 
+(defun my/counsel-switch-buffer-right ()
+  "Split right, then choose a buffer for that window.
+If the switch is canceled, close the new window."
+  (interactive)
+  (let* ((orig (selected-window))
+         (win  (split-window-right))
+         (ok   nil))
+    (unwind-protect
+        (progn
+          (select-window win)
+          (counsel-switch-buffer)  ;; returns only on success
+          (setq ok t))
+      (unless ok
+        (when (window-live-p win)
+          (delete-window win)
+          (select-window orig))))))
+
+(defun my/counsel-switch-buffer-below ()
+  "Split below, then choose a buffer for that window.
+If the switch is canceled, close the new window."
+  (interactive)
+  (let* ((orig (selected-window))
+         (win  (split-window-below))
+         (ok   nil))
+    (unwind-protect
+        (progn
+          (select-window win)
+          (counsel-switch-buffer)
+          (setq ok t))
+      (unless ok
+        (when (window-live-p win)
+          (delete-window win)
+          (select-window orig))))))
+
+;; Optional convenience bindings
+(global-set-key (kbd "C-x 4 }") #'my/counsel-switch-buffer-right)
+(global-set-key (kbd "C-x 4 {") #'my/counsel-switch-buffer-below)
+
 
 (provide '07-custom-fns)
 ;;; 07-custom-fns.el ends here

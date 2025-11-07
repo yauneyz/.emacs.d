@@ -204,6 +204,7 @@
               (evil-define-key 'visual org-mode-map
                 (kbd "<leader>c") #'my/hydra-org-color/body))))
 
+
 ;; YAS Completion
 (with-eval-after-load 'evil
   (evil-define-key 'normal 'global (kbd "<leader>yr") #'yas-reload-snippets)

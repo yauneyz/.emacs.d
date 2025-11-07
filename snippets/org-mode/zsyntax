@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: Zac Syntax Deck
+# key: zsyntax
+# --
+#+PROPERTY: ANKI_DECK Current::Z-Syntax::${0}

@@ -1,10 +1,3 @@
-;;; 50-lsp.el --- Shared LSP and DAP configuration -*- lexical-binding: t; -*-
-
-;;; Commentary:
-;; Centralises LSP/DAP plumbing so language-specific modules can stay lean.
-
-;;; Code:
-
 (use-package lsp-mode
   :commands (lsp lsp-deferred)
   :init
@@ -13,12 +6,12 @@
         lsp-log-io t
         lsp-idle-delay 0.2
         lsp-completion-provider :none)
-   (setenv "CLOJURE_LSP_LOG_LEVEL" "DEBUG")
-   (setenv "CLOJURE_LSP_LOG_PATH" (expand-file-name "~/.cache/clojure-lsp/log.txt"))
+  (setenv "CLOJURE_LSP_LOG_LEVEL" "DEBUG")
+  (setenv "CLOJURE_LSP_LOG_PATH" (expand-file-name "~/.cache/clojure-lsp/log.txt"))
 
   ;; Corfu handles CAPF
 
-;; clojure-lsp cache locations
+  ;; clojure-lsp cache locations
   (setq lsp-clojure-workspace-dir       (expand-file-name "~/.cache/clojure-lsp/workspace/")
         lsp-clojure-workspace-cache-dir (expand-file-name "~/.cache/clojure-lsp/"))
 
@@ -92,60 +85,6 @@
 
 (use-package lsp-ivy :after lsp-mode)
 
-(use-package dap-mode
-  :after lsp-mode
-  :commands (dap-debug dap-debug-edit-template)
-  :hook ((go-mode go-ts-mode typescript-mode tsx-ts-mode python-mode rust-mode) . dap-mode)
-  :config
-  (dap-auto-configure-mode)
-  (require 'dap-ui)
-  (dap-ui-mode 1)
-
-  ;; Node/TS
-  (require 'dap-node)
-  (dap-node-setup)
-  (dap-register-debug-template
-   "Node :: Launch Current File"
-   (list :type "node" :request "launch" :name "Node :: Launch"
-         :program "${file}" :cwd "${workspaceFolder}"
-         :runtimeExecutable "node" :console "integratedTerminal"
-         :internalConsoleOptions "neverOpen"))
-
-  ;; Go / Delve
-  (require 'dap-dlv-go)
-  (dap-register-debug-template
-   "Go :: Run Main"
-   (list :type "go" :request "launch" :name "Go :: Run Main"
-         :mode "auto" :program "${workspaceFolder}"))
-  (dap-register-debug-template
-   "Go :: Test Current Package"
-   (list :type "go" :request "launch" :name "Go :: Test"
-         :mode "test" :program "${workspaceFolder}"))
-
-  ;; Python (debugpy)
-  (require 'dap-python)
-  (setq dap-python-debugger 'debugpy)
-
-  ;; Rust (CodeLLDB / codelldb adapter assumed installed)
-  (require 'dap-lldb)
-  (dap-register-debug-template
-   "Rust :: Cargo Run"
-   (list :type "lldb" :request "launch" :name "Rust :: Cargo Run"
-         :program "${workspaceFolder}/target/debug/${workspaceFolderBasename}"
-         :cwd "${workspaceFolder}"))
-
-  (evil-define-key 'normal 'global
-    (kbd "<leader>db") #'dap-breakpoint-toggle
-    (kbd "<leader>dB") #'dap-breakpoint-condition
-    (kbd "<leader>dd") #'dap-debug
-    (kbd "<leader>dl") #'dap-debug-last
-    (kbd "<leader>dc") #'dap-continue
-    (kbd "<leader>di") #'dap-step-in
-    (kbd "<leader>do") #'dap-step-out
-    (kbd "<leader>dn") #'dap-next
-    (kbd "<leader>dr") #'dap-restart-frame
-    (kbd "<leader>dh") #'dap-hydra
-    (kbd "<leader>dq") #'dap-disconnect))
 
 (provide '50-lsp)
 ;;; 50-lsp.el ends here

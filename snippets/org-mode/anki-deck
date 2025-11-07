@@ -2,4 +2,4 @@
 # name: Anki Deck
 # key: adeck
 # --
-:ANKI_DECK: ${1:Default}
+\#+PROPERTY: ANKI_DECK ${1}

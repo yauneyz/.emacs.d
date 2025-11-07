@@ -1,9 +1,13 @@
 # -*- mode: snippet -*-
-# name: Anki Basic Card
-# key: ;ab
+# name: Anki Go Code Card
+# key: ;ago
 # --
 * ${1:Front}
   :PROPERTIES:
   :ANKI_NOTE_TYPE: Basic
   :END:
+
+#+BEGIN_SRC go
 ${2:Back}
+#+END_SRC
+$0

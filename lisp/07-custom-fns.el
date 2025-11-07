@@ -138,23 +138,23 @@ Works in magit-diff/status buffers without asking (no DWIM prompts)."
   (require 'magit)
   (require 'vdiff-magit)
   (magit-with-toplevel
-    (let* ((file (or (magit-current-file)
-                     (user-error "No file at point")))
-           (dt   (when (derived-mode-p 'magit-diff-mode)
-                   (magit-diff-type))))
-      (pcase dt
-        ;; In a magit-diff buffer with a concrete type:
-        ('unstaged  (vdiff-magit-show-unstaged file))
-        ('staged    (vdiff-magit-show-staged   file))
-        ('committed
-         (let* ((range (car magit-refresh-args)) ; e.g. "A..B" or "A...B"
-                (revs  (magit-ediff-compare--read-revisions range))
-                (rev-a (nth 0 revs))
-                (rev-b (nth 1 revs)))
-           (vdiff-magit-compare rev-a rev-b file file)))
-        (_
-         ;; Not in a committed/staged/unstaged diff (e.g., status buffer):
-         (vdiff-magit-show-working-tree file))))))
+   (let* ((file (or (magit-current-file)
+                    (user-error "No file at point")))
+          (dt   (when (derived-mode-p 'magit-diff-mode)
+                  (magit-diff-type))))
+     (pcase dt
+       ;; In a magit-diff buffer with a concrete type:
+       ('unstaged  (vdiff-magit-show-unstaged file))
+       ('staged    (vdiff-magit-show-staged   file))
+       ('committed
+        (let* ((range (car magit-refresh-args)) ; e.g. "A..B" or "A...B"
+               (revs  (magit-ediff-compare--read-revisions range))
+               (rev-a (nth 0 revs))
+               (rev-b (nth 1 revs)))
+          (vdiff-magit-compare rev-a rev-b file file)))
+       (_
+        ;; Not in a committed/staged/unstaged diff (e.g., status buffer):
+        (vdiff-magit-show-working-tree file))))))
 
 ;;;; --- One-shot: show this file’s Magit diff, then immediately vdiff it ----
 (defun my/vdiff-magit-this-file ()
@@ -222,6 +222,21 @@ working file, and disables `vdiff-mode' in that buffer."
     (yas-reload-all)
     (message "✅ Yasnippet snippets recompiled and reloaded.")))
 
+
+(defun my/reload-anki-editor ()
+  "Unload and reload `anki-editor` so it picks up fresh state (e.g., new decks)."
+  (interactive)
+  ;; If the minor mode is on in this buffer, turn it off and remember to re-enable.
+  (let ((reenable (bound-and-true-p anki-editor-mode)))
+    (when (featurep 'anki-editor)
+      (unload-feature 'anki-editor t))
+    ;; Pull it back in. If you use use-package, this is still fine—
+    ;; autoloads are already set up, and `require` loads the library.
+    (require 'anki-editor)
+    (when reenable
+      (anki-editor-mode 1))
+    (message "anki-editor reloaded%s."
+             (if reenable " (mode re-enabled)" ""))))
 
 
 (provide '07-custom-fns)

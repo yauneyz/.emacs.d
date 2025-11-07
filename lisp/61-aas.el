@@ -50,7 +50,9 @@ at runtime from `major-mode`."
     ";py" "Python code block"
     ";js" "JS code block"
     ";ts" "TS code block"
-    ";ab" "Anki Basic Card")
+    ";ab" "Anki Basic Card"
+    ";ago" "Anki Go Code Card"
+    )
 
   ;; Go
   (aas-yas 'go-ts-mode

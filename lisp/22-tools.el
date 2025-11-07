@@ -185,7 +185,7 @@ to allow out-of-order matching like 'eve/mp' for 'events/map'."
   :init
   (setq projectile-project-search-path
 	'("~/development"
-          "~/development/go"
+          ("~/development/go" . 2)
           "~/development/clojure"
           "~/development/clones"
           ("~/development/research" . 2)

@@ -158,47 +158,6 @@
               (delete-region beg end)
               (insert contents))))))))
 
-;; Color hydra opened from Evil visual state with <leader>c (Org buffers only).
-(use-package hydra :ensure t)
-(defhydra my/hydra-org-color (:hint nil :color blue)
-  "
-Color  _r_ red  _g_ green  _b_ blue  _y_ yellow  _o_ orange  _p_ purple  _c_ cyan  _m_ magenta  _k_ black  _w_ white  _t_ tan  _v_ violet
-BG     _R_ red  _G_ green  _B_ blue  _Y_ yellow  _O_ orange  _P_ purple  _C_ cyan  _M_ magenta  _K_ black  _W_ white  _T_ tan  _V_ violet
-Other  _x_ custom color     _X_ custom background     _u_ uncolor at point     _q_ quit
-"
-  ;; Foreground presets
-  ("r" (my/org-colorize-region "red"))
-  ("g" (my/org-colorize-region "green"))
-  ("b" (my/org-colorize-region "blue"))
-  ("y" (my/org-colorize-region "yellow"))
-  ("o" (my/org-colorize-region "orange"))
-  ("p" (my/org-colorize-region "purple"))
-  ("c" (my/org-colorize-region "cyan"))
-  ("m" (my/org-colorize-region "magenta"))
-  ("k" (my/org-colorize-region "black"))
-  ("w" (my/org-colorize-region "white"))
-  ("t" (my/org-colorize-region "tan"))
-  ("v" (my/org-colorize-region "violet"))
-  ;; Background presets
-  ("R" (my/org-bgcolorize-region "red"))
-  ("G" (my/org-bgcolorize-region "green"))
-  ("B" (my/org-bgcolorize-region "blue"))
-  ("Y" (my/org-bgcolorize-region "yellow"))
-  ("O" (my/org-bgcolorize-region "orange"))
-  ("P" (my/org-bgcolorize-region "purple"))
-  ("C" (my/org-bgcolorize-region "cyan"))
-  ("M" (my/org-bgcolorize-region "magenta"))
-  ("K" (my/org-bgcolorize-region "black"))
-  ("W" (my/org-bgcolorize-region "white"))
-  ("T" (my/org-bgcolorize-region "tan"))
-  ("V" (my/org-bgcolorize-region "violet"))
-  ;; Custom & utilities
-  ("x" my/org-colorize-region)
-  ("X" my/org-bgcolorize-region)
-  ("u" my/org-uncolorize-at-point)
-  ("q" nil "quit"))
-
-
 (use-package org-bullets
   :after org
   :hook (org-mode . org-bullets-mode)

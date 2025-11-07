@@ -1,11 +1,5 @@
 # -*- mode: snippet -*-
-# name: new yasnippet
-# key: new
-# --
-# -*- mode: snippet -*-
 # name: ${1:snippet-name}
 # key: ${2:trigger}
 # --
-# --
-# mode: `(symbol-name major-mode)`
 ${0:snippet-body}

@@ -2,10 +2,10 @@
 ;;; Snippet definitions:
 ;;;
 (yas-define-snippets 'snippet-mode
-		     '(("${2:trigger}" "${0:snippet-body}"
-			"${1:snippet-name}" nil nil nil
+		     '(("new" "${0:snippet-body}" "New Snippet" nil
+			nil nil
 			"/home/zac/.emacs.d/snippets/snippet-mode/new"
 			nil nil)))
 
 
-;;; Do not edit! File generated at Thu Nov  6 04:02:22 2025
+;;; Do not edit! File generated at Tue Nov 11 00:56:13 2025

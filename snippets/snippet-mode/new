@@ -1,5 +1,5 @@
 # -*- mode: snippet -*-
-# name: ${1:snippet-name}
-# key: ${2:trigger}
+# name: New Snippet
+# key: new
 # --
 ${0:snippet-body}

@@ -1,0 +1,15 @@
+# -*- mode: snippet -*-
+# name: Inline code surround
+# key: ..
+# type: command
+# condition: (not (use-region-p))
+# --
+(let* ((end (point))
+       (beg (save-excursion (skip-chars-backward "^ \t\n") (point))))
+  (if (< beg end)
+      (let ((txt (buffer-substring-no-properties beg end)))
+        (delete-region beg end)
+        (insert "~" txt "~"))
+    ;; If there's nothing to the left (or it's whitespace), just insert markers.
+    (insert "~~")
+    (backward-char 1)))

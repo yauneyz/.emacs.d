@@ -26,7 +26,7 @@
 			nil
 			"/home/zac/.emacs.d/snippets/go-mode/print"
 			nil nil)
-		       ("import"
+		       ("importf"
 			"import (\n       \"fmt\"${1}\n)\n${0}\n"
 			"Import fmt" nil nil nil
 			"/home/zac/.emacs.d/snippets/go-mode/importf"
@@ -37,4 +37,4 @@
 			nil nil)))
 
 
-;;; Do not edit! File generated at Thu Nov  6 04:02:22 2025
+;;; Do not edit! File generated at Tue Nov 11 00:56:13 2025

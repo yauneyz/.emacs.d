@@ -52,6 +52,8 @@ at runtime from `major-mode`."
     ";ts" "TS code block"
     ";ab" "Anki Basic Card"
     ";ago" "Anki Go Code Card"
+    "mk" "Inline code"
+    ".." "Inline code surround"
     )
 
   ;; Go

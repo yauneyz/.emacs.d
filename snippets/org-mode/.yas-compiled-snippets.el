@@ -3,7 +3,7 @@
 ;;;
 (yas-define-snippets 'org-mode
 		     '(("zsyntax"
-			"#+PROPERTY: ANKI_DECK Current::Z-Syntax::Slices\n"
+			"#+PROPERTY: ANKI_DECK Current::Z-Syntax::${0}\n"
 			"Zac Syntax Deck" nil nil nil
 			"/home/zac/.emacs.d/snippets/org-mode/zsyntax"
 			nil nil)
@@ -19,6 +19,29 @@
 			"JS code block" nil nil nil
 			"/home/zac/.emacs.d/snippets/org-mode/js-code"
 			nil nil)
+		       (".."
+			(progn
+			  (let*
+			      ((end (point))
+			       (beg
+				(save-excursion
+				  (skip-chars-backward "^ 	\n")
+				  (point))))
+			    (if (< beg end)
+				(let
+				    ((txt
+				      (buffer-substring-no-properties
+				       beg end)))
+				  (delete-region beg end)
+				  (insert "~" txt "~"))
+			      (insert "~~") (backward-char 1))))
+			"Inline code surround" (not (use-region-p))
+			nil nil
+			"/home/zac/.emacs.d/snippets/org-mode/inline-code-surround"
+			nil nil)
+		       ("mk" "~${1}~${0}" "Inline code" nil nil nil
+			"/home/zac/.emacs.d/snippets/org-mode/inline-code"
+			nil nil)
 		       ("go" "#+BEGIN_SRC go\n$0\n#+END_SRC\n"
 			"Go code block" nil nil nil
 			"/home/zac/.emacs.d/snippets/org-mode/go-code"
@@ -30,6 +53,11 @@
 		       ("atag" ":ANKI_TAGS: ${1:tag1 tag2}\n"
 			"Anki Tags" nil nil nil
 			"/home/zac/.emacs.d/snippets/org-mode/anki-tags"
+			nil nil)
+		       (";ap"
+			":PROPERTIES:\n:ANKI_NOTE_TYPE: Basic\n:END:"
+			"Anki Insert Properties" nil nil nil
+			"/home/zac/.emacs.d/snippets/org-mode/anki-properties"
 			nil nil)
 		       ("adeck" "\\#+PROPERTY: ANKI_DECK ${1}\n"
 			"Anki Deck" nil nil nil
@@ -47,4 +75,4 @@
 			nil nil)))
 
 
-;;; Do not edit! File generated at Thu Nov  6 04:02:22 2025
+;;; Do not edit! File generated at Tue Nov 11 00:56:13 2025

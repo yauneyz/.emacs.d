@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: Anki Insert Properties
+# key: ;ap
+# --
+:PROPERTIES:
+:ANKI_NOTE_TYPE: Basic
+:END:

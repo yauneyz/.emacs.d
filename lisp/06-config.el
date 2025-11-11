@@ -3,10 +3,10 @@
 (setq x-alt-keysym 'meta)
 
 ;; Debug on error
-;; (setq debug-on-error t)
+(setq debug-on-error t)
 
 ;;; When buffer is closed, saves the cursor location
-;(save-place-mode 1)
+					;(save-place-mode 1)
 
 ;; Set history-length longer
 (setq-default history-length 500)
@@ -52,8 +52,8 @@
 
 ;; So Long mitigates slowness due to extremely long lines.
 ;; Currently available in Emacs master branch *only*!
-;(when (fboundp 'global-so-long-mode)
-  ;(global-so-long-mode))
+					;(when (fboundp 'global-so-long-mode)
+					;(global-so-long-mode))
 
 ;; Add a newline automatically at the end of the file upon save.
 (setq require-final-newline t)
@@ -71,7 +71,7 @@
 
 
 (setq history-length 25)
-;(savehist-mode 1)
+					;(savehist-mode 1)
 
 
 (setenv "XDG_CACHE_HOME" (expand-file-name "~/.cache"))

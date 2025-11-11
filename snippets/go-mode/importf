@@ -1,6 +1,6 @@
 # -*- mode: snippet -*-
 # name: Import fmt
-# key: import
+# key: importf
 # --
 import (
        "fmt"${1}

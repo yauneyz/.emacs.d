@@ -136,24 +136,39 @@
 (evil-define-key 'normal 'global (kbd "M-h") #'elscreen-previous)
 (evil-define-key 'normal 'global (kbd "M-l") #'elscreen-next)
 
-;; Folds / misc ----------------------------------------------------------------
-(evil-define-key 'normal 'global (kbd "<f3>") #'evil-toggle-fold)
+;; Origami Folding ----------------------------------------------------------------
+(evil-define-key 'normal 'global (kbd "za")   #'origami-toggle-node)
+(evil-define-key 'normal 'global (kbd "zA")   #'origami-recursively-toggle-node) ; cycle closed/open/open-rec
+(evil-define-key 'normal 'global (kbd "zo")   #'origami-open-node)
+(evil-define-key 'normal 'global (kbd "zO")   #'origami-open-node-recursively)
+(evil-define-key 'normal 'global (kbd "zc")   #'origami-close-node)
+(evil-define-key 'normal 'global (kbd "zC")   #'origami-close-node-recursively)
+(evil-define-key 'normal 'global (kbd "zv")   #'origami-show-node)               ; reveal point (open parents)
+(evil-define-key 'normal 'global (kbd "zTAB") #'origami-forward-toggle-node)     ; toggle node found on this line
 
-;; Outline-mode keybindings (vim-style z-leader) ------------------------------
-(evil-define-key 'normal 'global (kbd "zo") #'outline-show-children)      ; expand one level
-(evil-define-key 'normal 'global (kbd "zO") #'outline-show-subtree)       ; recursively expand all children
-(evil-define-key 'normal 'global (kbd "zc") #'outline-hide-leaves)        ; collapse node one level
-(evil-define-key 'normal 'global (kbd "zC") #'outline-hide-subtree)       ; collapse all children
-(evil-define-key 'normal 'global (kbd "zR") #'outline-show-all)           ; expand all
-(evil-define-key 'normal 'global (kbd "zM") #'outline-hide-body)          ; collapse all (show only headings)
-(evil-define-key 'normal 'global (kbd "za") #'outline-toggle-children)    ; smart toggle
+;; Buffer-wide
+(evil-define-key 'normal 'global (kbd "zR")   #'origami-open-all-nodes)
+(evil-define-key 'normal 'global (kbd "zM")   #'origami-close-all-nodes)
+(evil-define-key 'normal 'global (kbd "zi")   #'origami-toggle-all-nodes)        ; like Vim foldenable toggle
+(evil-define-key 'normal 'global (kbd "zE")   #'origami-reset)                   ; reset all state
+(evil-define-key 'normal 'global (kbd "zS")   #'origami-show-only-node)          ; focus current area
 
-;; Outline navigation ----------------------------------------------------------
-(evil-define-key 'normal 'global (kbd "zu") #'outline-up-heading)                ; up a level
-(evil-define-key 'normal 'global (kbd "zj") #'outline-forward-same-level)        ; next at same level
-(evil-define-key 'normal 'global (kbd "zk") #'outline-backward-same-level)       ; previous at same level
-(evil-define-key 'normal 'global (kbd "zn") #'outline-next-visible-heading)      ; next heading (any level)
-(evil-define-key 'normal 'global (kbd "zp") #'outline-previous-visible-heading)  ; previous heading (any level)
+;; Foldlevel feel
+(evil-define-key 'normal 'global (kbd "zr")   #'origami-open-node-recursively)   ; reduce folding here
+(evil-define-key 'normal 'global (kbd "zm")   #'origami-close-node-recursively)  ; more folding here
+
+;; Navigation (both Vim-style and bracket variants)
+(evil-define-key 'normal 'global (kbd "zj")   #'origami-forward-fold)            ; next fold start
+(evil-define-key 'normal 'global (kbd "zk")   #'origami-previous-fold)           ; prev fold start
+(evil-define-key 'normal 'global (kbd "]z")   #'origami-forward-fold)
+(evil-define-key 'normal 'global (kbd "[z")   #'origami-previous-fold)
+(evil-define-key 'normal 'global (kbd "]Z")   #'origami-forward-fold-same-level) ; next sibling
+(evil-define-key 'normal 'global (kbd "[Z")   #'origami-backward-fold-same-level); prev sibling
+(evil-define-key 'normal 'global (kbd "g]z")  #'origami-next-fold)               ; end of next fold
+
+;; History
+(evil-define-key 'normal 'global (kbd "gzu")  #'origami-undo)
+(evil-define-key 'normal 'global (kbd "gzr")  #'origami-redo)
 
 ;; Shell buffer toggles -------------------------------------------------------
 ;; Quick access to last used shell buffer

@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: reframe-repl
+# key: <repl
+# --
+(comment
+	(let [db @re-frame.db/app-db$1]
+		(println $0)))

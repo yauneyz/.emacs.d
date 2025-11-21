@@ -1,0 +1,58 @@
+;; org.tempel — org-mode templates for anki-editor & code blocks
+;; Place this file under one of your `tempel-path` directories, e.g.
+;;   ~/.emacs.d/templates/org.tempel
+
+org-mode
+
+;; ---------- Anki compact notes (heading = Front, body = Back) ----------
+(ab "* " (p "Front") n
+    (p "Back") n)
+
+;; Basic (and reversed) — override note type via property drawer
+(abr "* " (p "Front / heading") n
+     ":PROPERTIES:" n
+     ":ANKI_NOTE_TYPE: Basic (and reversed card)" n
+     ":END:" n n
+     (p "Back / body") n)
+
+;; Cloze — override note type; body typically contains clozes
+(ac "* " (p "Heading (can be empty)") n
+    ":PROPERTIES:" n
+    ":ANKI_NOTE_TYPE: Cloze" n
+    ":END:" n n
+    (p "Body (use c1/cn/ch helpers for clozes)") n)
+
+;; ---------- Property helpers (insert on demand) ----------
+(adeck ":ANKI_DECK: " (p "Default") n)
+(antype ":ANKI_NOTE_TYPE: " (p "Basic") n)
+(atag ":ANKI_TAGS: " (p "tag1 tag2") n)
+
+;; ---------- Cloze helpers (inline) ----------
+(c1 "{{c1::" (p "text") "}}")
+(cn "{{c" (p "1") "::" (p "text") "}}")
+(ch "{{c" (p "1") "::" (p "text") "::" (p "hint") "}}")
+
+;; ---------- Generic/good code blocks (empty body; cursor inside) ----------
+(srcblock "#+BEGIN_SRC " (p "lang") n (p) n "#+END_SRC" n)
+
+(cbgo  "#+BEGIN_SRC go"         n (p) n "#+END_SRC" n)
+(cbpy  "#+BEGIN_SRC python"     n (p) n "#+END_SRC" n)
+(cbjs  "#+BEGIN_SRC js"         n (p) n "#+END_SRC" n)
+(cbts  "#+BEGIN_SRC ts"         n (p) n "#+END_SRC" n)
+(cbrs  "#+BEGIN_SRC rust"       n (p) n "#+END_SRC" n)
+(cbjava "#+BEGIN_SRC java"      n (p) n "#+END_SRC" n)
+(cbcpp "#+BEGIN_SRC cpp"        n (p) n "#+END_SRC" n)
+(cbc   "#+BEGIN_SRC C"          n (p) n "#+END_SRC" n)
+(cbbash "#+BEGIN_SRC bash"      n (p) n "#+END_SRC" n)
+(cbsql "#+BEGIN_SRC sql"        n (p) n "#+END_SRC" n)
+(cbjson "#+BEGIN_SRC json"      n (p) n "#+END_SRC" n)
+(cbmd  "#+BEGIN_SRC markdown"   n (p) n "#+END_SRC" n)
+(cbex  "#+begin_example"        n (p) n "#+end_example" n)
+
+
+;; ---------- “Basic with code on back” conveniences (auto-trigger via AAS) ----------
+(abcf "* " (p "Question / heading") n
+      "#+BEGIN_SRC " (p "lang") n (p) n "#+END_SRC" n)
+
+(abcb "* " (p "Question / heading") n
+      "#+BEGIN_SRC " (p "lang") n (p) n "#+END_SRC" n)

@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: New Snippet
+# key: new
+# --
+${0:snippet-body}

@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: Import fmt
+# key: importf
+# --
+import (
+       "fmt"${1}
+)
+${0}

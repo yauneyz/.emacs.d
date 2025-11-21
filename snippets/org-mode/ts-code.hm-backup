@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: TS code block
+# key: ts
+# --
+#+BEGIN_SRC ts
+$0
+#+END_SRC

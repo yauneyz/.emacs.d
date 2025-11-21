@@ -1,15 +1,7 @@
 ;;; 20-ui.el --- Themes, modeline, icons, line-numbers  -*- lexical-binding: t; -*-
 
 ;; =========== Font  ===================
-;; Using Maple Mono (installed via flake.nix maple-mono input)
-;; Height increased to 180 (18pt) for HiDPI monitors (1.5x scaling)
-(let ((height (pcase (system-name)
-                ("opal" 230)   ; desktop
-                ("onyx" 120)   ; laptop
-                (_ 230))))
-  (set-face-attribute 'default nil :font "Maple Mono" :height height))
-;; Alternative fonts (uncomment to use):
-;; (set-face-attribute 'default nil :font "Fira Code Retina" :height 120)
+(set-face-attribute 'default nil :font "Fira Code Retina" :height 120)
 ;; (set-face-attribute 'default nil :font "JetBrainsMono Nerd Font" :height 120)
 ;; (set-face-attribute 'fixed-pitch nil :font "JetBrainsMono Nerd Font" :height 120)
 ;; (set-face-attribute 'variable-pitch nil :font "Cantarell" :height 130)

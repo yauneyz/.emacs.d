@@ -200,10 +200,7 @@ to allow out-of-order matching like 'eve/mp' for 'events/map'."
     (define-key winum-keymap (kbd "M-0") #'treemacs-select-window))
   :config
   (progn
-    ;; Treemacs' python helpers clear PATH, so give them the full git path.
-    (setq treemacs-git-executable                  (or (executable-find "git")
-                                                      treemacs-git-executable)
-          treemacs-collapse-dirs                   (if treemacs-python-executable 3 0)
+    (setq treemacs-collapse-dirs                   (if treemacs-python-executable 3 0)
           treemacs-deferred-git-apply-delay        0.5
           treemacs-directory-name-transformer      #'identity
           treemacs-display-in-side-window          t

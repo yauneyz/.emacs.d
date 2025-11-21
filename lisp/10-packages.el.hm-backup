@@ -1,7 +1,6 @@
 ;;; 10-packages.el --- straight.el, use-package, etc. -*- lexical-binding: t; -*-
 
-;; NOTE: package.el is disabled in favor of straight.el
-;; early-init.el sets package-enable-at-startup to nil
+(require 'package)
 
 ;; --------------------------------------------------------------------------
 ;; straight.el bootstrap
@@ -20,7 +19,17 @@
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
-(setq straight-use-package-by-default t)
+(setq straight-use-package-by-default t
+      package-check-signature nil)
+
+;; --------------------------------------------------------------------------
+;; package-archives (still used for built-ins like gpg keys, etc.)
+;; --------------------------------------------------------------------------
+(setq package-archives
+      '(("melpa" . "https://melpa.org/packages/")
+        ("org"   . "https://orgmode.org/elpa/")
+        ("elpa"  . "https://elpa.gnu.org/packages/")))
+(package-initialize)
 
 ;; --------------------------------------------------------------------------
 ;; use-package
@@ -36,11 +45,22 @@
   (require 'bind-key))
 (setq use-package-always-ensure t)
 
+
+;; --------------------------------------------------------------------------
+;; Convenience helper used later
+;; --------------------------------------------------------------------------
+(defun install-if-necessary (package)
+  "Install PACKAGE unless it is already installed."
+  (unless (package-installed-p package)
+    (package-install package)))
+
 ;; --------------------------------------------------------------------------
 ;; User info (email, name)
 ;; --------------------------------------------------------------------------
 (setq user-full-name     (or (getenv "GIT_AUTHOR_NAME") "Zac Yauney")
       user-mail-address  (or (getenv "GIT_AUTHOR_EMAIL") "zac.yauney@gmail.com"))
+
+(load-file (expand-file-name "lisp/21-modeline.el" user-emacs-directory))
 
 (provide 'packages)
 ;;; 10-packages.el ends here

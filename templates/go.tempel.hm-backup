@@ -1,0 +1,7 @@
+
+go-mode
+
+(tstruct "type " p " struct {" > n>
+	 (p "Fields") n
+	 "}" > n
+	 (p ""))

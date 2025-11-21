@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: Anki Basic Card
+# key: ;ab
+# --
+* ${1:Front}
+  :PROPERTIES:
+  :ANKI_NOTE_TYPE: Basic
+  :END:
+${2:Back}

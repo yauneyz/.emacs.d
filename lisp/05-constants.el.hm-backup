@@ -3,12 +3,6 @@
 (defconst *sys/linux*  (eq system-type 'gnu/linux)   "Running on GNU/Linux?")
 (defconst *sys/win32*  (eq system-type 'windows-nt)  "Running on Windows?")
 
-;; NixOS doesn't have /bin/sh, so set shell-file-name to bash from PATH
-(when *sys/linux*
-  (setq shell-file-name (or (executable-find "bash")
-                            (executable-find "sh")
-                            "/bin/sh")))
-
 (defconst python-p (or (executable-find "python3")
                        (and (executable-find "python")
                             (string-match "Python 3"

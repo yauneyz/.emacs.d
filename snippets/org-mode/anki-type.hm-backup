@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: Anki Note Type
+# key: antype
+# --
+:ANKI_NOTE_TYPE: ${1:Basic}

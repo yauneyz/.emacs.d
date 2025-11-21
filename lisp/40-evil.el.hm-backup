@@ -24,13 +24,12 @@
 (use-package evil-surround :config (global-evil-surround-mode 1))
 
 ;; Commenter ------------------------------------------------------------------
-(use-package evil-nerd-commenter
-  :after evil
-  :config
-  (evil-define-key '(normal visual) 'global (kbd "<leader>cc")
-    #'evilnc-comment-or-uncomment-lines)
-  (evil-define-key '(normal visual) 'global (kbd "<leader>cu")
-    #'evilnc-comment-or-uncomment-lines))
+(install-if-necessary 'evil-nerd-commenter)
+(evil-define-key '(normal visual) 'global (kbd "<leader>cc")
+  #'evilnc-comment-or-uncomment-lines)
+(evil-define-key '(normal visual) 'global (kbd "<leader>cu")
+  #'evilnc-comment-or-uncomment-lines)
+
 
 ;; Window move keys -----------------------------------------------------------
 (use-package windmove)
@@ -41,5 +40,11 @@
 
 ;; Tab as dispatcher later ----------------------------------------------------
 (global-set-key (kbd "<escape>") #'keyboard-escape-quit)
+
+
+(install-if-necessary 'evil-nerd-commenter)
+;; (evilnc-default-hotkeys)
+(evil-define-key '(normal visual) 'global (kbd "<leader>cc") 'evilnc-comment-or-uncomment-lines)
+(evil-define-key '(normal visual) 'global (kbd "<leader>cu") 'evilnc-comment-or-uncomment-lines)
 
 (provide '40-evil)

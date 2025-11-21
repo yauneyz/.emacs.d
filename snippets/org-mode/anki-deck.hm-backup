@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: Anki Deck
+# key: adeck
+# --
+\#+PROPERTY: ANKI_DECK ${1}

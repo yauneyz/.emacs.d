@@ -17,7 +17,7 @@
   :bind ("M-~" . shell-here)
   :config
   (when *sys/linux*
-    (setq explicit-shell-file-name (executable-find "bash"))))
+    (setq explicit-shell-file-name "/bin/bash")))
 
 (use-package multi-term
   :straight (multi-term :type git :host github :repo "manateelazycat/multi-term")

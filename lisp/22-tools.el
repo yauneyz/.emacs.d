@@ -272,7 +272,13 @@ to allow out-of-order matching like 'eve/mp' for 'events/map'."
       (`(t . _)
        (treemacs-git-mode 'simple)))
 
-    (treemacs-hide-gitignored-files-mode nil))
+    (treemacs-hide-gitignored-files-mode nil)
+
+    ;; Fix for "wrong-type-argument arrayp nil" error
+    ;; Ensure workspace projects slot is initialized as empty list instead of nil
+    (dolist (ws treemacs--workspaces)
+      (unless (treemacs-workspace->projects ws)
+        (setf (treemacs-workspace->projects ws) '()))))
   :bind
   (:map global-map
         ("M-0"       . treemacs-select-window)

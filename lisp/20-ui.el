@@ -5,7 +5,7 @@
 ;; Height increased to 180 (18pt) for HiDPI monitors (1.5x scaling)
 (let ((height (pcase (system-name)
                 ("opal" 230)   ; desktop
-                ("onyx" 120)   ; laptop
+                ("laptop" 260)   ; laptop
                 (_ 230))))
   (set-face-attribute 'default nil :font "Maple Mono" :height height))
 ;; Alternative fonts (uncomment to use):

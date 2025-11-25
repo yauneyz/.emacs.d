@@ -3,7 +3,7 @@
 (setq x-alt-keysym 'meta)
 
 ;; Debug on error
-(setq debug-on-error t)
+;; (setq debug-on-error t)
 
 ;;; When buffer is closed, saves the cursor location
 					;(save-place-mode 1)

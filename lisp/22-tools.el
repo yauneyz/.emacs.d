@@ -89,6 +89,15 @@ to allow out-of-order matching like 'eve/mp' for 'events/map'."
   ([remap describe-variable] . helpful-variable)
   ([remap describe-key] . helpful-key))
 
+(use-package command-log-mode
+  :defer t
+  :commands (command-log-mode
+             clm/open-command-log-buffer
+             clm/close-command-log-buffer)
+  :config
+  (setq command-log-mode-open-log-turns-on-mode nil
+        command-log-mode-window-size 60))
+
 ;; Pulsar
 (use-package pulsar
   :config

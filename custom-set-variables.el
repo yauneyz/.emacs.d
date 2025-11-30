@@ -16,6 +16,8 @@
      "0325a6b5eea7e5febae709dab35ec8648908af12cf2d2b569bedc8da0a3a81c1"
      "4594d6b9753691142f02e67b8eb0fda7d12f6cc9f1299a49b819312d6addad1d"
      default))
+ '(ignored-local-variable-values
+   '((eval define-clojure-indent (wait-for '(:defn)) (async '(:defn)))))
  '(package-vc-selected-packages
    '((cider-storm :url "https://github.com/flow-storm/cider-storm")))
  '(tab-width 8))

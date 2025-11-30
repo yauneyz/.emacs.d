@@ -11,6 +11,9 @@
 			"re-frame subscribe" nil nil nil
 			"/home/zac/.emacs.d/snippets/clojurescript-mode/re-frame-sub"
 			nil nil)
+		       ("ptl" "(println $0)\n" "println" nil nil nil
+			"/home/zac/.emacs.d/snippets/clojurescript-mode/println"
+			nil nil)
 		       ("scapi" "[sc.api :refer [defsc spy]]"
 			"import sc api" nil nil nil
 			"/home/zac/.emacs.d/snippets/clojurescript-mode/defsc-spy"
@@ -20,4 +23,4 @@
 			nil nil)))
 
 
-;;; Do not edit! File generated at Tue Nov 11 00:56:13 2025
+;;; Do not edit! File generated at Fri Nov 28 05:11:59 2025

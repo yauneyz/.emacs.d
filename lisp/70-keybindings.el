@@ -227,10 +227,6 @@
               (evil-define-key 'visual org-mode-map
                 (kbd "<leader>c") #'my/hydra-org-color/body))))
 
-(with-eval-after-load 'evil
-  ;; Bind the second `y` that follows an operator-pending `y`, yielding `yy`.
-  (evil-define-key 'operator evil-operator-state-map (kbd "y") #'evil-yank-line))
-
 ;; YAS Completion
 (with-eval-after-load 'evil
   (evil-define-key 'normal 'global (kbd "<leader>yr") #'yas-reload-snippets)

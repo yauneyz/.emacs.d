@@ -4,8 +4,12 @@
 (yas-define-snippets 'fundamental-mode
 		     '(("shebang" "#!/usr/bin/env bash\n"
 			";shr shebang" nil nil nil
+			"/home/zac/.emacs.d/snippets/fundamental-mode/shebang-bash.hm-backup"
+			nil nil)
+		       ("shebang" "#!/usr/bin/env bash\n"
+			";shr shebang" nil nil nil
 			"/home/zac/.emacs.d/snippets/fundamental-mode/shebang-bash"
 			nil nil)))
 
 
-;;; Do not edit! File generated at Tue Nov 11 00:56:13 2025
+;;; Do not edit! File generated at Fri Nov 28 05:11:59 2025

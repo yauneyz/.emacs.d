@@ -8,9 +8,29 @@
 ;; - savefold: persist folds to disk (supports origami)
 ;; - evil (already in your setup)
 
+(require 'cl-lib)
+
+(defun +folding--require-origami ()
+  "Load `origami' even when `highlight' lacks a background color."
+  (unless (featurep 'origami)
+    (let ((orig-face-attribute (symbol-function 'face-attribute)))
+      (cl-letf (((symbol-function 'face-attribute)
+                 (lambda (face attribute &optional frame inherit)
+                   (let ((value (funcall orig-face-attribute face attribute frame inherit)))
+                     (if (and (eq face 'highlight)
+                              (eq attribute :background)
+                              (memq value '(nil unspecified)))
+                         (let ((fallback (funcall orig-face-attribute 'default :background frame inherit)))
+                           (if (memq fallback '(nil unspecified))
+                               "#3f3f3f"
+                             fallback))
+                       value)))))
+        (require 'origami)))))
+
 (use-package origami
   :ensure t
   :init
+  (+folding--require-origami)
   (require 'origami-parsers) ; make sure parsers are defined early
   :hook ((prog-mode . origami-mode))
   :config

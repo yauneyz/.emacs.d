@@ -165,7 +165,7 @@ to allow out-of-order matching like 'eve/mp' for 'events/map'."
   (setq projectile-project-search-path
 	'("~/development"
           ("~/development/go" . 2)
-          "~/development/clojure"
+          ("~/development/clojure" . 2)
           "~/development/clones"
           ("~/development/research" . 2)
           "~/development/tools"

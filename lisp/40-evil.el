@@ -3,6 +3,9 @@
 ;; --------------------------------------------------------------------------
 ;; Evil core
 ;; --------------------------------------------------------------------------
+;; Note: If yy + p paste behavior is still incorrect after these config changes,
+;; ensure you have the latest evil version (bug was fixed in PR #937):
+;; Run: M-x straight-pull-package RET evil RET, then restart Emacs
 (use-package evil
   :init  (setq evil-want-keybinding nil
                evil-want-C-i-jump  t
@@ -13,13 +16,25 @@
   (evil-global-set-key 'motion "k" #'evil-previous-visual-line)
   (evil-set-initial-state 'messages-buffer-mode 'normal)
   (evil-set-initial-state 'dashboard-mode       'normal)
-  (evil-set-undo-system 'undo-redo))
+  (evil-set-undo-system 'undo-redo)
+
+  ;; Ensure proper paste behavior for line-wise yanks
+  (setq evil-kill-on-visual-paste nil))  ; Don't pollute kill-ring on visual paste
 
 (use-package evil-collection :after evil :config (evil-collection-init))
 
 ;; Leader key
 (evil-set-leader 'normal (kbd "SPC"))
 (evil-set-leader 'visual (kbd "SPC"))
+
+;; Explicit clipboard operations (since select-enable-clipboard is nil)
+(evil-define-key 'visual 'global (kbd "<leader>y") (lambda ()
+                                                       (interactive)
+                                                       (evil-yank (region-beginning) (region-end) ?* nil)))
+(evil-define-key 'normal 'global (kbd "<leader>p") (lambda ()
+                                                      (interactive)
+                                                      (let ((evil-this-register ?*))
+                                                        (evil-paste-after 1))))
 
 (use-package evil-surround :config (global-evil-surround-mode 1))
 

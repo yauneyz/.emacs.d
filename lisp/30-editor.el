@@ -12,9 +12,9 @@
   (setq x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING)))
 
 ;; Clipboard integration (Wayland/X11) -----------------------------------------
-;; Disable automatic clipboard sync to preserve Evil text properties (linewise/characterwise)
-;; Use Evil registers for explicit clipboard operations: "*y (yank to clipboard), "*p (paste from clipboard)
-(setq select-enable-clipboard nil)
+;; Enable clipboard synchronization
+;; Evil linewise paste is preserved via custom advice in 40-evil.el
+(setq select-enable-clipboard t)
 (setq select-enable-primary nil)  ; Wayland doesn't use PRIMARY selection
 
 ;; Trim whitespace except current line ----------------------------------------

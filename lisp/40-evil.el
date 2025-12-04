@@ -27,14 +27,23 @@
 (evil-set-leader 'normal (kbd "SPC"))
 (evil-set-leader 'visual (kbd "SPC"))
 
-;; Explicit clipboard operations (since select-enable-clipboard is nil)
-(evil-define-key 'visual 'global (kbd "<leader>y") (lambda ()
-                                                       (interactive)
-                                                       (evil-yank (region-beginning) (region-end) ?* nil)))
-(evil-define-key 'normal 'global (kbd "<leader>p") (lambda ()
-                                                      (interactive)
-                                                      (let ((evil-this-register ?*))
-                                                        (evil-paste-after 1))))
+;; Clipboard integration: preserve linewise paste behavior ---------------------
+;; Restore yank-handler text property when text comes from system clipboard
+;; This fixes the issue where clipboard sync loses Evil's yank-handler metadata
+(defun my/restore-yank-handler-from-clipboard (orig-fun &rest args)
+  "Add yank-handler text property to clipboard text that should be linewise."
+  (let ((text (apply orig-fun args)))
+    (when (and (stringp text)
+               ;; Check if text ends with newline (linewise indicator)
+               (string-match-p "\n$" text)
+               ;; Only add if it doesn't already have a yank-handler
+               (not (get-text-property 0 'yank-handler text)))
+      ;; Add the linewise yank-handler property (must be a list)
+      (put-text-property 0 (length text) 'yank-handler
+                         '(evil-yank-line-handler nil t) text))
+    text))
+
+(advice-add 'current-kill :around #'my/restore-yank-handler-from-clipboard)
 
 (use-package evil-surround :config (global-evil-surround-mode 1))
 

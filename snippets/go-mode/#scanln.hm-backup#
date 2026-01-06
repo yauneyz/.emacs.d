@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: Scan Line
+# key: scanl
+# --
+fmt.Scanln(${0})

@@ -9,6 +9,36 @@ to allow out-of-order matching like 'eve/mp' for 'events/map'."
         (ivy-re-builders-alist '((t . ivy--regex-fuzzy))))
     (counsel-projectile-find-file)))
 
+(defun my-projectile--valid-known-projects-p (data)
+  "Return non-nil when DATA is a proper list of project paths."
+  (and (listp data)
+       (catch 'invalid
+         (while (consp data)
+           (unless (stringp (car data))
+             (throw 'invalid nil))
+           (setq data (cdr data)))
+         (null data))))
+
+(defun my-projectile--sanitize-known-projects-file ()
+  "Reset a corrupted Projectile bookmarks file so discovery can continue.
+Projectile stores known projects in `projectile-known-projects-file'.  When
+that file becomes truncated (for example due to a crash) Projectile will try
+to treat the unreadable contents as a list and blow up during discovery.  This
+helper rewrites the file to an empty list when it cannot be parsed, letting
+`projectile-discover-projects-in-search-path' rebuild it."
+  (when (file-exists-p projectile-known-projects-file)
+    (let ((data (with-temp-buffer
+                  (insert-file-contents projectile-known-projects-file)
+                  (goto-char (point-min))
+                  (condition-case nil
+                      (read (current-buffer))
+                    (error :invalid)))))
+      (unless (my-projectile--valid-known-projects-p data)
+        (message "Projectile bookmarks corrupted; resetting %s"
+                 projectile-known-projects-file)
+        (with-temp-file projectile-known-projects-file
+          (insert "()"))))))
+
 
 ;; Color ripgrep
 (use-package color-rg
@@ -180,6 +210,7 @@ to allow out-of-order matching like 'eve/mp' for 'events/map'."
   (setq projectile-indexing-method 'alien
 	projectile-enable-caching t)
   :config
+  (my-projectile--sanitize-known-projects-file)
   (projectile-mode 1)
   ;; Set up the evil keybinding after both evil and projectile are loaded
   (add-to-list 'projectile-globally-ignored-directories ".clj-kondo")

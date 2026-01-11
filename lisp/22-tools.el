@@ -1,84 +1,74 @@
 
 
-(defun my-counsel-projectile-find-file ()
-  "Use counsel-projectile-find-file with true fuzzy matching.
-Temporarily disable ivy-prescient-mode and force ivy--regex-fuzzy
-to allow out-of-order matching like 'eve/mp' for 'events/map'."
-  (interactive)
-  (let ((ivy-prescient-mode nil)
-        (ivy-re-builders-alist '((t . ivy--regex-fuzzy))))
-    (counsel-projectile-find-file)))
+;; Deadgrep: Fast ripgrep interface
+(use-package deadgrep
+  :if (executable-find "rg")
+  :bind (("C-M-s" . deadgrep))
+  :config
+  ;; Make deadgrep work with project.el
+  (defun my/deadgrep-project-root ()
+    "Get project root for deadgrep using project.el."
+    (when-let ((project (project-current)))
+      (project-root project)))
 
-(defun my-projectile--valid-known-projects-p (data)
-  "Return non-nil when DATA is a proper list of project paths."
-  (and (listp data)
-       (catch 'invalid
-         (while (consp data)
-           (unless (stringp (car data))
-             (throw 'invalid nil))
-           (setq data (cdr data)))
-         (null data))))
+  (setq deadgrep-project-root-function #'my/deadgrep-project-root))
 
-(defun my-projectile--sanitize-known-projects-file ()
-  "Reset a corrupted Projectile bookmarks file so discovery can continue.
-Projectile stores known projects in `projectile-known-projects-file'.  When
-that file becomes truncated (for example due to a crash) Projectile will try
-to treat the unreadable contents as a list and blow up during discovery.  This
-helper rewrites the file to an empty list when it cannot be parsed, letting
-`projectile-discover-projects-in-search-path' rebuild it."
-  (when (file-exists-p projectile-known-projects-file)
-    (let ((data (with-temp-buffer
-                  (insert-file-contents projectile-known-projects-file)
-                  (goto-char (point-min))
-                  (condition-case nil
-                      (read (current-buffer))
-                    (error :invalid)))))
-      (unless (my-projectile--valid-known-projects-p data)
-        (message "Projectile bookmarks corrupted; resetting %s"
-                 projectile-known-projects-file)
-        (with-temp-file projectile-known-projects-file
-          (insert "()"))))))
-
-
-;; Color ripgrep
+;; Color ripgrep (alternative)
 (use-package color-rg
   :straight (color-rg :type git :host github :repo "manateelazycat/color-rg")
   :if (executable-find "rg")
-  :bind ("C-M-s" . color-rg-search-input))
+  :commands color-rg-search-input)
 
-;; Dired
-(use-package dired
-  :straight (:type built-in)
+;; Dirvish: Modern Dired replacement with rich previews
+(use-package dirvish
+  :init
+  (dirvish-override-dired-mode)
   :bind
-  (("C-x C-j" . dired-jump))
+  (("C-x C-j" . dired-jump)
+   :map dirvish-mode-map
+   ("a" . dirvish-quick-access)
+   ("f" . dirvish-file-info-menu)
+   ("y" . dirvish-yank-menu)
+   ("N" . dirvish-narrow)
+   ("^" . dirvish-history-last)
+   ("h" . dirvish-history-jump)
+   ("s" . dirvish-quicksort)
+   ("v" . dirvish-vc-menu)
+   ("TAB" . dirvish-subtree-toggle)
+   ("M-f" . dirvish-history-go-forward)
+   ("M-b" . dirvish-history-go-backward)
+   ("M-l" . dirvish-ls-switches-menu)
+   ("M-m" . dirvish-mark-menu)
+   ("M-t" . dirvish-layout-toggle)
+   ("M-s" . dirvish-setup-menu)
+   ("M-e" . dirvish-emerge-menu)
+   ("M-j" . dirvish-fd-jump))
   :custom
-  ;; Always delete and copy recursively
-  (dired-listing-switches "-lah")
-  (dired-recursive-deletes 'always)
-  (dired-recursive-copies 'always)
-  ;; Auto refresh Dired, but be quiet about it
-  (global-auto-revert-non-file-buffers t)
-  (auto-revert-verbose nil)
-  ;; Quickly copy/move file in Dired
-  (dired-dwim-target t)
-  ;; Move files to trash when deleting
+  (dirvish-quick-access-entries
+   '(("h" "~/" "Home")
+     ("d" "~/Downloads/" "Downloads")
+     ("D" "~/development/" "Development")
+     ("e" "~/.emacs.d/" "Emacs")
+     ("t" "/tmp/" "Temp")))
+  (dirvish-attributes
+   '(nerd-icons file-time file-size collapse subtree-state vc-state git-msg))
+  (dirvish-mode-line-format
+   '(:left (sort symlink) :right (omit yank index)))
+  (dirvish-header-line-format
+   '(:left (path) :right (free-space)))
   (delete-by-moving-to-trash t)
-  ;; Load the newest version of a file
-  (load-prefer-newer t)
-  ;; Detect external file changes and auto refresh file
-  (auto-revert-use-notify nil)
-  (auto-revert-interval 3) ; Auto revert every 3 sec
+  (dired-listing-switches
+   "-l --almost-all --human-readable --group-directories-first --no-group")
+  (dired-dwim-target t)
+  (dired-recursive-copies 'always)
+  (dired-recursive-deletes 'always)
   :config
-  ;; Enable global auto-revert
+  ;; Enable global auto-revert for all buffers
   (global-auto-revert-mode t)
-  ;; Reuse same dired buffer, to prevent numerous buffers while navigating in dired
-  (put 'dired-find-alternate-file 'disabled nil)
-  :hook
-  (dired-mode . (lambda ()
-                  (local-set-key (kbd "<mouse-2>") #'dired-find-alternate-file)
-                  (local-set-key (kbd "RET") #'dired-find-alternate-file)
-                  (local-set-key (kbd "^")
-                                 (lambda () (interactive) (find-alternate-file ".."))))))
+  (setq auto-revert-verbose nil
+        global-auto-revert-non-file-buffers t
+        auto-revert-use-notify nil
+        auto-revert-interval 3))
 
 ;; Winner
 (use-package winner
@@ -110,14 +100,12 @@ helper rewrites the file to an empty list when it cannot be parsed, letting
 
 (use-package helpful
   :ensure t
-  :custom
-  (counsel-describe-function-function #'helpful-callable)
-  (counsel-describe-variable-function #'helpful-variable)
   :bind
-  ([remap describe-function] . helpful-function)
+  ([remap describe-function] . helpful-callable)
   ([remap describe-symbol] . helpful-symbol)
   ([remap describe-variable] . helpful-variable)
-  ([remap describe-key] . helpful-key))
+  ([remap describe-key] . helpful-key)
+  ([remap describe-command] . helpful-command))
 
 (use-package command-log-mode
   :defer t
@@ -138,6 +126,40 @@ helper rewrites the file to an empty list when it cannot be parsed, letting
   (setq pulsar-highlight-face 'pulsar-yellow)
   (pulsar-global-mode 1))
 
+;; Apheleia: Format on save
+(use-package apheleia
+  :config
+  (apheleia-global-mode +1)
+  :custom
+  ;; Enable format-on-save for all programming modes
+  (apheleia-mode-alist
+   '((python-mode . ruff)
+     (python-ts-mode . ruff)
+     (go-mode . gofmt)
+     (go-ts-mode . gofmt)
+     (rust-mode . rustfmt)
+     (rust-ts-mode . rustfmt)
+     (clojure-mode . zprint)
+     (clojurescript-mode . zprint)
+     (clojure-ts-mode . zprint)
+     (clojurescript-ts-mode . zprint)
+     (javascript-mode . prettier)
+     (js-mode . prettier)
+     (js2-mode . prettier)
+     (js-ts-mode . prettier)
+     (typescript-mode . prettier)
+     (typescript-ts-mode . prettier)
+     (tsx-ts-mode . prettier)
+     (json-mode . prettier)
+     (json-ts-mode . prettier)
+     (yaml-mode . prettier)
+     (yaml-ts-mode . prettier)
+     (html-mode . prettier)
+     (css-mode . prettier)
+     (scss-mode . prettier)
+     (web-mode . prettier)
+     (markdown-mode . prettier))))
+
 ;; ELscreen
 (use-package elscreen
   :config
@@ -149,85 +171,152 @@ helper rewrites the file to an empty list when it cannot be parsed, letting
 ;;   :config
 ;;   (add-hook 'after-init-hook #'global-flycheck-mode))
 
-(use-package ivy :diminish
-  :bind (("C-s" . swiper)
-         :map ivy-minibuffer-map
-         ("TAB" . ivy-alt-done) ("C-l" . ivy-alt-done)
-         ("C-j" . ivy-next-line) ("C-k" . ivy-previous-line)
-         :map ivy-switch-buffer-map
-         ("C-k" . ivy-previous-line) ("C-l" . ivy-done)
-         ("C-d" . ivy-switch-buffer-kill)
-         :map ivy-reverse-i-search-map
-         ("C-k" . ivy-previous-line) ("C-d" . ivy-reverse-i-search-kill)
-         ;; counsel
-         ("C-x C-f" . counsel-find-file))
-  :custom ((ivy-use-virtual-buffers t)
-           (ivy-height 10) (ivy-wrap t)
-           (ivy-count-format "【%d/%d】"))
-  :config
-  (setq ivy-re-builders-alist '((t . ivy--regex-fuzzy))
-        ivy-initial-inputs-alist nil)
-  (ivy-mode 1))
+;; ======================== Vertico / Consult / Embark ========================
 
-(use-package counsel :after ivy
-  :ensure t
-  :bind (("M-x"     . counsel-M-x)
-         ("<leader>SPC" . my-counsel-projectile-find-file)
-         ("C-x b"   . counsel-ibuffer)
-         ("C-x C-f" . counsel-find-file)
-         :map minibuffer-local-map
-         ("C-r" . counsel-minibuffer-history))
-  :config
-  (setq ivy-initial-inputs-alist nil))
-
-(use-package flx)                       ; faster fuzzy
-(use-package prescient :config (prescient-persist-mode 1))
-(use-package ivy-prescient :after (ivy prescient) :config (ivy-prescient-mode 1))
-
-(use-package ivy-rich :after ivy :config (ivy-rich-mode 1))
-
-;; ---------------------------- Projectile / Magit ----------------------------
-(use-package projectile
-  :diminish projectile-mode
-  :bind-keymap ("C-c p" . projectile-command-map)
-  :custom ((projectile-completion-system 'ivy))
+;; Vertico: Modern vertical completion UI
+(use-package vertico
   :init
-  (setq projectile-project-search-path
-	'("~/development"
-          ("~/development/go" . 2)
-          ("~/development/clojure" . 2)
-          "~/development/clones"
-          ("~/development/research" . 2)
-          "~/development/tools"
-          "~/development/typescript"
-          "~/development/tutoring"
-          "~/development/python"
-          "~/development/android"
-          ("~/development/data-science" . 2)
-          "~/development/mcp"
-          "~/dotfiles"
-          "~/.emacs.d"))
-  (setq projectile-indexing-method 'alien
-	projectile-enable-caching t)
+  (vertico-mode)
+  :custom
+  (vertico-cycle t)
+  (vertico-resize nil)  ; Keep window size fixed (don't shrink/grow)
+  (vertico-count 15)    ; Always show 15 candidates
+  :bind (:map vertico-map
+              ("C-j" . vertico-next)
+              ("C-k" . vertico-previous)
+              ("C-l" . vertico-insert)))
+
+;; Marginalia: Rich annotations in the minibuffer
+(use-package marginalia
+  :after vertico
+  :init
+  (marginalia-mode)
+  :bind (:map minibuffer-local-map
+              ("M-A" . marginalia-cycle)))
+
+;; Consult: Consulting completing-read
+(use-package consult
+  :bind (("C-s" . consult-line)
+         ("C-x b" . consult-buffer)
+         ("C-x C-b" . consult-buffer)
+         ("C-x C-f" . find-file)
+         ("C-x p b" . consult-project-buffer)
+         ("M-y" . consult-yank-pop)
+         ("M-g g" . consult-goto-line)
+         ("M-g M-g" . consult-goto-line)
+         ("M-g i" . consult-imenu)
+         ("M-g I" . consult-imenu-multi)
+         ("M-s d" . consult-find)
+         ("M-s g" . consult-grep)
+         ("M-s r" . consult-ripgrep)
+         ("M-s l" . consult-line-multi)
+         :map minibuffer-local-map
+         ("C-r" . consult-history))
+  :custom
+  (consult-narrow-key "<")
+  (consult-project-function (lambda (_may-prompt) (project-root (project-current))))
   :config
-  (my-projectile--sanitize-known-projects-file)
-  (projectile-mode 1)
-  ;; Set up the evil keybinding after both evil and projectile are loaded
-  (add-to-list 'projectile-globally-ignored-directories ".clj-kondo")
-  (setq projectile-auto-discover  t
-	projectile-mode-line      "Projectile"
-	projectile-sort-order     'recently-active
-	projectile-generic-command
-	"find . -type f -not -path '*/node_modules/*' -not -path '*/build/*' \
--not -path '*/.clj-kondo/*' -print0")
-  )
+  ;; Configure preview
+  (setq consult-preview-key 'any)
+  (consult-customize
+   consult-ripgrep consult-grep
+   consult-bookmark consult-recent-file
+   consult--source-recent-file consult--source-project-recent-file consult--source-bookmark
+   :preview-key "M-."))
 
-;; Here to make sure projectile loads
-(projectile-discover-projects-in-search-path)
+;; Embark: Context actions
+(use-package embark
+  :bind
+  (("C-." . embark-act)
+   ("C-;" . embark-dwim)
+   ("C-h B" . embark-bindings))
+  :custom
+  (prefix-help-command #'embark-prefix-help-command)
+  :config
+  ;; Hide the mode line of the Embark live/completions buffers
+  (add-to-list 'display-buffer-alist
+               '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+                 nil
+                 (window-parameters (mode-line-format . none)))))
 
-(use-package counsel-projectile
-  :after (projectile counsel)
-  :config (counsel-projectile-mode 1))
+;; Embark + Consult integration
+(use-package embark-consult
+  :after (embark consult)
+  :hook
+  (embark-collect-mode . consult-preview-at-point-mode))
+
+;; ======================== Project.el Configuration ========================
+
+(use-package project
+  :straight (:type built-in)
+  :custom
+  (project-switch-commands
+   '((project-find-file "Find file")
+     (consult-project-buffer "Buffer")
+     (project-find-regexp "Grep")
+     (project-dired "Dired")
+     (magit-project-status "Magit" ?g)))
+  :config
+  ;; Add project search paths
+  (setq project-vc-extra-root-markers '(".project" ".projectile" "go.mod" "Cargo.toml" "package.json"))
+
+  (defun my/project--ignored-directories (path)
+    "Return directories from PATH/.gitignore to skip during discovery."
+    (let ((ignore-file (expand-file-name ".gitignore" path))
+          ignores)
+      (when (file-readable-p ignore-file)
+        (with-temp-buffer
+          (insert-file-contents ignore-file)
+          (goto-char (point-min))
+          (while (not (eobp))
+            (let* ((raw (buffer-substring-no-properties (line-beginning-position)
+                                                        (line-end-position)))
+                   (line (string-trim raw)))
+              (unless (or (string-empty-p line)
+                          (string-prefix-p "#" line)
+                          (string-prefix-p "!" line)
+                          (string-match-p "/" line))
+                (push (string-remove-suffix "/" line) ignores)))
+            (forward-line 1))))
+      ignores))
+
+  ;; Discover projects (similar to projectile-discover)
+  (defun my/add-known-projects ()
+    "Add common development directories to known projects."
+    (interactive)
+    (let ((search-paths
+           '("~/development"
+             "~/development/go"
+             "~/development/clojure"
+             "~/development/clones"
+             "~/development/research"
+             "~/development/tools"
+             "~/development/typescript"
+             "~/development/tutoring"
+             "~/development/python"
+             "~/development/android"
+             "~/development/data-science"
+             "~/development/mcp"
+             "~/dotfiles"
+             "~/.emacs.d")))
+      (dolist (path search-paths)
+        (let* ((expanded (expand-file-name path))
+               (ignored (my/project--ignored-directories expanded)))
+          (when (file-directory-p expanded)
+            (let ((default-directory expanded))
+              (dolist (dir (directory-files default-directory t))
+                (when (and (file-directory-p dir)
+                           (not (member (file-name-nondirectory dir) '("." "..")))
+                           (not (member (file-name-nondirectory dir) ignored))
+                           (or (file-exists-p (expand-file-name ".git" dir))
+                               (file-exists-p (expand-file-name ".project" dir))
+                               (file-exists-p (expand-file-name ".projectile" dir))))
+                  (project-remember-project (project-current nil dir)))))))))
+
+  ;; Discover projects on startup
+  (add-hook 'emacs-startup-hook #'my/add-known-projects))
+
+)
 
 
 
@@ -331,9 +420,6 @@ helper rewrites the file to an empty list when it cannot be parsed, letting
 
 (use-package treemacs-evil
   :after (treemacs evil))
-
-(use-package treemacs-projectile
-  :after (treemacs projectile))
 
 (use-package treemacs-icons-dired
   :hook (dired-mode . treemacs-icons-dired-enable-once))

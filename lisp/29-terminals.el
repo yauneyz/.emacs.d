@@ -1,5 +1,6 @@
-;;; 25-terminals.el --- vterm / shell helpers  -*- lexical-binding: t; -*-
+;;; 29-terminals.el --- vterm / shell helpers  -*- lexical-binding: t; -*-
 
+;; Vterm: Modern terminal emulator
 (use-package vterm
   :commands vterm
   :bind ((:map vterm-mode-map
@@ -7,11 +8,30 @@
                ("M-y" . vterm-yank-pop)
                ("C-q" . vterm-send-next-key)
                ("C-z" . nil)
-               ("M-:" . nil)))
+               ("M-:" . nil)
+               ("C-c C-t" . vterm-copy-mode)))
   :custom
   (vterm-kill-buffer-on-exit t)
   (vterm-max-scrollback 10000)
-  (vterm-buffer-name-string "vterm %s"))
+  (vterm-buffer-name-string "vterm %s")
+  (vterm-always-compile-module t)
+  :config
+  ;; Enable line number mode in vterm copy mode
+  (add-hook 'vterm-copy-mode-hook
+            (lambda ()
+              (if vterm-copy-mode
+                  (progn
+                    (display-line-numbers-mode 1)
+                    (evil-normal-state))
+                (display-line-numbers-mode -1))))
+
+  ;; Better vterm scrolling
+  (setq vterm-scroll-to-bottom-on-output nil)
+  (setq vterm-scroll-to-bottom-on-input t)
+
+  ;; Enable vterm integration with Evil
+  (with-eval-after-load 'evil
+    (evil-set-initial-state 'vterm-mode 'emacs)))
 
 (use-package shell-here
   :bind ("M-~" . shell-here)

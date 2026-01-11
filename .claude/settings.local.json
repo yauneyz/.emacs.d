@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find:*)",
+      "Bash(pkg-config:*)",
+      "Bash(aspell:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

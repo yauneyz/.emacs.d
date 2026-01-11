@@ -40,14 +40,12 @@
         (error (message "Not inside a (comment ...) block"))))))
 
 
-(defun my-counsel-projectile-find-file ()
-  "Use counsel-projectile-find-file with true fuzzy matching.
-Temporarily disable ivy-prescient-mode and force ivy--regex-fuzzy
-to allow out-of-order matching like 'eve/mp' for 'events/map'."
+(defun my-project-find-file ()
+  "Find file in current project using project.el."
   (interactive)
-  (let ((ivy-prescient-mode nil)
-        (ivy-re-builders-alist '((t . ivy--regex-fuzzy))))
-    (counsel-projectile-find-file)))
+  (if-let ((project (project-current)))
+      (project-find-file)
+    (find-file default-directory)))
 
 (defun toggle-shell-buffer (&optional buffer-num other-window)
   "Toggle shell buffer for given BUFFER-NUM (defaults to 1).
@@ -238,7 +236,7 @@ working file, and disables `vdiff-mode' in that buffer."
     (message "anki-editor reloaded%s."
              (if reenable " (mode re-enabled)" ""))))
 
-(defun my/counsel-switch-buffer-right ()
+(defun my/consult-switch-buffer-right ()
   "Split right, then choose a buffer for that window.
 If the switch is canceled, close the new window."
   (interactive)
@@ -248,14 +246,14 @@ If the switch is canceled, close the new window."
     (unwind-protect
         (progn
           (select-window win)
-          (counsel-switch-buffer)  ;; returns only on success
+          (consult-buffer)  ;; returns only on success
           (setq ok t))
       (unless ok
         (when (window-live-p win)
           (delete-window win)
           (select-window orig))))))
 
-(defun my/counsel-switch-buffer-below ()
+(defun my/consult-switch-buffer-below ()
   "Split below, then choose a buffer for that window.
 If the switch is canceled, close the new window."
   (interactive)
@@ -265,7 +263,7 @@ If the switch is canceled, close the new window."
     (unwind-protect
         (progn
           (select-window win)
-          (counsel-switch-buffer)
+          (consult-buffer)
           (setq ok t))
       (unless ok
         (when (window-live-p win)
@@ -273,8 +271,8 @@ If the switch is canceled, close the new window."
           (select-window orig))))))
 
 ;; Optional convenience bindings
-(global-set-key (kbd "C-x 4 }") #'my/counsel-switch-buffer-right)
-(global-set-key (kbd "C-x 4 {") #'my/counsel-switch-buffer-below)
+(global-set-key (kbd "C-x 4 }") #'my/consult-switch-buffer-right)
+(global-set-key (kbd "C-x 4 {") #'my/consult-switch-buffer-below)
 
 
 (provide '07-custom-fns)

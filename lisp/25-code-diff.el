@@ -7,7 +7,6 @@
   ((magit-display-buffer-function
     #'magit-display-buffer-fullframe-status-v1) ; take the full frame
    (magit-save-repository-buffers 'dontask)
-   (magit-completing-read-function #'ivy-completing-read)
    ;; make small changes pop
    (magit-diff-refine-hunk 'all)
    ;; more context around hunks
@@ -15,9 +14,10 @@
    ;; calmer by default
    (magit-diff-arguments '("--ignore-all-space")))
   :config
-  ;; keep your projectile repo list
+  ;; Auto-populate magit repository directories from project.el known projects
   (setq magit-repository-directories
-        (mapcar (lambda (p) (cons p 1)) projectile-known-projects))
+        (mapcar (lambda (p) (cons p 1))
+                (project-known-project-roots)))
 
   ;; --- helpers: always open a single, full-screen diff buffer ---
   (defun my/--select-window-showing-mode (mode)

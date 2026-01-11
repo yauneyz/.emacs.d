@@ -15,11 +15,9 @@ Looks for go.mod file first, then falls back to VCS root."
      (locate-dominating-file (buffer-file-name) "go.mod"))
    ;; Fall back to current directory if no buffer file
    (locate-dominating-file default-directory "go.mod")
-   ;; Finally fall back to VCS project root
-   (cond
-    ((fboundp 'projectile-project-root) (projectile-project-root))
-    ((fboundp 'project-current) (when-let* ((pr (project-current))) (project-root pr)))
-    (t default-directory))))
+   ;; Finally fall back to project.el
+   (when-let* ((pr (project-current))) (project-root pr))
+   default-directory))
 
 (defun +go/compile-in-root (cmd)
   "Run CMD in project root using `compile'."
@@ -91,10 +89,9 @@ Customize per-project via .dir-locals.el if needed."
 
 (defun +go/git-root ()
   "Get the Git repository root directory."
-  (cond
-   ((fboundp 'projectile-project-root) (projectile-project-root))
-   ((fboundp 'project-current) (when-let* ((pr (project-current))) (project-root pr)))
-   (t default-directory)))
+  (or
+   (when-let* ((pr (project-current))) (project-root pr))
+   default-directory))
 
 (defun +go/compile-in-git-root (cmd)
   "Run CMD in Git repository root using `compile'."

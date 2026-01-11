@@ -22,7 +22,8 @@
   :config
   ;; Disable in org-mode to avoid interference
   (add-hook 'org-mode-hook (lambda () (corfu-mode -1)))
-  (add-hook 'markdown-mode-hook (lambda () (corfu-mode -1)))
+  ;; Enable in markdown-mode for better completion
+  ;; (corfu is now enabled globally, so markdown gets it by default)
 
   ;; Keys: RET accepts completion; S-RET inserts newline (ignoring Corfu)
   (define-key corfu-map (kbd "RET") #'corfu-insert)

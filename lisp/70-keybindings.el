@@ -12,13 +12,16 @@
 (evil-define-key '(normal insert) 'global (kbd "C-c )") 'forward-sexp)
 
 ;; Buffer & file helpers ------------------------------------------------------
-(evil-define-key 'normal 'global (kbd "<leader>bs") #'counsel-switch-buffer)
+(evil-define-key 'normal 'global (kbd "<leader>bs") #'consult-buffer)
 (evil-define-key 'normal 'global (kbd "<leader>bo") #'switch-to-buffer-other-window)
-(evil-define-key 'normal 'global (kbd "<leader>bv") #'my/counsel-switch-buffer-right)
-(evil-define-key 'normal 'global (kbd "<leader>bh") #'my/counsel-switch-buffer-below)
+(evil-define-key 'normal 'global (kbd "<leader>bv") #'my/consult-switch-buffer-right)
+(evil-define-key 'normal 'global (kbd "<leader>bh") #'my/consult-switch-buffer-below)
 (evil-define-key 'normal 'global (kbd "<leader>bk") #'kill-buffer)
-(evil-define-key 'normal 'global (kbd "<leader>bf") #'format-all-buffer)
-(evil-define-key 'normal 'global (kbd "<leader>gg") #'counsel-projectile-rg)
+(evil-define-key 'normal 'global (kbd "<leader>bf") #'apheleia-format-buffer)
+(evil-define-key 'normal 'global (kbd "<leader>gg") #'deadgrep)
+
+;; Fuzzy file finder (project-aware)
+(evil-define-key 'normal 'global (kbd "<leader>SPC") #'project-find-file)
 
 ;; Selection helpers --------------------------------------------------------
 (evil-define-key 'normal 'global (kbd "<leader>cv") #'evil-select-inside-comment-block)
@@ -29,7 +32,15 @@
 (evil-define-key 'normal 'global (kbd "<leader>tf") #'treemacs-find-file)
 (evil-define-key 'normal 'global (kbd "<leader>ts") #'lsp-treemacs-symbols)
 
-(evil-define-key 'normal 'global (kbd "<leader>p") 'projectile-command-map)
+;; Project.el keybindings (replacing projectile)
+(evil-define-key 'normal 'global (kbd "<leader>pf") #'project-find-file)
+(evil-define-key 'normal 'global (kbd "<leader>pb") #'consult-project-buffer)
+(evil-define-key 'normal 'global (kbd "<leader>pp") #'project-switch-project)
+(evil-define-key 'normal 'global (kbd "<leader>pd") #'project-dired)
+(evil-define-key 'normal 'global (kbd "<leader>pg") #'consult-ripgrep)
+(evil-define-key 'normal 'global (kbd "<leader>pk") #'project-kill-buffers)
+(evil-define-key 'normal 'global (kbd "<leader>pc") #'project-compile)
+(evil-define-key 'normal 'global (kbd "<leader>pe") #'project-eshell)
 
 ;; Navigate between hunks (diff-hl and Magit both respect these)
 (global-set-key (kbd "M-]") #'diff-hl-next-hunk)
@@ -97,7 +108,7 @@
 ;; ELISP bindings --------------------------------------------------
 
 ;; Go development keybindings --------------------------------------------------
-;; Note: <leader>gg = counsel-projectile-rg (grep), so Go menu is <leader>gm
+;; Note: <leader>gg = deadgrep (grep), so Go menu is <leader>gm
 (defun +go/set-keys ()
   "Set Go-specific keybindings for Go buffers."
   (let ((m (current-local-map)))
@@ -119,9 +130,10 @@
 (add-hook 'go-ts-mode-hook  #'+go/set-keys)
 
 ;; Helper describe-* -----------------------------------------------------------
-(evil-define-key 'normal 'global (kbd "<leader>hf") #'counsel-describe-function)
-(evil-define-key 'normal 'global (kbd "<leader>hv") #'counsel-describe-variable)
-(evil-define-key 'normal 'global (kbd "<leader>hk") #'counsel-describe-key)
+;; These are remapped to helpful-* through helpful package configuration
+(evil-define-key 'normal 'global (kbd "<leader>hf") #'describe-function)
+(evil-define-key 'normal 'global (kbd "<leader>hv") #'describe-variable)
+(evil-define-key 'normal 'global (kbd "<leader>hk") #'describe-key)
 
 ;; Window / screen management --------------------------------------------------
 (use-package elscreen :config (elscreen-start))
@@ -214,7 +226,7 @@
   (define-key treemacs-mode-map (kbd "C-l") 'windmove-right))
 
 (global-set-key (kbd "C-M-h") 'help-command)
-(global-set-key (kbd "C-x C-b") 'counsel-switch-buffer)
+(global-set-key (kbd "C-x C-b") 'consult-buffer)
 (global-set-key (kbd "C-c o") 'toggle-command-log)
 (global-set-key (kbd "C-x r r") 'reload-init)
 

@@ -20,8 +20,6 @@
   (setq-local olivetti-style nil)
   (olivetti-mode 1))
 
-(add-hook 'prog-mode-hook #'my/prog-olivetti-setup)
-
 (defun org-mode-setup ()
   (org-indent-mode)
   (variable-pitch-mode 1)

@@ -9,16 +9,6 @@
 ;; Call olivetti mode on .txt
 (add-hook 'text-mode-hook 'olivetti-mode)
 
-;; --- New configuration for programming modes ---
-(defun my/prog-olivetti-setup ()
-  "Configure Olivetti in programming modes: set a 100-column width and disable visual margins."
-  (setq-local olivetti-body-width 100)
-  (setq-local olivetti-minimum-body-width 100)
-  ;; Disable visual margins by setting the style to nil.
-  ;; (See Olivetti’s documentation: setting `olivetti-style` to nil turns off any
-  ;; extra side margins.)
-  (setq-local olivetti-style nil)
-  (olivetti-mode 1))
 
 (defun org-mode-setup ()
   (org-indent-mode)

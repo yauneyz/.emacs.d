@@ -136,23 +136,23 @@ Works in magit-diff/status buffers without asking (no DWIM prompts)."
   (require 'magit)
   (require 'vdiff-magit)
   (magit-with-toplevel
-   (let* ((file (or (magit-current-file)
-                    (user-error "No file at point")))
-          (dt   (when (derived-mode-p 'magit-diff-mode)
-                  (magit-diff-type))))
-     (pcase dt
-       ;; In a magit-diff buffer with a concrete type:
-       ('unstaged  (vdiff-magit-show-unstaged file))
-       ('staged    (vdiff-magit-show-staged   file))
-       ('committed
-        (let* ((range (car magit-refresh-args)) ; e.g. "A..B" or "A...B"
-               (revs  (magit-ediff-compare--read-revisions range))
-               (rev-a (nth 0 revs))
-               (rev-b (nth 1 revs)))
-          (vdiff-magit-compare rev-a rev-b file file)))
-       (_
-        ;; Not in a committed/staged/unstaged diff (e.g., status buffer):
-        (vdiff-magit-show-working-tree file))))))
+    (let* ((file (or (magit-current-file)
+                     (user-error "No file at point")))
+           (dt   (when (derived-mode-p 'magit-diff-mode)
+                   (magit-diff-type))))
+      (pcase dt
+	;; In a magit-diff buffer with a concrete type:
+	('unstaged  (vdiff-magit-show-unstaged file))
+	('staged    (vdiff-magit-show-staged   file))
+	('committed
+         (let* ((range (car magit-refresh-args)) ; e.g. "A..B" or "A...B"
+		(revs  (magit-ediff-compare--read-revisions range))
+		(rev-a (nth 0 revs))
+		(rev-b (nth 1 revs)))
+           (vdiff-magit-compare rev-a rev-b file file)))
+	(_
+         ;; Not in a committed/staged/unstaged diff (e.g., status buffer):
+         (vdiff-magit-show-working-tree file))))))
 
 ;;;; --- One-shot: show this file’s Magit diff, then immediately vdiff it ----
 (defun my/vdiff-magit-this-file ()

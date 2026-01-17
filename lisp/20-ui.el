@@ -54,10 +54,10 @@
   :config
   (doom-themes-visual-bell-config)
   (doom-themes-org-config)
-  ; (load-theme 'doom-dark+ t)
-  ; (load-theme 'doom-horizon t)
-	(load-theme 'doom-tokyo-night t)
-	;(load-theme 'doom-moonlight t)
+					; (load-theme 'doom-dark+ t)
+					; (load-theme 'doom-horizon t)
+  (load-theme 'doom-tokyo-night t)
+					;(load-theme 'doom-moonlight t)
   (defun switch-theme ()
     "Interactively switch doom themes."
     (interactive)
@@ -108,15 +108,6 @@
 (add-hook 'org-mode-hook  #'setup-prettify-symbols)
 
 ;; Olivetti spacing in code + config buffers (helper defined in 31-org.el)
-(dolist (hook '(prog-mode-hook
-                go-mod-mode-hook
-                json-mode-hook
-                protobuf-mode-hook
-                protobuf-ts-mode-hook))
-  ;; Proto hooks may not be defined yet (autoloaded modes), so bind them before use.
-  (unless (boundp hook)
-    (set hook nil))
-  (add-hook hook #'my/prog-olivetti-setup))
 
 (fset 'yes-or-no-p 'y-or-n-p)
 (setq use-dialog-box nil)

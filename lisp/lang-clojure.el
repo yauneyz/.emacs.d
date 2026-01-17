@@ -43,9 +43,9 @@
 	(cljr-add-keybindings-with-prefix "C-c C-m")
 	(setq cljr-inject-dependencies-at-jack-in t))
 
-      ;; (use-package flycheck-clj-kondo
-      ;;  :ensure t
-      ;;  :after flycheck)
+      (use-package flycheck-clj-kondo
+	:ensure t
+	:after flycheck)
 
       (use-package cider
 	:ensure t

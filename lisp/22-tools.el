@@ -165,11 +165,11 @@
   :config
   (elscreen-start))
 
-;; ;; Flycheck
-;; (use-package flycheck
-;;   :ensure t
-;;   :config
-;;   (add-hook 'after-init-hook #'global-flycheck-mode))
+;; Flycheck surfaces diagnostics globally so LSP errors stick around.
+(use-package flycheck
+  :ensure t
+  :config
+  (add-hook 'after-init-hook #'global-flycheck-mode))
 
 ;; ======================== Vertico / Consult / Embark ========================
 
@@ -250,12 +250,7 @@
 (use-package project
   :straight (:type built-in)
   :custom
-  (project-switch-commands
-   '((project-find-file "Find file")
-     (consult-project-buffer "Buffer")
-     (project-find-regexp "Grep")
-     (project-dired "Dired")
-     (magit-project-status "Magit" ?g)))
+  (project-switch-commands 'project-find-file)
   :config
   ;; Add project search paths
   (setq project-vc-extra-root-markers '(".project" ".projectile" "go.mod" "Cargo.toml" "package.json"))

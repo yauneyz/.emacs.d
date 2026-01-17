@@ -110,7 +110,12 @@
 ;; Olivetti spacing in code + config buffers (helper defined in 31-org.el)
 (dolist (hook '(prog-mode-hook
                 go-mod-mode-hook
-                json-mode-hook))
+                json-mode-hook
+                protobuf-mode-hook
+                protobuf-ts-mode-hook))
+  ;; Proto hooks may not be defined yet (autoloaded modes), so bind them before use.
+  (unless (boundp hook)
+    (set hook nil))
   (add-hook hook #'my/prog-olivetti-setup))
 
 (fset 'yes-or-no-p 'y-or-n-p)

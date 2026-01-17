@@ -18,7 +18,7 @@
 (evil-define-key 'normal 'global (kbd "<leader>bh") #'my/consult-switch-buffer-below)
 (evil-define-key 'normal 'global (kbd "<leader>bk") #'kill-buffer)
 (evil-define-key 'normal 'global (kbd "<leader>bf") #'apheleia-format-buffer)
-(evil-define-key 'normal 'global (kbd "<leader>gg") #'deadgrep)
+(evil-define-key 'normal 'global (kbd "<leader>gg") #'consult-ripgrep)
 
 ;; Fuzzy file finder (project-aware)
 (evil-define-key 'normal 'global (kbd "<leader>SPC") #'project-find-file)
@@ -108,7 +108,7 @@
 ;; ELISP bindings --------------------------------------------------
 
 ;; Go development keybindings --------------------------------------------------
-;; Note: <leader>gg = deadgrep (grep), so Go menu is <leader>gm
+;; Note: <leader>gg = consult-ripgrep (project grep), so Go menu is <leader>gm
 (defun +go/set-keys ()
   "Set Go-specific keybindings for Go buffers."
   (let ((m (current-local-map)))

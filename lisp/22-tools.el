@@ -320,6 +320,27 @@
 
 
 
+;; Track the visited file so Treemacs can reveal it immediately after opening.
+(defvar my/treemacs--last-file-buffer nil
+  "Most recent file-visiting buffer seen before toggling Treemacs.")
+
+(defun my/treemacs--remember-file-buffer (&rest _)
+  "Store the current file-visiting buffer for later Treemacs reveal."
+  (setq my/treemacs--last-file-buffer
+        (let ((buf (window-buffer (selected-window))))
+          (and (buffer-live-p buf)
+               (buffer-file-name buf)
+               buf))))
+
+(defun my/treemacs--reveal-remembered-buffer (&rest _)
+  "Reveal the previously remembered file when Treemacs becomes visible."
+  (when (and (eq (treemacs-current-visibility) 'visible)
+             (buffer-live-p my/treemacs--last-file-buffer))
+    (with-current-buffer my/treemacs--last-file-buffer
+      (treemacs-find-file)))
+  (setq my/treemacs--last-file-buffer nil))
+
+
 ;; Treemacs
 (use-package treemacs
   :ensure t
@@ -407,7 +428,10 @@
     ;; Ensure workspace projects slot is initialized as empty list instead of nil
     (dolist (ws treemacs--workspaces)
       (unless (treemacs-workspace->projects ws)
-        (setf (treemacs-workspace->projects ws) '()))))
+        (setf (treemacs-workspace->projects ws) '())))
+
+    (advice-add 'treemacs :before #'my/treemacs--remember-file-buffer)
+    (advice-add 'treemacs :after #'my/treemacs--reveal-remembered-buffer))
   :bind
   (:map global-map
         ("M-0"       . treemacs-select-window)

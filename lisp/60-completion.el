@@ -48,13 +48,6 @@
   (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
 
 
-;; better matching (VSCode-like fuzzy, out-of-order)
-(use-package orderless
-  :custom
-  (completion-styles '(orderless basic))
-  (completion-category-defaults nil)
-  (completion-category-overrides '((file (styles . (partial-completion))))))
-
 ;; extra completion sources (dabbrev, files, etc.)
 (use-package cape
   :init
@@ -93,6 +86,19 @@
 
 ;; (global-set-key (kbd "<tab>") #'dispatch-tab-command)
 ;; (evil-define-key 'insert 'global (kbd "<tab>") #'dispatch-tab-command)
+
+(use-package copilot
+  :straight (copilot :type git :host github :repo "copilot-emacs/copilot.el" :files ("*.el" "dist"))
+  :hook (prog-mode . copilot-mode)
+  :init
+  (setq copilot-max-char 100000)
+  :config
+  ;; Ensure Copilot accepts/controls coexist with Corfu/Yasnippet
+  (define-key copilot-mode-map (kbd "C-c ]") #'copilot-panel-open)
+  (define-key copilot-completion-map (kbd "<tab>") #'copilot-accept-completion)
+  (define-key copilot-completion-map (kbd "TAB") #'copilot-accept-completion)
+  (define-key copilot-completion-map (kbd "C-<tab>") #'copilot-accept-completion-by-word)
+  (define-key copilot-completion-map (kbd "C-S-<iso-lefttab>") #'copilot-accept-completion-by-line))
 
 
 

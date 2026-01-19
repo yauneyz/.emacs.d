@@ -18,8 +18,6 @@
      default))
  '(ignored-local-variable-values
    '((eval define-clojure-indent (wait-for '(:defn)) (async '(:defn)))))
- '(package-vc-selected-packages
-   '((cider-storm :url "https://github.com/flow-storm/cider-storm")))
  '(tab-width 8))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.

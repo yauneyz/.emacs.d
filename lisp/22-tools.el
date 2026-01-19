@@ -194,6 +194,14 @@
   :bind (:map minibuffer-local-map
               ("M-A" . marginalia-cycle)))
 
+;; Orderless: fuzzy matching for minibuffer + Corfu
+(use-package orderless
+  :init
+  (setq completion-styles '(orderless basic)
+        completion-category-defaults nil
+        completion-category-overrides '((file (styles . (partial-completion))))
+        orderless-matching-styles '(orderless-flex orderless-literal orderless-regexp)))
+
 ;; Consult: Consulting completing-read
 (use-package consult
   :bind (("C-s" . consult-line)

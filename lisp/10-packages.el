@@ -20,6 +20,16 @@
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
+(with-eval-after-load 'straight
+  ;; Some packages still `(require 'package)' for metadata; we intentionally
+  ;; keep package.el disabled so suppress its redundant warning.
+  (setq straight-package--warning-displayed t))
+
+(with-eval-after-load 'package
+  ;; Never allow `package-initialize' to activate ELPA archives; straight.el
+  ;; owns package management for this config.
+  (advice-add 'package-initialize :override #'ignore))
+
 (setq straight-use-package-by-default t)
 
 ;; --------------------------------------------------------------------------

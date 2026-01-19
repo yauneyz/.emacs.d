@@ -98,7 +98,17 @@
   (define-key copilot-completion-map (kbd "<tab>") #'copilot-accept-completion)
   (define-key copilot-completion-map (kbd "TAB") #'copilot-accept-completion)
   (define-key copilot-completion-map (kbd "C-<tab>") #'copilot-accept-completion-by-word)
-  (define-key copilot-completion-map (kbd "C-S-<iso-lefttab>") #'copilot-accept-completion-by-line))
+  (define-key copilot-completion-map (kbd "C-S-<iso-lefttab>") #'copilot-accept-completion-by-line)
+  ;; Provide indentation hints so Copilot stops warning when it can't infer them.
+  (dolist (entry '((prog-mode 2)
+                   (text-mode 2)
+                   (org-mode 2)
+                   (clojure-mode 2)
+                   (clojurescript-mode 2)
+                   (clojurec-mode 2)
+                   (clojure-ts-mode 2)
+                   (clojurescript-ts-mode 2)))
+    (add-to-list 'copilot-indentation-alist entry)))
 
 
 

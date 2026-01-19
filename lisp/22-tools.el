@@ -128,8 +128,6 @@
 
 ;; Apheleia: Format on save
 (use-package apheleia
-  :config
-  (apheleia-global-mode +1)
   :custom
   ;; Enable format-on-save for all programming modes
   (apheleia-mode-alist
@@ -158,7 +156,11 @@
      (css-mode . prettier)
      (scss-mode . prettier)
      (web-mode . prettier)
-     (markdown-mode . prettier))))
+     (markdown-mode . prettier)))
+  :config
+  (setf (alist-get 'zprint apheleia-formatters nil nil #'eq)
+        '("zprint" "{:style :community}"))
+  (apheleia-global-mode +1))
 
 ;; ELscreen
 (use-package elscreen

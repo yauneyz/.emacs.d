@@ -1,6 +1,6 @@
 ;;; -*- lisp-data -*-
-(("/home/zac/development/clojure/owl/")
- ("/data/zac/zac/development/clojure/owl/electron/")
+(("/data/zac/zac/development/clojure/owl/electron/")
+ ("/home/zac/development/clojure/owl/")
  ("/home/zac/development/clojure/owl/electron/")
  ("/home/zac/development/org/")
  ("/data/zac/zac/development/clojure/owl/antei/")

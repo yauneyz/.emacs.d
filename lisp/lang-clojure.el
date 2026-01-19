@@ -9,12 +9,11 @@
 
 (use-package paredit
   :ensure t
-  :bind (:map paredit-mode-map
-              ("C-)" . paredit-forward-slurp-sexp)
-              ("C-(" . paredit-backward-slurp-sexp))
   :config
   (evil-define-key '(normal insert) 'global (kbd "C-)") #'paredit-forward-slurp-sexp)
-  (evil-define-key '(normal insert) 'global (kbd "C-(") #'paredit-backward-slurp-sexp))
+  (evil-define-key '(normal insert) 'global (kbd "C-(") #'paredit-backward-slurp-sexp)
+  (evil-define-key '(normal insert) 'global (kbd "C-f") #'paredit-forward)
+  (evil-define-key '(normal insert) 'global (kbd "C-b") #'paredit-backward))
 
 (use-package clojure-mode
   :ensure t

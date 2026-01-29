@@ -231,7 +231,6 @@
   (consult-customize
    consult-ripgrep consult-grep
    consult-bookmark consult-recent-file
-   consult--source-recent-file consult--source-project-recent-file consult--source-bookmark
    :preview-key "M-."))
 
 ;; Embark: Context actions

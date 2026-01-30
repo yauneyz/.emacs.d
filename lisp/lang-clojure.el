@@ -63,6 +63,7 @@
   (cider-repl-history-file "~/.emacs.d/cider-repl-history")
   (cider-repl-history-size 1000)
   (cider-repl-wrap-history t)
+  (cider-repl-pop-to-buffer-on-connect nil)
   (cider-show-error-buffer t)
   (cider-auto-select-error-buffer t)
   (cider-repl-display-help-banner nil)

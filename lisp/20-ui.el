@@ -2,11 +2,11 @@
 
 ;; =========== Font  ===================
 ;; Using Maple Mono (installed via flake.nix maple-mono input)
-;; Height increased to 180 (18pt) for HiDPI monitors (1.5x scaling)
+;; Slightly smaller default height for HiDPI monitors.
 (let ((height (pcase (system-name)
-                ("opal" 230)   ; desktop
-                ("laptop" 260)   ; laptop
-                (_ 230))))
+                ("opal" 80)   ; desktop
+                ("laptop" 100) ; laptop
+                (_ 210))))
   (set-face-attribute 'default nil :font "Maple Mono" :height height))
 ;; Alternative fonts (uncomment to use):
 ;; (set-face-attribute 'default nil :font "Fira Code Retina" :height 120)

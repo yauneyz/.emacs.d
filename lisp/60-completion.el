@@ -20,8 +20,9 @@
   (corfu-quit-no-match 'separator)        ;; keep UI until you type a space/comma/etc.
   ;; nice in terminals too (M-x corfu-terminal-install if you use tty often)
   :config
-  ;; Disable in org-mode to avoid interference
+  ;; Disable in org-mode and markdown-mode to avoid interference
   (add-hook 'org-mode-hook (lambda () (corfu-mode -1)))
+  (add-hook 'markdown-mode-hook (lambda () (corfu-mode -1)))
   ;; Enable in markdown-mode for better completion
   ;; (corfu is now enabled globally, so markdown gets it by default)
 

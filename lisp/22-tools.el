@@ -301,6 +301,8 @@
              "~/development/android"
              "~/development/data-science"
              "~/development/mcp"
+             "~/development/owl"
+             "~/development/jirachi"
              "~/dotfiles"
              "~/.emacs.d")))
       (dolist (path search-paths)
@@ -317,10 +319,10 @@
                                (file-exists-p (expand-file-name ".projectile" dir))))
                   (project-remember-project (project-current nil dir)))))))))
 
-  ;; Discover projects on startup
-  (add-hook 'emacs-startup-hook #'my/add-known-projects))
+    ;; Discover projects on startup
+    (add-hook 'emacs-startup-hook #'my/add-known-projects))
 
-)
+  )
 
 
 
@@ -344,7 +346,6 @@
       (treemacs-find-file)))
   (setq my/treemacs--last-file-buffer nil))
 
-
 ;; Treemacs
 (use-package treemacs
   :ensure t
@@ -356,7 +357,7 @@
   (progn
     ;; Treemacs' python helpers clear PATH, so give them the full git path.
     (setq treemacs-git-executable                  (or (executable-find "git")
-                                                      treemacs-git-executable)
+                                                       treemacs-git-executable)
           treemacs-collapse-dirs                   (if treemacs-python-executable 3 0)
           treemacs-deferred-git-apply-delay        0.5
           treemacs-directory-name-transformer      #'identity

@@ -11,11 +11,7 @@
 
 (use-package go-mode
   :ensure t
-  :mode "\\.go\\'"
-  :config
-  (add-hook 'go-mode-hook
-            (lambda ()
-              (setq-local xref-backend-functions '(lsp--xref-backend)))))
+  :mode "\\.go\\'")
 
 (when (fboundp 'go-ts-mode)
   (add-to-list 'major-mode-remap-alist '(go-mode . go-ts-mode)))

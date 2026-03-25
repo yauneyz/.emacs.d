@@ -92,9 +92,9 @@
 (evil-define-key 'normal 'global (kbd "<leader>cdo") #'cider-debug-step-out)
 
 ;; LSP helpers -----------------------------------------------------------------
-;; Prefer this: one key that works everywhere
-(evil-define-key 'normal 'global (kbd "gd") #'xref-find-definitions)
-(evil-define-key 'normal 'global (kbd "gr") #'xref-find-references)
+;; Prefer LSP-backed navigation when available, with xref fallback elsewhere.
+(evil-define-key 'normal 'global (kbd "gd") #'+xref/find-definition)
+(evil-define-key 'normal 'global (kbd "gr") #'+xref/find-references)
 
 (evil-define-key 'normal 'global (kbd "gi") #'lsp-find-implementation)
 (evil-define-key 'normal 'global (kbd "<leader>rn") #'lsp-rename)

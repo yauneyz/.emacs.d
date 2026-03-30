@@ -8,14 +8,20 @@
   (set-default-coding-systems 'utf-8)
   (set-terminal-coding-system 'utf-8)
   (set-keyboard-coding-system 'utf-8))
-(when (display-graphic-p)
-  (setq x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING)))
 
 ;; Clipboard integration (Wayland/X11) -----------------------------------------
-;; Enable clipboard synchronization
-;; Evil linewise paste is preserved via custom advice in 40-evil.el
-(setq select-enable-clipboard t)
-(setq select-enable-primary nil)  ; Wayland doesn't use PRIMARY selection
+(defun my/configure-clipboard ()
+  "Configure clipboard integration across X11 and Wayland."
+  ;; Keep the previous X selection targets, but add the Wayland text MIME type.
+  ;; Native Wayland apps often expose only `text/plain;charset=utf-8`, so
+  ;; omitting it allows copy-to-system-clipboard to work while paste fails.
+  (setq x-select-request-type
+        '(UTF8_STRING COMPOUND_TEXT TEXT STRING text/plain\;charset=utf-8)
+        select-enable-clipboard t
+        select-enable-primary nil))
+
+;; Evil linewise paste is preserved via custom advice in 40-evil.el.
+(my/configure-clipboard)
 
 ;; Trim whitespace except current line ----------------------------------------
 (defun delete-trailing-whitespace-except-current-line ()

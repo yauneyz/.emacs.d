@@ -325,6 +325,38 @@
   )
 
 
+;; Normalize Treemacs paths so symlinked $HOME paths match project.el roots.
+(defun my/treemacs--canonicalize-existing-path (path)
+  "Return PATH in the canonical form Treemacs uses for workspace roots."
+  (when path
+    (cond
+     ((file-remote-p path)
+      (treemacs-canonical-path path))
+     ((file-exists-p path)
+      (treemacs-canonical-path (file-truename path)))
+     (t
+      (treemacs-canonical-path path)))))
+
+(defun my/treemacs--with-canonical-buffer-paths (orig &rest args)
+  "Run ORIG with canonical buffer-local file paths for Treemacs."
+  (let ((buffer-file-name (my/treemacs--canonicalize-existing-path buffer-file-name))
+        (default-directory (if default-directory
+                               (my/treemacs--canonicalize-existing-path default-directory)
+                             default-directory)))
+    (apply orig args)))
+
+(defun my/treemacs--canonicalize-path-arg (orig path &rest args)
+  "Resolve PATH before ORIG compares it against Treemacs workspace roots."
+  (apply orig (my/treemacs--canonicalize-existing-path path) args))
+
+(defun my/treemacs--canonicalize-tag-follow-buffer-file (orig flat-index treemacs-window buffer-file project)
+  "Resolve BUFFER-FILE before ORIG follows a tag in Treemacs."
+  (funcall orig
+           flat-index
+           treemacs-window
+           (my/treemacs--canonicalize-existing-path buffer-file)
+           project))
+
 
 ;; Track the visited file so Treemacs can reveal it immediately after opening.
 (defvar my/treemacs--last-file-buffer nil
@@ -431,9 +463,17 @@
 
     ;; Fix for "wrong-type-argument arrayp nil" error
     ;; Ensure workspace projects slot is initialized as empty list instead of nil
-    (dolist (ws treemacs--workspaces)
-      (unless (treemacs-workspace->projects ws)
-        (setf (treemacs-workspace->projects ws) '())))
+    (let ((projects-slot (cl-struct-slot-offset 'treemacs-workspace 'projects)))
+      (dolist (ws treemacs--workspaces)
+        (unless (treemacs-workspace->projects ws)
+          (aset ws projects-slot '()))))
+
+    (advice-add 'treemacs :around #'my/treemacs--with-canonical-buffer-paths)
+    (advice-add 'treemacs-find-file :around #'my/treemacs--with-canonical-buffer-paths)
+    (advice-add 'treemacs-find-tag :around #'my/treemacs--with-canonical-buffer-paths)
+    (advice-add 'treemacs--follow :around #'my/treemacs--with-canonical-buffer-paths)
+    (advice-add 'treemacs-find-file-node :around #'my/treemacs--canonicalize-path-arg)
+    (advice-add 'treemacs--do-follow-tag :around #'my/treemacs--canonicalize-tag-follow-buffer-file)
 
     (advice-add 'treemacs :before #'my/treemacs--remember-file-buffer)
     (advice-add 'treemacs :after #'my/treemacs--reveal-remembered-buffer))

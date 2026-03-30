@@ -28,19 +28,28 @@
 (evil-set-leader 'visual (kbd "SPC"))
 
 ;; Clipboard integration: preserve linewise paste behavior ---------------------
-;; Restore yank-handler text property when text comes from system clipboard
-;; This fixes the issue where clipboard sync loses Evil's yank-handler metadata
+(defun my/kill-ring-yank-handler-for-text (text)
+  "Return the kill-ring yank-handler for TEXT, if one exists."
+  (catch 'handler
+    (dolist (entry kill-ring)
+      (when (and (stringp entry)
+                 (string= entry text))
+        (let ((handler (get-text-property 0 'yank-handler entry)))
+          (when handler
+            (throw 'handler handler)))))
+    nil))
+
+;; Restore yank-handler text property when clipboard text already exists in
+;; kill-ring. This preserves Evil linewise pastes for text copied in Emacs
+;; without forcing unrelated external clipboard text into linewise paste.
 (defun my/restore-yank-handler-from-clipboard (orig-fun &rest args)
-  "Add yank-handler text property to clipboard text that should be linewise."
-  (let ((text (apply orig-fun args)))
-    (when (and (stringp text)
-               ;; Check if text ends with newline (linewise indicator)
-               (string-match-p "\n$" text)
-               ;; Only add if it doesn't already have a yank-handler
-               (not (get-text-property 0 'yank-handler text)))
-      ;; Add the linewise yank-handler property (must be a list)
-      (put-text-property 0 (length text) 'yank-handler
-                         '(evil-yank-line-handler nil t) text))
+  "Restore Evil yank metadata for clipboard text copied from Emacs."
+  (let* ((text (apply orig-fun args))
+         (handler (and (stringp text)
+                       (not (get-text-property 0 'yank-handler text))
+                       (my/kill-ring-yank-handler-for-text text))))
+    (when handler
+      (put-text-property 0 (length text) 'yank-handler handler text))
     text))
 
 (advice-add 'current-kill :around #'my/restore-yank-handler-from-clipboard)

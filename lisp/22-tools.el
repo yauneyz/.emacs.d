@@ -303,6 +303,7 @@
              "~/development/mcp"
              "~/development/owl"
              "~/development/jirachi"
+             "~/development/xavier"
              "~/dotfiles"
              "~/.emacs.d")))
       (dolist (path search-paths)
@@ -417,7 +418,9 @@
           treemacs-project-follow-cleanup          nil
           treemacs-persist-file                    (expand-file-name ".cache/treemacs-persist" user-emacs-directory)
           treemacs-position                        'left
-          treemacs-read-string-input               'from-child-frame
+          ;; Child-frame prompts can lose keyboard focus on some window
+          ;; manager/display setups, which makes Treemacs rename appear hung.
+          treemacs-read-string-input               'from-minibuffer
           treemacs-recenter-distance               0.1
           treemacs-recenter-after-file-follow      nil
           treemacs-recenter-after-tag-follow       nil

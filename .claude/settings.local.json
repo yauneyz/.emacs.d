@@ -3,7 +3,9 @@
     "allow": [
       "Bash(find:*)",
       "Bash(pkg-config:*)",
-      "Bash(aspell:*)"
+      "Bash(aspell:*)",
+      "Bash(awk 'NR>=14 && NR<=15' history)",
+      "Bash(awk 'NR==15' history)"
     ],
     "deny": [],
     "ask": []

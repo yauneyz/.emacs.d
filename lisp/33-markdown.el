@@ -1,5 +1,35 @@
 ;;; 33-markdown.el --- Markdown editing with live preview  -*- lexical-binding: t; -*-
 
+(defun my/markdown-compose-pretty-markers (limit)
+  "Compose Markdown task markers up to LIMIT."
+  (while (re-search-forward "^\\([[:space:]]*\\)\\(?:[-+*]\\|[0-9]+[.)]\\) \\(\\[[ xX]\\]\\)" limit t)
+    (compose-region
+     (match-beginning 2)
+     (match-end 2)
+     (if (string-match-p "[xX]" (match-string 2)) "☑" "☐")))
+  nil)
+
+(defun my/markdown-configure-prose-font ()
+  "Use the best available variable-pitch font for prose buffers."
+  (when (display-graphic-p)
+    (catch 'configured
+      (dolist (family '("Liberation Sans" "DejaVu Sans"))
+        (when (find-font (font-spec :family family))
+          (set-face-attribute 'variable-pitch nil :family family :height 1.08)
+          (throw 'configured family))))))
+
+(defun my/markdown-mode-setup ()
+  "Use a prose-first display while preserving fixed-pitch code regions."
+  (my/markdown-configure-prose-font)
+  (variable-pitch-mode 1)
+  (visual-line-mode 1)
+  (auto-fill-mode 0)
+  (olivetti-mode 1)
+  (display-line-numbers-mode -1)
+  (setq-local line-spacing 0.12
+              markdown-hide-urls t)
+  (markdown-toggle-markup-hiding 1))
+
 ;; Markdown mode
 (use-package markdown-mode
   :mode (("\\.md\\'" . markdown-mode)
@@ -14,12 +44,40 @@
   (markdown-asymmetric-header t)
   (markdown-gfm-uppercase-checkbox t)
   (markdown-fontify-whole-heading-line t)
+  (markdown-header-scaling t)
+  (markdown-header-scaling-values '(1.55 1.35 1.18 1.08 1.0 1.0))
+  (markdown-list-item-bullets '("•"))
+  :custom-face
+  (markdown-header-face ((t (:inherit variable-pitch :weight bold))))
+  (markdown-header-delimiter-face ((t (:inherit shadow :weight normal))))
+  (markdown-bold-face ((t (:inherit bold :weight bold))))
+  (markdown-italic-face ((t (:inherit italic :slant italic))))
+  (markdown-code-face ((t (:inherit fixed-pitch :extend t))))
+  (markdown-inline-code-face ((t (:inherit (markdown-code-face font-lock-constant-face) :extend nil))))
+  (markdown-pre-face ((t (:inherit (markdown-code-face font-lock-constant-face)))))
+  (markdown-table-face ((t (:inherit fixed-pitch))))
+  (markdown-language-keyword-face ((t (:inherit (fixed-pitch font-lock-type-face)))))
+  (markdown-language-info-face ((t (:inherit (fixed-pitch font-lock-string-face)))))
+  (markdown-metadata-key-face ((t (:inherit (fixed-pitch font-lock-variable-name-face)))))
+  (markdown-metadata-value-face ((t (:inherit (fixed-pitch font-lock-string-face)))))
+  (markdown-url-face ((t (:inherit (fixed-pitch link)))))
+  :hook (markdown-mode . my/markdown-mode-setup)
   :config
-  ;; Use visual-line-mode for nicer line wrapping
-  (add-hook 'markdown-mode-hook 'visual-line-mode)
+  (font-lock-add-keywords
+   'markdown-mode
+   '((my/markdown-compose-pretty-markers))
+   'append)
 
-  ;; Use olivetti for comfortable writing
-  (add-hook 'markdown-mode-hook 'olivetti-mode)
+  (dolist (face '(markdown-code-face
+                  markdown-inline-code-face
+                  markdown-pre-face
+                  markdown-table-face
+                  markdown-language-keyword-face
+                  markdown-language-info-face
+                  markdown-metadata-key-face
+                  markdown-metadata-value-face
+                  markdown-url-face))
+    (set-face-attribute face nil :family (face-attribute 'fixed-pitch :family)))
 
   ;; Keybindings for markdown commands
   (with-eval-after-load 'markdown-mode

@@ -1,4 +1,4 @@
-;;; --- Diffing stack: Magit + Delta + vdiff + diff-hl + smerge ---
+;;; 25-code-diff.el --- Diffing stack: Magit + Delta + vdiff + diff-hl + smerge  -*- lexical-binding: t; -*-
 
 ;; Magit: unified, scrollable diffs + everything Git
 (use-package magit

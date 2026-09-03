@@ -1,3 +1,4 @@
+;;; 31-org.el --- Org config  -*- lexical-binding: t; -*-
 ;; Olivetti mode
 
 (use-package olivetti

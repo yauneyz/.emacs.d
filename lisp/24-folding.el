@@ -1,6 +1,5 @@
-
+;;; 24-folding.el --- Origami + persistence + Evil keys  -*- lexical-binding: t; -*-
 ;; Folding
-;;; 52-folding.el --- Origami + persistence + Evil keys  -*- lexical-binding: t; -*-
 
 ;; Packages:
 ;; - origami: folding engine with recursive ops

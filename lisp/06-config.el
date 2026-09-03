@@ -1,3 +1,4 @@
+;;; 06-config.el --- General config  -*- lexical-binding: t; -*-
 
 ;; Map Alt key to Meta
 (setq x-alt-keysym 'meta)

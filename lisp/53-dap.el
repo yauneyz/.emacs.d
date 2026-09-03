@@ -1,3 +1,4 @@
+;;; 53-dap.el --- DAP config  -*- lexical-binding: t; -*-
 (use-package dap-mode
   :after lsp-mode
   :commands (dap-debug dap-debug-edit-template)

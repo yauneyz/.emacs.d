@@ -1,3 +1,4 @@
+;;; early-init.el --- Early init  -*- lexical-binding: t; -*-
 ;; Runs before `init.el` (Emacs 27+) so GC + UI settings kick in ASAP.
 
 ;; Speed up startup -----------------------------------------------------------

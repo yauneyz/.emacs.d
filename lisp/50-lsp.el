@@ -1,3 +1,4 @@
+;;; 50-lsp.el --- LSP config  -*- lexical-binding: t; -*-
 (use-package lsp-mode
   :commands (lsp lsp-deferred)
   :init

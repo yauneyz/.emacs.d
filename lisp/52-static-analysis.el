@@ -1,3 +1,4 @@
+;;; 52-static-analysis.el --- Static analysis  -*- lexical-binding: t; -*-
 (use-package format-all
   :commands (format-all-mode format-all-buffer)
   :hook

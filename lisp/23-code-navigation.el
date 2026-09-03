@@ -1,4 +1,4 @@
-
+;;; 23-code-navigation.el --- Code navigation  -*- lexical-binding: t; -*-
 ;; Bookmarks
 
 ;; Put bookmarks in a dedicated file

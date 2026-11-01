@@ -10,6 +10,26 @@
 ;; Call olivetti mode on .txt
 (add-hook 'text-mode-hook 'olivetti-mode)
 
+;; --- Olivetti vs side windows
+;; Olivetti's wide margins count toward a window's minimum width, so in a
+;; fullscreen frame the main window can't be split for a side window
+;; ("too small for splitting").  Olivetti normally clears its margins via a
+;; `split-window' window parameter, but `display-buffer-in-side-window'
+;; binds `ignore-window-parameters', so that never runs.  The display then
+;; falls back to a plain right-hand split, putting Treemacs on the right.
+;; Clear the margins first and let Olivetti re-apply them afterwards.
+(defun my/olivetti--reset-around-side-window (orig &rest args)
+  "Call ORIG with ARGS while Olivetti margins are cleared."
+  (olivetti-reset-all-windows)
+  (unwind-protect (apply orig args)
+    (walk-windows (lambda (window)
+                    (when (buffer-local-value 'olivetti-mode (window-buffer window))
+                      (olivetti-set-window window)))
+                  'nomini)))
+
+(with-eval-after-load 'olivetti
+  (advice-add 'display-buffer-in-side-window :around #'my/olivetti--reset-around-side-window))
+
 
 (defun org-mode-setup ()
   (org-indent-mode)

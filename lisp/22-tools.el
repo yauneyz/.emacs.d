@@ -285,43 +285,162 @@
       ignores))
 
   ;; Discover projects (similar to projectile-discover)
-  (defun my/add-known-projects ()
-    "Add common development directories to known projects."
-    (interactive)
-    (let ((search-paths
-           '("~/development"
-             "~/development/go"
-             "~/development/clojure"
-             "~/development/clones"
-             "~/development/research"
-             "~/development/tools"
-             "~/development/typescript"
-             "~/development/tutoring"
-             "~/development/python"
-             "~/development/android"
-             "~/development/data-science"
-             "~/development/mcp"
-             "~/development/owl"
-             "~/development/jirachi"
-             "~/development/xavier"
-             "~/dotfiles"
-             "~/.emacs.d")))
-      (dolist (path search-paths)
-        (let* ((expanded (expand-file-name path))
-               (ignored (my/project--ignored-directories expanded)))
-          (when (file-directory-p expanded)
-            (let ((default-directory expanded))
-              (dolist (dir (directory-files default-directory t))
-                (when (and (file-directory-p dir)
-                           (not (member (file-name-nondirectory dir) '("." "..")))
-                           (not (member (file-name-nondirectory dir) ignored))
-                           (or (file-exists-p (expand-file-name ".git" dir))
-                               (file-exists-p (expand-file-name ".project" dir))
-                               (file-exists-p (expand-file-name ".projectile" dir))))
-                  (project-remember-project (project-current nil dir)))))))))
+  ;; Every git root under `my/project-recursive-roots' becomes a project.
+  ;; Scanning stops at the first git root (no nested repos / submodules).
+  ;; The walk is done by tools/git-roots (Rust, parallel), which Emacs builds
+  ;; on demand with cargo; without cargo it falls back to an elisp walk.
+  (defvar my/project-recursive-roots '("~/development")
+    "Directories scanned recursively for git roots.")
 
-    ;; Discover projects on startup
-    (add-hook 'emacs-startup-hook #'my/add-known-projects))
+  (defvar my/project-shallow-roots '("~/dotfiles" "~/.emacs.d")
+    "Directories that are themselves projects, or whose direct children are.")
+
+  (defvar my/project-scan-skip-dirs
+    '(".git" "node_modules" "target" ".venv" "venv" "__pycache__" "dist"
+      "build" ".cache" ".direnv" ".stack-work" "dist-newstyle" ".cpcache"
+      ".gradle" ".idea" "straight" "elpa" "eln-cache" "celeba")
+    "Directory names never descended into while scanning for projects.")
+
+  (defvar my/git-roots-source-dir
+    (expand-file-name "tools/git-roots" user-emacs-directory)
+    "Cargo project for the git-roots scanner.")
+
+  (defvar my/git-roots-target-dir
+    (expand-file-name "var/git-roots" user-emacs-directory)
+    "Cargo target dir for git-roots (kept out of the tracked tree).")
+
+  (defun my/git-roots--binary ()
+    (expand-file-name "release/git-roots" my/git-roots-target-dir))
+
+  (defun my/git-roots--up-to-date-p ()
+    "Non-nil if the built binary is newer than every source file."
+    (let ((bin (my/git-roots--binary)))
+      (and (file-executable-p bin)
+           (seq-every-p
+            (lambda (src) (file-newer-than-file-p bin src))
+            (cons (expand-file-name "Cargo.toml" my/git-roots-source-dir)
+                  (directory-files-recursively
+                   (expand-file-name "src" my/git-roots-source-dir) "\\.rs\\'"))))))
+
+  (defun my/git-roots-ensure (callback)
+    "Call CALLBACK with the git-roots binary path, building it if needed.
+CALLBACK gets nil when the binary is unavailable (no cargo, build failure)."
+    (cond
+     ((my/git-roots--up-to-date-p) (funcall callback (my/git-roots--binary)))
+     ((not (and (executable-find "cargo")
+                (file-exists-p (expand-file-name "Cargo.toml" my/git-roots-source-dir))))
+      (funcall callback nil))
+     (t
+      (message "Building git-roots project scanner...")
+      (let ((default-directory (file-name-as-directory my/git-roots-source-dir))
+            (log (get-buffer-create "*git-roots-build*")))
+        (with-current-buffer log (erase-buffer))
+        (make-process
+         :name "git-roots-build"
+         :buffer log
+         :noquery t
+         :command (list "cargo" "build" "--release" "--quiet"
+                        "--target-dir" my/git-roots-target-dir)
+         :sentinel
+         (lambda (proc _event)
+           (unless (process-live-p proc)
+             (if (and (zerop (process-exit-status proc))
+                      (file-executable-p (my/git-roots--binary)))
+                 (funcall callback (my/git-roots--binary))
+               (message "git-roots build failed (see *git-roots-build*); using elisp scan")
+               (funcall callback nil)))))))))
+
+  (defun my/project--git-root-p (dir)
+    "Non-nil if DIR contains a .git directory or file (worktrees, submodules)."
+    (file-exists-p (expand-file-name ".git" dir)))
+
+  (defun my/project--find-git-roots (dir)
+    "Elisp fallback: return git roots below DIR, stopping at each root."
+    (let ((roots '())
+          (stack (list (file-name-as-directory (expand-file-name dir))))
+          (seen (make-hash-table :test #'equal))
+          (file-name-handler-alist nil))
+      (while stack
+        (let* ((d (pop stack))
+               (true (file-truename d)))
+          (unless (gethash true seen)
+            (puthash true t seen)
+            (if (my/project--git-root-p d)
+                (push d roots)
+              (dolist (ent (ignore-errors
+                             (directory-files-and-attributes
+                              d t directory-files-no-dot-files-regexp t)))
+                (let ((type (file-attribute-type (cdr ent))))
+                  (when (and (or (eq type t)
+                                 (and (stringp type) (file-directory-p (car ent))))
+                             (not (member (file-name-nondirectory (car ent))
+                                          my/project-scan-skip-dirs)))
+                    (push (file-name-as-directory (car ent)) stack))))))))
+      (nreverse roots)))
+
+  (defun my/project--remember-dirs (dirs &optional report)
+    "Remember each git root in DIRS as a project and persist the list once.
+DIRS are already known roots, so register them directly instead of going
+through `project-current'.  STABLE keeps the existing recency order.
+Paths reaching the same repo via symlinks collapse to the shortest one."
+    (let ((by-true (make-hash-table :test #'equal)))
+      (dolist (dir dirs)
+        (let* ((key (file-truename (file-name-as-directory dir)))
+               (cur (gethash key by-true)))
+          (when (or (null cur) (< (length dir) (length cur)))
+            (puthash key dir by-true))))
+      (setq dirs (hash-table-values by-true)))
+    (dolist (dir dirs)
+      (project--remember-dir (file-name-as-directory dir) t t))
+    (project--write-project-list)
+    (when report
+      (message "Remembered %d projects" (length dirs))))
+
+  (defun my/project--shallow-dirs ()
+    "Git roots in `my/project-shallow-roots' (the root itself or direct children)."
+    (let (dirs)
+      (dolist (path my/project-shallow-roots)
+        (let ((expanded (expand-file-name path)))
+          (when (file-directory-p expanded)
+            (if (my/project--git-root-p expanded)
+                (push expanded dirs)
+              (dolist (child (directory-files expanded t directory-files-no-dot-files-regexp t))
+                (when (and (file-directory-p child) (my/project--git-root-p child))
+                  (push child dirs)))))))
+      dirs))
+
+  (defun my/add-known-projects (&optional report)
+    "Remember every git root under `my/project-recursive-roots', plus shallow roots.
+Runs asynchronously; with REPORT (interactive), message the count when done."
+    (interactive (list t))
+    (let ((roots (seq-filter #'file-directory-p
+                             (mapcar #'expand-file-name my/project-recursive-roots)))
+          (shallow (my/project--shallow-dirs)))
+      (my/git-roots-ensure
+       (lambda (bin)
+         (if (not bin)
+             (my/project--remember-dirs
+              (nconc (mapcan #'my/project--find-git-roots roots) shallow) report)
+           (let ((buf (generate-new-buffer " *git-roots*")))
+             (make-process
+              :name "git-roots"
+              :buffer buf
+              :noquery t
+              :stderr (get-buffer-create " *git-roots-errors*")
+              :command (append (list bin)
+                               (mapcan (lambda (n) (list "--skip" n))
+                                       my/project-scan-skip-dirs)
+                               roots)
+              :sentinel
+              (lambda (proc _event)
+                (unless (process-live-p proc)
+                  (let ((dirs (with-current-buffer buf
+                                (split-string (buffer-string) "\n" t))))
+                    (kill-buffer buf)
+                    (my/project--remember-dirs (nconc dirs shallow) report)))))))))))
+
+  ;; Discover projects on startup (async; doesn't block init)
+  (add-hook 'emacs-startup-hook #'my/add-known-projects)
 
   )
 

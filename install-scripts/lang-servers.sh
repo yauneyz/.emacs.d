@@ -25,13 +25,16 @@ fi
 
 echo "→ Ensuring Python language servers"
 if command -v pipx >/dev/null 2>&1; then
-  pipx install --include-deps ruff-lsp >/dev/null || pipx upgrade ruff-lsp >/dev/null
+  pipx install ruff >/dev/null || pipx upgrade ruff >/dev/null
   pipx install --include-deps debugpy >/dev/null || pipx upgrade debugpy >/dev/null
+elif command -v uv >/dev/null 2>&1; then
+  uv tool install ruff
 elif command -v pip >/dev/null 2>&1; then
-  python3.12 -m pip install --user ruff-lsp debugpy >/dev/null
+  python3 -m pip install --user ruff debugpy >/dev/null
 else
   echo "⚠️  pip/pipx not found; skip Python helpers" >&2
 fi
+echo "  Install debugpy, ipython, and pytest in each project's Python environment."
 
 echo "→ Ensuring Rust components"
 if command -v rustup >/dev/null 2>&1; then

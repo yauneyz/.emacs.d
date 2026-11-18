@@ -3,7 +3,7 @@
   :after lsp-mode
   :commands (dap-debug dap-debug-edit-template)
   :hook
-  ((go-mode go-ts-mode typescript-mode tsx-ts-mode python-mode rust-mode) . dap-mode)
+  ((go-mode go-ts-mode typescript-mode tsx-ts-mode python-mode python-ts-mode rust-mode) . dap-mode)
   :init
   ;; Have dap auto-wire UI, sessions, tooltip eval, and controls
   (setq dap-auto-configure-features '(locals expressions repl))
@@ -76,6 +76,11 @@
    "Python :: Run current file"
    (list :type "python" :request "launch" :name "Python :: File"
          :program "${file}" :cwd "${workspaceFolder}" :justMyCode t))
+  (dap-register-debug-template
+   "Python :: JAX eager current file"
+   (list :type "python" :request "launch" :name "Python :: JAX eager"
+         :program "${file}" :cwd "${workspaceFolder}" :justMyCode t
+         :env (list :JAX_DISABLE_JIT "1")))
 
   ;; Rust (CodeLLDB). Easiest is to drive cargo directly:
   (require 'dap-lldb) ;; ensure codelldb/lldb-vscode is installed

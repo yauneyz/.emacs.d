@@ -183,5 +183,77 @@
     (with-eval-after-load 'evil
       (evil-define-key 'normal 'global (kbd "z=") #'ispell-word))))
 
+;; --- PDF export
+
+(defun my/markdown-export-pdf (&optional output-file)
+  "Save this Markdown buffer and export it to OUTPUT-FILE using Pandoc and Chrome.
+By default, write a PDF beside the Markdown file.  With a prefix argument,
+prompt for the destination.  Conversion diagnostics go to *Markdown PDF Export*."
+  (interactive
+   (list (when current-prefix-arg
+           (read-file-name "Export PDF to: " nil nil nil
+                           (concat (file-name-base (or buffer-file-name
+                                                       (buffer-name))) ".pdf")))))
+  (unless (and buffer-file-name
+               (not (file-remote-p buffer-file-name)))
+    (user-error "PDF export requires a local Markdown file"))
+  (let ((pandoc (executable-find "pandoc"))
+        (chrome (or (executable-find "google-chrome")
+                    (executable-find "chromium"))))
+    (unless (and pandoc chrome)
+      (user-error "PDF export requires pandoc and google-chrome or chromium"))
+    (save-buffer)
+    (let* ((default-directory (file-name-directory buffer-file-name))
+           (output (expand-file-name
+                    (or output-file
+                        (concat (file-name-sans-extension buffer-file-name) ".pdf"))))
+           (work-dir (make-temp-file "markdown-pdf-" t))
+           (html (expand-file-name "document.html" work-dir))
+           (pdf (expand-file-name "document.pdf" work-dir))
+           (log (get-buffer-create "*Markdown PDF Export*")))
+      (when (equal (file-truename output) (file-truename buffer-file-name))
+        (delete-directory work-dir t)
+        (user-error "PDF destination must differ from the Markdown source"))
+      (with-current-buffer log (erase-buffer))
+      (message "Exporting Markdown to PDF...")
+      (unwind-protect
+          (progn
+            (unless (eq 0 (call-process
+                           pandoc nil log nil buffer-file-name
+                           "--standalone" "--to=html5" "--embed-resources"
+                           "--metadata" (concat "pagetitle=" (file-name-base buffer-file-name))
+                           "--output" html
+                           "--variable"
+                           (concat "header-includes=<style>"
+                                   "@page { size: Letter; margin: 0.8in; }"
+                                   "body { max-width: none; margin: 0; font-family: Georgia, serif;"
+                                   " font-size: 11pt; line-height: 1.45; color: #111; }"
+                                   "h1 { font-size: 16pt; } h1,h2,h3 { break-after: avoid; }"
+                                   "p { orphans: 3; widows: 3; }"
+                                   "pre { white-space: pre-wrap; overflow-wrap: anywhere; }"
+                                   "img { max-width: 100%; } table { border-collapse: collapse; }"
+                                   "td,th { padding: 0.3em; border: 1px solid #bbb; }"
+                                   "</style>")))
+              (display-buffer log)
+              (error "Pandoc failed; see *Markdown PDF Export*"))
+            (require 'browse-url)
+            (unless (and (eq 0 (call-process
+                               chrome nil log nil "--headless" "--disable-gpu"
+                               (concat "--user-data-dir=" (expand-file-name "chrome" work-dir))
+                               "--no-pdf-header-footer"
+                               (concat "--print-to-pdf=" pdf)
+                               (browse-url-file-url html)))
+                         (file-exists-p pdf)
+                         (> (file-attribute-size (file-attributes pdf)) 0))
+              (display-buffer log)
+              (error "Chrome PDF export failed; see *Markdown PDF Export*"))
+            (copy-file pdf output t)
+            (message "Exported PDF: %s" output)
+            output)
+        (delete-directory work-dir t)))))
+
+(with-eval-after-load 'markdown-mode
+  (define-key markdown-mode-command-map (kbd "p") #'my/markdown-export-pdf))
+
 (provide '33-markdown)
 ;;; 33-markdown.el ends here

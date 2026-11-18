@@ -16,9 +16,7 @@
   (setq lsp-clojure-workspace-dir       (expand-file-name "~/.cache/clojure-lsp/workspace/")
         lsp-clojure-workspace-cache-dir (expand-file-name "~/.cache/clojure-lsp/"))
 
-  :hook ((python-mode . lsp-deferred)
-         (python-ts-mode . lsp-deferred)
-         (rust-mode . lsp-deferred)
+  :hook ((rust-mode . lsp-deferred)
          (rust-ts-mode . lsp-deferred)
          (go-mode . lsp-deferred)
          (go-ts-mode . lsp-deferred)
@@ -36,8 +34,14 @@
          (clojurescript-mode . lsp-deferred)
          (clojurec-mode . lsp-deferred))
   :config
+  ;; This lsp-mode revision calls (cl-remove-if #'nil ...) in the ts-query
+  ;; client's default.  Loading all clients then aborts every LSP startup.
+  ;; Supply its parser directory before that client is loaded.
+  (defvar lsp-ts-query-parser-install-directories
+    (vector (expand-file-name "tree-sitter" user-emacs-directory)))
+
   ;; Tree-sitter variants
-  (dolist (mode '(go-ts-mode rust-ts-mode python-ts-mode tsx-ts-mode
+  (dolist (mode '(go-ts-mode rust-ts-mode tsx-ts-mode
                              haskell-ts-mode bash-ts-mode c-ts-mode c++-ts-mode))
     (add-hook (intern (format "%s-hook" mode)) #'lsp-deferred))
 
